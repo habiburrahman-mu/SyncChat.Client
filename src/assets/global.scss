@@ -1,0 +1,51 @@
+// Global Stylesheet
+
+// Variables
+$primary-color: #3498db;
+$secondary-color: #2ecc71;
+$font-family: 'Arial, sans-serif';
+$base-spacing: 16px;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin responsive($breakpoint) {
+  @media (max-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Reset
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family;
+  color: $primary-color;
+  background-color: #f4f4f4;
+  line-height: 1.6;
+}
+
+// Utility Classes
+.hidden {
+  display: none !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 {
+  margin-top: $base-spacing;
+}
+
+.mb-1 {
+  margin-bottom: $base-spacing;
+}
