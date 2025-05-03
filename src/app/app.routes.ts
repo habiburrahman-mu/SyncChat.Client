@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
+import { FEATURE_ROUTES } from '@features/features.routes';
 import { PAGES_ROUTES } from '@pages/pages.routes';
 
 export const routes: Routes = [
-  { path: 'chat', loadChildren: () => import('@features/chat/chat.routes').then(r => r.CHAT_ROUTES) },
-  { path: 'auth', loadChildren: () => import('@features/auth/auth.routes').then(r => r.AUTH_ROUTES) },
+  ...FEATURE_ROUTES,
   ...PAGES_ROUTES
 ];
