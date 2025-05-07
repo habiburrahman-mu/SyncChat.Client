@@ -11,8 +11,8 @@
 
 /* You can add global styles to this file, and also import other style files */
 
-@tailwind base;
-@tailwind components;
+@import "tailwindcss/preflight";
+@tailwind utilities;
 @tailwind utilities;
 
 :root {
@@ -26,14 +26,24 @@
 body {
   font-family: 'Inter', sans-serif;
   color: var(--text-color);
-  background-color: var(--background-color);
+  // background-color: var(--background-color);
+  background: radial-gradient(
+    circle at center,
+    #f5faff 0%,
+    #eef7ff 60%,
+    #e9f3ff 100%
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   @apply antialiased;
 }
 
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+// body {
+//   background: linear-gradient(135deg, #f5faff 0%, #eef7ff 100%);
+//   background-attachment: fixed;
+//   background-repeat: no-repeat;
+//   min-height: 100vh;
+//   margin: 0;
+//   font-family: 'Roboto', sans-serif;
+// }
+

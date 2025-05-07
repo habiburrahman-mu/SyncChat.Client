@@ -1,1 +1,47 @@
-<p>register works!</p>
+<div class="flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-md bg-sky-50 rounded-lg shadow-lg p-8 space-y-10">
+
+    <div class="text-center mb-5">
+      <h2 class="text-2xl font-semibold">Create an Account</h2>
+    </div>
+
+    <form class="space-y-5">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Full Name</mat-label>
+        <input matInput type="text" name="fullName" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" name="email" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" name="password" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput type="password" name="confirmPassword" required />
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" class="w-full py-3 text-lg">Register</button>
+
+      <div class="relative flex items-center">
+        <div class="flex-grow border-t border-gray-300"></div>
+        <span class="mx-4 text-gray-500">or</span>
+        <div class="flex-grow border-t border-gray-300"></div>
+      </div>
+
+      <button mat-stroked-button color="primary" class="w-full py-3 text-base font-medium normal-case">
+        Continue with Google
+      </button>
+
+      <div class="text-center text-sm text-gray-600 mt-4">
+        Already have an account?
+        <a routerLink="../login" class="text-blue-600 hover:underline">Login here</a>
+      </div>
+    </form>
+  </div>
+</div>

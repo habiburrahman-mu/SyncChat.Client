@@ -21,7 +21,8 @@
     "paths": {
       "@features/*": ["app/features/*"],
       "@pages/*": ["app/pages/*"],
-    }
+    },
+    "typeRoots": ["node_modules/@angular/material"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
