@@ -1,0 +1,11 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'chat-home-header',
+  imports: [],
+  templateUrl: './home-header.component.html',
+  styleUrl: './home-header.component.scss'
+})
+export class HomeHeaderComponent {
+
+}
