@@ -1,8 +1,13 @@
-<div class="flex items-center justify-center min-h-screen p-4">
-  <div class="w-full max-w-md bg-sky-50 rounded-lg shadow-lg p-8 space-y-10">
+<div class="flex flex-col md:flex-row min-h-screen overflow-hidden">
+  <!-- Left Side: Lottie Animation -->
+  <div class="relative w-full md:w-1/2 h-64 md:h-auto bg-sky-100">
+    <ng-lottie [options]="options" class="absolute inset-0 w-full h-full" style="pointer-events: none"></ng-lottie>
+  </div>
 
+  <!-- Right Side: Register Form -->
+  <div class="flex flex-col justify-center w-full md:w-1/2 p-8 space-y-10 bg-white">
     <div class="text-center mb-5">
-      <h2 class="text-2xl font-semibold">Create an Account</h2>
+      <h2 class="text-2xl font-semibold">Create a SyncChat Account</h2>
     </div>
 
     <form class="space-y-5">

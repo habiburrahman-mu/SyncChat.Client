@@ -1,1 +1,15 @@
-<p>not-found works!</p>
+<div class="flex flex-col items-center justify-center min-h-screen p-8 bg-sky-50 space-y-6">
+  <div class="w-full max-w-md">
+    <ng-lottie
+      [options]="options"
+      class="w-full h-72"
+      style="pointer-events: none"
+    ></ng-lottie>
+  </div>
+
+  <div class="text-center space-y-4">
+    <h2 class="text-3xl font-semibold text-gray-800">Oops! Page not found.</h2>
+    <p class="text-gray-600 text-base mb-5">The page you’re looking for doesn’t exist or was moved.</p>
+    <a [routerLink]="['/']" class="text-lg hover:underline text-blue-900">Back to Home</a>
+  </div>
+</div>
