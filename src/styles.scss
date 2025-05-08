@@ -13,44 +13,20 @@
 
 /* You can add global styles to this file, and also import other style files */
 
-@include mat.core();
 
-$myapp-theme-primary: mat.m2-define-palette(mat.$m2-indigo-palette, A400, A100, A700);
-$myapp-theme-accent: mat.m2-define-palette(mat.$m2-indigo-palette);
-$myapp-theme-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
-$myapp-theme: mat.m2-define-light-theme((
-  color: (
-    primary: $myapp-theme-primary,
-    accent: $myapp-theme-accent,
-    warn: $myapp-theme-warn,
-  )
-));
-
-@include mat.all-component-themes($myapp-theme);
-
-@import "tailwindcss/preflight";
+@use "tailwindcss/preflight";
 @tailwind utilities;
 @tailwind utilities;
-
-:root {
-  --primary-color: #4f46e5;
-  --secondary-color: #6366f1;
-  --accent-color: #22c55e;
-  --text-color: #111827;
-  --background-color: #f9fafb;
-}
 
 body {
   font-family: 'Roboto', sans-serif;
   color: var(--text-color);
   // background-color: var(--background-color);
-  background: radial-gradient(
-    circle at center,
-    #f5faff 0%,
-    #eef7ff 60%,
-    #e9f3ff 100%
-  );
+  background: radial-gradient(circle at center,
+      #f5faff 0%,
+      #eef7ff 60%,
+      #e9f3ff 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   @apply antialiased;
@@ -65,9 +41,34 @@ body {
 //   font-family: 'Roboto', sans-serif;
 // }
 
-.mdc-notched-outline__notch
-{
+.mdc-notched-outline__notch {
   border-right: none;
 }
 
+@include mat.core();
 
+$myapp-theme-primary: mat.m2-define-palette(mat.$m2-indigo-palette, A400, A100, A700);
+$myapp-theme-accent: mat.m2-define-palette(mat.$m2-indigo-palette);
+$myapp-theme-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$myapp-theme: mat.m2-define-light-theme((color: (primary: $myapp-theme-primary,
+        accent: $myapp-theme-accent,
+        warn: $myapp-theme-warn,
+      )));
+
+@include mat.all-component-themes($myapp-theme);
+
+@include mat.form-field-density(-4);
+@include mat.button-density(0);
+// @include mat.card-density(-4);
+// @include mat.dialog-density(-4);
+
+:root {
+  // --primary-color: #4f46e5;
+  // --secondary-color: #6366f1;
+  // --accent-color: #22c55e;
+  // --text-color: #111827;
+  // --background-color: #f9fafb;
+
+  // @include mat.form-field-density($compact-theme);
+}
