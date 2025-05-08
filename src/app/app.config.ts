@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { provideLottieOptions } from 'ngx-lottie';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,6 +13,12 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideLottieOptions({
       player: () => import('lottie-web'),
-    })
+    }),
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: ({
+        appearance: 'outline'
+      })
+    }
   ]
 };

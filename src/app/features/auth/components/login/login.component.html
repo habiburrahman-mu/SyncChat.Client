@@ -1,22 +1,22 @@
-<div class="flex flex-col md:flex-row min-h-screen overflow-hidden">
+<div class="flex flex-col justify-between md:flex-row min-h-screen overflow-hidden">
   <!-- Left Side: Lottie Animation -->
-  <div class="relative w-full md:w-1/2 h-64 md:h-auto bg-sky-100">
+  <div class="relative w-full md:w-1/2 h-64 md:h-auto md">
     <ng-lottie [options]="options" class="absolute inset-0 w-full h-full" style="pointer-events: none"></ng-lottie>
   </div>
 
   <!-- Right Side: Login Form -->
-  <div class="flex flex-col justify-center w-full md:w-1/2 p-8 space-y-10 bg-white">
+  <div class="flex flex-col justify-center w-full max-w-150 md:w-1/2 p-8 md: space-y-10 bg-white">
     <div class="text-center mb-5">
       <h2 class="text-2xl font-semibold">Login to SyncChat</h2>
     </div>
 
     <form class="space-y-5">
-      <mat-form-field appearance="fill" class="w-full">
+      <mat-form-field class="w-full">
         <mat-label>Email</mat-label>
         <input matInput type="email" name="email" required />
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="w-full">
+      <mat-form-field class="w-full">
         <mat-label>Password</mat-label>
         <input matInput type="password" name="password" required />
       </mat-form-field>
