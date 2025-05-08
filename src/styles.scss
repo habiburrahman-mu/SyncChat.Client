@@ -1,5 +1,6 @@
 @use "themes/_tailwind.css";
-@use "@angular/material" as mat;
+@use '@angular/material' as mat;
+@use '_theme-colors' as palettes;
 
 // @import "tailwindcss/base";
 // @import "./custom-base-styles.css";
@@ -11,6 +12,22 @@
 // @import "./custom-utilities.css";
 
 /* You can add global styles to this file, and also import other style files */
+
+@include mat.core();
+
+$myapp-theme-primary: mat.m2-define-palette(mat.$m2-indigo-palette, A400, A100, A700);
+$myapp-theme-accent: mat.m2-define-palette(mat.$m2-indigo-palette);
+$myapp-theme-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$myapp-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $myapp-theme-primary,
+    accent: $myapp-theme-accent,
+    warn: $myapp-theme-warn,
+  )
+));
+
+@include mat.all-component-themes($myapp-theme);
 
 @import "tailwindcss/preflight";
 @tailwind utilities;
@@ -52,3 +69,5 @@ body {
 {
   border-right: none;
 }
+
+
