@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
+import { GoogleIconComponent } from 'app/shared/components/google-icon/google-icon.component';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 
 @Component({
@@ -17,7 +18,8 @@ import { AnimationOptions, LottieComponent } from 'ngx-lottie';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    LottieComponent
+    LottieComponent,
+    GoogleIconComponent
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
