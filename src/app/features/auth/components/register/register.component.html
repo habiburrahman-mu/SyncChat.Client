@@ -39,24 +39,24 @@
       </mat-form-field>
 
       <button mat-flat-button color="primary" class="w-full py-3 text-lg">Register</button>
-
-      <div class="relative flex items-center my-3">
-        <div class="flex-grow border-t border-gray-200"></div>
-        <span class="mx-4 text-gray-400 text-sm">or</span>
-        <div class="flex-grow border-t border-gray-200"></div>
-      </div>
-
-      <button mat-stroked-button class="w-full py-3 text-base font-medium normal-case hover:bg-gray-50 transition">
-        <div class="flex gap-1">
-          <chat-google-icon [width]="20" [height]="20" />
-          <div>Continue with Google</div>
-        </div>
-      </button>
-
-      <div class="text-center text-sm text-gray-600 mt-4">
-        Already have an account?
-        <a routerLink="../login" class="text-blue-600 hover:underline">Login here</a>
-      </div>
     </form>
+
+    <div class="relative flex items-center my-3">
+      <div class="flex-grow border-t border-gray-200"></div>
+      <span class="mx-4 text-gray-400 text-sm">or</span>
+      <div class="flex-grow border-t border-gray-200"></div>
+    </div>
+
+    <button mat-stroked-button class="w-full py-3 text-base font-medium normal-case hover:bg-gray-50 transition">
+      <div class="flex gap-1">
+        <chat-google-icon [width]="20" [height]="20" />
+        <div>Continue with Google</div>
+      </div>
+    </button>
+
+    <div class="text-center text-sm text-gray-600 mt-4">
+      Already have an account?
+      <a routerLink="../login" class="text-blue-600 hover:underline">Login here</a>
+    </div>
   </div>
 </div>
