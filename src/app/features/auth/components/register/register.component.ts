@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -22,7 +22,7 @@ import { AnimationOptions, LottieComponent } from 'ngx-lottie';
     GoogleIconComponent
   ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
@@ -34,6 +34,6 @@ export class RegisterComponent {
   };
 
   form = this.fb.nonNullable.group({
-    fullName: this.fb.nonNullable.control<string>('', [Validators.required, Validators.minLength(3)])
+    fullName: this.fb.nonNullable.control<string>('', [Validators.required, Validators.minLength(3)]),
   });
 }
