@@ -1,13 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
+import { RegisterUserRequest } from '@features/auth/models';
+import { AuthHttpService } from '@features/auth/services';
 import { GoogleIconComponent } from 'app/shared/components/google-icon/google-icon.component';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'chat-register',
@@ -27,7 +30,10 @@ import { AnimationOptions, LottieComponent } from 'ngx-lottie';
   styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
+
   private readonly fb = inject(FormBuilder);
+  private readonly authHttpService = inject(AuthHttpService);
+  private readonly destroyRef = inject(DestroyRef)
 
   readonly options: AnimationOptions = {
     path: 'assets/animations/register.json',
@@ -90,7 +96,23 @@ export class RegisterComponent {
 
   onSubmit() {
     if (this.form.valid) {
-      console.log('Form submitted:', this.form.value);
+      const registerUserRequest: RegisterUserRequest = {
+        userName: this.form.value.userName!,
+        name: this.form.value.fullName!,
+        email: this.form.value.email!,
+        password: this.form.value.password!
+      };
+
+      this.authHttpService.register(registerUserRequest)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: response => {
+            console.log(response);
+          },
+          error: err => {
+            console.error(err);
+          }
+        });
     }
   }
 }
