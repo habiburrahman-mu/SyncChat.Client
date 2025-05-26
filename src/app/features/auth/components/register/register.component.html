@@ -12,33 +12,71 @@
       <p class="mt-1 text-gray-500 text-sm">Join the conversation in just a few steps.</p> <!-- Added subtitle -->
     </div>
 
-    <form class="space-y-5">
-      <mat-form-field class="w-full">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+      <!-- Full Name -->
+      <mat-form-field class="w-full mb-1">
         <mat-label>Full Name</mat-label>
-        <input matInput type="text" name="fullName" required />
+        <input matInput formControlName="fullName" type="text">
+        <mat-error *ngIf="form.controls.fullName.hasError('required')">
+          {{ errorMessages.fullName.required }}
+        </mat-error>
+        <mat-error *ngIf="form.controls.fullName.hasError('minlength')">
+          {{ errorMessages.fullName.minlength }}
+        </mat-error>
       </mat-form-field>
 
-      <mat-form-field class="w-full">
-        <mat-label>Full Name</mat-label>
-        <input matInput type="text" name="fullName" required />
+      <!-- Username -->
+      <mat-form-field class="w-full mb-1">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="userName" type="text">
+        <mat-error *ngIf="form.controls.userName.hasError('required')">
+          {{ errorMessages.userName.required }}
+        </mat-error>
+        <mat-error *ngIf="form.controls.userName.hasError('minlength')">
+          {{ errorMessages.userName.minlength }}
+        </mat-error>
+        <mat-error *ngIf="form.controls.userName.hasError('pattern')">
+          {{ errorMessages.userName.pattern }}
+        </mat-error>
       </mat-form-field>
 
-      <mat-form-field class="w-full">
+      <!-- Email -->
+      <mat-form-field class="w-full mb-1">
         <mat-label>Email</mat-label>
-        <input matInput type="email" name="email" required />
+        <input matInput formControlName="email" type="email">
+        <mat-error *ngIf="form.controls.email.hasError('required')">
+          {{ errorMessages.email.required }}
+        </mat-error>
+        <mat-error *ngIf="form.controls.email.hasError('email')">
+          {{ errorMessages.email.email }}
+        </mat-error>
       </mat-form-field>
 
-      <mat-form-field class="w-full">
+      <!-- Password -->
+      <mat-form-field class="w-full mb-1">
         <mat-label>Password</mat-label>
-        <input matInput type="password" name="password" required />
+        <input matInput formControlName="password" type="password">
+        <mat-error *ngIf="form.controls.password.hasError('required')">
+          {{ errorMessages.password.required }}
+        </mat-error>
+        <mat-error *ngIf="form.controls.password.hasError('minlength')">
+          {{ errorMessages.password.minlength }}
+        </mat-error>
       </mat-form-field>
 
-      <mat-form-field class="w-full">
+      <!-- Confirm Password -->
+      <mat-form-field class="w-full mb-1">
         <mat-label>Confirm Password</mat-label>
-        <input matInput type="password" name="confirmPassword" required />
+        <input matInput formControlName="confirmPassword" type="password">
+        <mat-error *ngIf="form.controls.confirmPassword.hasError('required')">
+          {{ errorMessages.confirmPassword.required }}
+        </mat-error>
+        <mat-error *ngIf="!form.controls.confirmPassword.hasError('required') && form.hasError('passwordMismatch')">
+          {{ errorMessages.confirmPassword.passwordMismatch }}
+        </mat-error>
       </mat-form-field>
 
-      <button mat-flat-button color="primary" class="w-full py-3 text-lg">Register</button>
+      <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="form.invalid">Register</button>
     </form>
 
     <div class="relative flex items-center my-3">
