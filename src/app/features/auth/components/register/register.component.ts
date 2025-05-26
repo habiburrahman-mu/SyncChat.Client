@@ -11,6 +11,7 @@ import { AuthHttpService } from '@features/auth/services';
 import { GoogleIconComponent } from 'app/shared/components/google-icon/google-icon.component';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'chat-register',
@@ -31,9 +32,10 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 })
 export class RegisterComponent {
 
-  private readonly fb = inject(FormBuilder);
-  private readonly authHttpService = inject(AuthHttpService);
-  private readonly destroyRef = inject(DestroyRef)
+  private readonly _fb = inject(FormBuilder);
+  private readonly _authHttpService = inject(AuthHttpService);
+  private readonly _destroyRef = inject(DestroyRef);
+  private readonly _snackBar = inject(MatSnackBar);
 
   readonly options: AnimationOptions = {
     path: 'assets/animations/register.json',
@@ -49,20 +51,20 @@ export class RegisterComponent {
     return password === confirmPassword ? null : { passwordMismatch: true };
   };
 
-  form = this.fb.nonNullable.group({
-    fullName: this.fb.nonNullable.control<string>('', {
+  form = this._fb.nonNullable.group({
+    fullName: this._fb.nonNullable.control<string>('', {
       validators: [Validators.required, Validators.minLength(3)]
     }),
-    userName: this.fb.nonNullable.control<string>('', {
+    userName: this._fb.nonNullable.control<string>('', {
       validators: [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z0-9_]+$/)]
     }),
-    email: this.fb.nonNullable.control<string>('', {
+    email: this._fb.nonNullable.control<string>('', {
       validators: [Validators.required, Validators.email]
     }),
-    password: this.fb.nonNullable.control<string>('', {
+    password: this._fb.nonNullable.control<string>('', {
       validators: [Validators.required, Validators.minLength(8)]
     }),
-    confirmPassword: this.fb.nonNullable.control<string>('', {
+    confirmPassword: this._fb.nonNullable.control<string>('', {
       validators: [Validators.required]
     })
   }, {
@@ -103,14 +105,15 @@ export class RegisterComponent {
         password: this.form.value.password!
       };
 
-      this.authHttpService.register(registerUserRequest)
-        .pipe(takeUntilDestroyed(this.destroyRef))
+      this._authHttpService.register(registerUserRequest)
+        .pipe(takeUntilDestroyed(this._destroyRef))
         .subscribe({
           next: response => {
-            console.log(response);
+            this._snackBar.open("Saved successfully");
           },
           error: err => {
             console.error(err);
+            this._snackBar.open("Error!");
           }
         });
     }
