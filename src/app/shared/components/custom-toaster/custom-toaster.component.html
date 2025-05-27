@@ -1,0 +1,11 @@
+<div class="toaster-content toaster-success"> <!-- swap toaster-success/info/etc -->
+  <div class="toaster-text">
+    <div class="toaster-title">{{ data.title }}</div>
+    @if (data.summary !== undefined) {
+    <div class="toaster-summary">{{ data.summary }}</div>
+    }
+  </div>
+  <button mat-icon-button (click)="close()" class="toaster-close-btn">
+    <mat-icon fontIcon="close"></mat-icon>
+  </button>
+</div>

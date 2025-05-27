@@ -69,22 +69,3 @@ $myapp-theme: mat.m2-define-light-theme((
 
 /* Apply color to the snackbar surface inside the custom toaster class */
 
-.toaster-primary .mdc-snackbar__surface {
-  background-color: #4caf50 !important; /* Green */
-  color: #fff;
-}
-
-.toaster-info .mdc-snackbar__surface {
-  background-color: #1976d2 !important; /* Primary Color */
-  color: #fff;
-}
-
-.toaster-danger .mdc-snackbar__surface {
-  background-color: #f44336 !important; /* Reddish */
-  color: #fff;
-}
-
-.toaster-warning .mdc-snackbar__surface {
-  background-color: #ff9800 !important; /* Yellowish */
-  color: #fff;
-}

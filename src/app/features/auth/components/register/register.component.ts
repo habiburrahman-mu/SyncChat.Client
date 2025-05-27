@@ -8,12 +8,12 @@ import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
 import { RegisterUserRequest } from '@features/auth/models';
 import { AuthHttpService } from '@features/auth/services';
-import { GoogleIconComponent } from 'app/shared/components/google-icon/google-icon.component';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ToasterService } from '@core/services';
 import { ToasterType } from '@core/types';
+import { GoogleIconComponent } from '@shared/components';
 
 @Component({
   selector: 'chat-register',
@@ -123,6 +123,6 @@ export class RegisterComponent {
   }
 
   showToast(type: ToasterType) {
-    this._toasterService.show(`This is a ${type} toast!`, type);
+    this._toasterService.show(type, type, type !== 'info' ? `This is a ${type} toast!` : undefined);
   }
 }
