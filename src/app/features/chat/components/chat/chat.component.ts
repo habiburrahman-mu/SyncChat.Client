@@ -4,7 +4,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { MatListModule } from '@angular/material/list';
 
 @Component({
@@ -15,7 +14,6 @@ import { MatListModule } from '@angular/material/list';
     MatSidenavModule,
     FormsModule,
     MatIconModule,
-    LottieComponent,
     MatSidenavModule,
     MatListModule
   ],
