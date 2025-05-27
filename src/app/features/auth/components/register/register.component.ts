@@ -10,8 +10,10 @@ import { RegisterUserRequest } from '@features/auth/models';
 import { AuthHttpService } from '@features/auth/services';
 import { GoogleIconComponent } from 'app/shared/components/google-icon/google-icon.component';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ToasterService } from '@core/services';
+import { ToasterType } from '@core/types';
 
 @Component({
   selector: 'chat-register',
@@ -36,6 +38,7 @@ export class RegisterComponent {
   private readonly _authHttpService = inject(AuthHttpService);
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _snackBar = inject(MatSnackBar);
+  private readonly _toasterService = inject(ToasterService)
 
   readonly options: AnimationOptions = {
     path: 'assets/animations/register.json',
@@ -117,5 +120,9 @@ export class RegisterComponent {
           }
         });
     }
+  }
+
+  showToast(type: ToasterType) {
+    this._toasterService.show(`This is a ${type} toast!`, type);
   }
 }

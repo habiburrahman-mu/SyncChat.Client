@@ -96,5 +96,10 @@
       Already have an account?
       <a routerLink="../login" class="text-blue-600 hover:underline">Login here</a>
     </div>
+
+    <button mat-raised-button color="primary" (click)="showToast('success')">Primary</button>
+    <button mat-raised-button color="accent" (click)="showToast('info')">Info</button>
+    <button mat-raised-button color="warn" (click)="showToast('danger')">Danger</button>
+    <button mat-raised-button color="accent" (click)="showToast('warning')">Warning</button>
   </div>
 </div>
