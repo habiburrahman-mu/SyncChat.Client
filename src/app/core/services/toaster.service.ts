@@ -14,10 +14,25 @@ export class ToasterService {
   show(type: ToasterType, title: string, summary: string | undefined = undefined) {
     const config = new MatSnackBarConfig<ToasterData>();
     config.duration = 100000;
-    config.panelClass = ['toaster', `toaster-${type}`];
+    config.panelClass = this.getPanelClass(type);
 
     config.data = { title, summary };
 
     this.snackBar.openFromComponent(CustomToasterComponent, config);
+  }
+
+  private getPanelClass(type: ToasterType): string {
+    switch (type) {
+      case 'success':
+        return 'custom-toaster-success';
+      case 'info':
+        return 'custom-toaster-info';
+      case 'warning':
+        return 'custom-toaster-warning';
+      case 'danger':
+        return 'custom-toaster-danger';
+      default:
+        return 'custom-toaster-info';
+    }
   }
 }
