@@ -1,4 +1,4 @@
-<div class="toaster-content toaster-success"> <!-- swap toaster-success/info/etc -->
+<div class="toaster-content" [ngStyle]="{ '--loader-duration': duration + 'ms' }">
   <div class="toaster-text">
     <div class="toaster-title">{{ data.title }}</div>
     @if (data.summary !== undefined) {

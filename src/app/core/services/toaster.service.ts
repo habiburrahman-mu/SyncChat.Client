@@ -13,10 +13,10 @@ export class ToasterService {
 
   show(type: ToasterType, title: string, summary: string | undefined = undefined) {
     const config = new MatSnackBarConfig<ToasterData>();
-    config.duration = 100000;
+    config.duration = 5000;
     config.panelClass = this.getPanelClass(type);
 
-    config.data = { title, summary };
+    config.data = { title, summary, duration: config.duration};
 
     this.snackBar.openFromComponent(CustomToasterComponent, config);
   }

@@ -1,8 +1,27 @@
 .toaster-content {
   display: flex;
   align-items: center;
-  color: inherit;
-  padding: 8px;
+  color: #fff;
+  padding: 6px 8px;
+  position: relative;
+  overflow: hidden;
+
+  border-bottom: 3px solid transparent;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.85), rgba(255,255,255,0.85));
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 100% 3px;
+
+  animation: loader-deplete var(--loader-duration, 4000ms) linear forwards;
+}
+
+@keyframes loader-deplete {
+  from {
+    background-size: 100% 3px;
+  }
+  to {
+    background-size: 0% 3px;
+  }
 }
 
 .toaster-text {
@@ -43,3 +62,7 @@
     box-shadow: 0 0 4px rgba(255, 255, 255, 0.35);
   }
 }
+
+
+
+
