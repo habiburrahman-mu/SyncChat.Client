@@ -123,6 +123,21 @@ export class RegisterComponent {
   }
 
   showToast(type: ToasterType) {
-    this._toasterService.show(type, type, type !== 'info' ? `This is a ${type} toast!` : undefined);
+  switch (type) {
+    case 'success':
+      this._toasterService.success(type, `This is a ${type} toast!`);
+      break;
+    case 'info':
+      this._toasterService.info(type);
+      break;
+    case 'warning':
+      this._toasterService.warning(type, `This is a ${type} toast!`);
+      break;
+    case 'danger':
+      this._toasterService.danger(type, `This is a ${type} toast!`);
+      break;
+    default:
+      console.error(`Invalid toaster type: ${type}`);
   }
+}
 }
