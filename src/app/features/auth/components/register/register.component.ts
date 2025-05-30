@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,7 +10,6 @@ import { RegisterUserRequest } from '@features/auth/models';
 import { AuthHttpService } from '@features/auth/services';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ToasterService } from '@core/services';
 import { ToasterType } from '@core/types';
 import { GoogleIconComponent } from '@shared/components';
@@ -31,13 +30,13 @@ import { GoogleIconComponent } from '@shared/components';
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent {
 
   private readonly _fb = inject(FormBuilder);
   private readonly _authHttpService = inject(AuthHttpService);
   private readonly _destroyRef = inject(DestroyRef);
-  private readonly _snackBar = inject(MatSnackBar);
   private readonly _toasterService = inject(ToasterService)
 
   readonly options: AnimationOptions = {
@@ -99,45 +98,54 @@ export class RegisterComponent {
     }
   };
 
+  isRegistering = signal<boolean>(false);
+
   onSubmit() {
     if (this.form.valid) {
-      const registerUserRequest: RegisterUserRequest = {
-        userName: this.form.value.userName!,
-        name: this.form.value.fullName!,
-        email: this.form.value.email!,
-        password: this.form.value.password!
-      };
+      const registerUserRequest = this.createRequest();
 
       this._authHttpService.register(registerUserRequest)
         .pipe(takeUntilDestroyed(this._destroyRef))
         .subscribe({
           next: response => {
-            this._snackBar.open("Saved successfully");
+            this._toasterService.success("Registered successfully.");
           },
           error: err => {
-            console.error(err);
-            this._snackBar.open("Error!");
+
           }
         });
     }
+    else {
+      this.form.markAllAsTouched();
+      this._toasterService.invalidForm();
+    }
+  }
+
+  private createRequest(): RegisterUserRequest {
+    return {
+      userName: this.form.value.userName!,
+      name: this.form.value.fullName!,
+      email: this.form.value.email!,
+      password: this.form.value.password!
+    };
   }
 
   showToast(type: ToasterType) {
-  switch (type) {
-    case 'success':
-      this._toasterService.success(type, `This is a ${type} toast!`);
-      break;
-    case 'info':
-      this._toasterService.info(type);
-      break;
-    case 'warning':
-      this._toasterService.warning(type, `This is a ${type} toast!`);
-      break;
-    case 'danger':
-      this._toasterService.danger(type, `This is a ${type} toast!`);
-      break;
-    default:
-      console.error(`Invalid toaster type: ${type}`);
+    switch (type) {
+      case 'success':
+        this._toasterService.success(type, `This is a ${type} toast!`);
+        break;
+      case 'info':
+        this._toasterService.info(type);
+        break;
+      case 'warning':
+        this._toasterService.warning(type, `This is a ${type} toast!`);
+        break;
+      case 'danger':
+        this._toasterService.error(type, `This is a ${type} toast!`);
+        break;
+      default:
+        console.error(`Invalid toaster type: ${type}`);
+    }
   }
-}
 }

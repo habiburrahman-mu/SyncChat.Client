@@ -23,14 +23,21 @@ export class ToasterService {
     this.show('warning', title, summary);
   }
 
-  danger(title: string, summary?: string) {
+  error(title: string, summary?: string) {
     this.show('danger', title, summary);
+  }
+
+  invalidForm(title?: string, summary?: string) {
+    title = title ?? "Form Validation Error";
+    summary = summary ?? "Some fields are missing or incorrect. Please check and try again.";
+
+    this.warning(title, summary);
   }
 
   private show(type: ToasterType, title: string, summary: string | undefined = undefined) {
     const config = new MatSnackBarConfig<ToasterData>();
-    config.duration = 5000;
-    config.panelClass = this.getPanelClass(type);
+    config.duration = 4000;
+    config.panelClass = ['custom-toaster', this.getPanelClass(type)];
 
     config.data = { title, summary, duration: config.duration };
 

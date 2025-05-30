@@ -51,13 +51,10 @@ $myapp-theme-primary: mat.m2-define-palette(mat.$m2-indigo-palette, A400, A100, 
 $myapp-theme-accent: mat.m2-define-palette(mat.$m2-indigo-palette);
 $myapp-theme-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
-$myapp-theme: mat.m2-define-light-theme((
-  color: (
-    primary: $myapp-theme-primary,
-    accent: $myapp-theme-accent,
-    warn: $myapp-theme-warn,
-  )
-));
+$myapp-theme: mat.m2-define-light-theme((color: (primary: $myapp-theme-primary,
+        accent: $myapp-theme-accent,
+        warn: $myapp-theme-warn,
+      )));
 
 @include mat.all-component-themes($myapp-theme);
 @include mat.form-field-density(-4);
@@ -69,24 +66,26 @@ $myapp-theme: mat.m2-define-light-theme((
 
 /* Apply color to the snackbar surface inside the custom toaster class */
 
+.custom-toaster {
+  width: 50px !important;
+}
+
 .custom-toaster-success {
   --mdc-snackbar-container-color: #43a047;
-  color: #fff;
+  --mdc-snackbar-supporting-text-color: #fff;
 }
 
 .custom-toaster-info {
   --mdc-snackbar-container-color: #1976d2;
-  color: #fff;
+  --mdc-snackbar-supporting-text-color: #fff;
 }
 
 .custom-toaster-warning {
   --mdc-snackbar-container-color: #ffca28;
-  color: #000;
+  --mdc-snackbar-supporting-text-color: #000 !important;
 }
 
 .custom-toaster-danger {
   --mdc-snackbar-container-color: #d32f2f;
-  color: #fff;
+  --mdc-snackbar-supporting-text-color: #fff;
 }
-
-
