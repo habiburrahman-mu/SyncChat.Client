@@ -89,3 +89,10 @@ $myapp-theme: mat.m2-define-light-theme((color: (primary: $myapp-theme-primary,
   --mdc-snackbar-container-color: #d32f2f;
   --mdc-snackbar-supporting-text-color: #fff;
 }
+
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+:root {
+  @include mat.progress-spinner-overrides((
+    active-indicator-color: white,
+  ));
+}

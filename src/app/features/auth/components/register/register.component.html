@@ -76,7 +76,10 @@
         </mat-error>
       </mat-form-field>
 
-      <button mat-flat-button color="primary" class="w-full py-3 text-lg">Register</button>
+      <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="isRegistering()">
+        <mat-icon *ngIf="isRegistering()"><mat-spinner diameter="18"></mat-spinner></mat-icon>
+        <span>Register</span>
+      </button>
     </form>
 
     <div class="relative flex items-center my-3">

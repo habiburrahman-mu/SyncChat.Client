@@ -13,6 +13,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ToasterService } from '@core/services';
 import { ToasterType } from '@core/types';
 import { GoogleIconComponent } from '@shared/components';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'chat-register',
@@ -24,9 +26,12 @@ import { GoogleIconComponent } from '@shared/components';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
+    CommonModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+
     LottieComponent,
     GoogleIconComponent,
-    CommonModule
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
@@ -102,16 +107,19 @@ export class RegisterComponent {
 
   onSubmit() {
     if (this.form.valid) {
+      this.isRegistering.set(true);
+
       const registerUserRequest = this.createRequest();
 
       this._authHttpService.register(registerUserRequest)
         .pipe(takeUntilDestroyed(this._destroyRef))
         .subscribe({
           next: response => {
+            this.isRegistering.set(true);
             this._toasterService.success("Registered successfully.");
           },
           error: err => {
-
+            this.isRegistering.set(false);
           }
         });
     }
