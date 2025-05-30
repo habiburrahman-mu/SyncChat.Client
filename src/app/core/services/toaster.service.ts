@@ -5,11 +5,11 @@ import { ToasterType } from '@core/types';
 import { CustomToasterComponent } from '@shared/components';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ToasterService {
 
-  constructor(private snackBar: MatSnackBar) { }
+  constructor(private snackBar: MatSnackBar) { console.log('test') }
 
   success(title: string, summary?: string) {
     this.show('success', title, summary);

@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
+import { ToasterService } from '@core/services';
 
 @Component({
   selector: 'chat-login',
@@ -28,4 +29,6 @@ export class LoginComponent {
     loop: true,
     autoplay: true
   };
+
+  constructor(private _toasterService: ToasterService) {}
 }

@@ -4,20 +4,23 @@ import { ToasterService } from '@core/services';
 import { catchError, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const toasterService = inject(ToasterService);
+
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      handleError(error);
+      handleError(error, toasterService);
       return throwError(() => error);
     })
   );
 };
 
-function handleError(error: HttpErrorResponse) {
-  const toasterService = inject(ToasterService);
-
+function handleError(error: HttpErrorResponse, toasterService: ToasterService) {
   let message = 'An unexpected error occurred!';
 
-  if (error.status >= 400 && error.status < 500) {
+  if (error.status === 0) {
+    toasterService.error('Network Error', 'Unable to connect to the server. Please check your connection.');
+  }
+  else if (error.status >= 400 && error.status < 500) {
     message = `Client Error: ${error.status} - ${error.message}`;
     toasterService.warning('Warning', message);
   } else if (error.status >= 500) {
