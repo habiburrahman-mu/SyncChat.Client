@@ -55,7 +55,10 @@
       <!-- Password -->
       <mat-form-field class="w-full mb-1">
         <mat-label>Password</mat-label>
-        <input matInput formControlName="password" type="password">
+        <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password">
+        <button mat-icon-button matSuffix (click)="showPassword = !showPassword" type="button">
+          <mat-icon>{{ showPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
         <mat-error *ngIf="form.controls.password.hasError('required')">
           {{ errorMessages.password.required }}
         </mat-error>
@@ -67,7 +70,10 @@
       <!-- Confirm Password -->
       <mat-form-field class="w-full mb-1">
         <mat-label>Confirm Password</mat-label>
-        <input matInput formControlName="confirmPassword" type="password">
+        <input matInput formControlName="confirmPassword" [type]="showPassword ? 'text' : 'password'">
+        <button mat-icon-button matSuffix (click)="showPassword = !showPassword" type="button">
+          <mat-icon>{{ showPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
         <mat-error *ngIf="form.controls.confirmPassword.hasError('required')">
           {{ errorMessages.confirmPassword.required }}
         </mat-error>
@@ -88,7 +94,8 @@
       <div class="flex-grow border-t border-gray-200"></div>
     </div>
 
-    <button mat-stroked-button class="w-full py-3 text-base font-medium normal-case hover:bg-gray-50 transition">
+    <button mat-stroked-button class="w-full py-3 text-base font-medium normal-case hover:bg-gray-50 transition"
+      [disabled]="isRegistering()">
       <div class="flex gap-1">
         <chat-google-icon [width]="20" [height]="20" />
         <div>Continue with Google</div>
@@ -99,10 +106,5 @@
       Already have an account?
       <a routerLink="../login" class="text-blue-600 hover:underline">Login here</a>
     </div>
-
-    <button mat-raised-button color="primary" (click)="showToast('success')">Primary</button>
-    <button mat-raised-button color="accent" (click)="showToast('info')">Info</button>
-    <button mat-raised-button color="warn" (click)="showToast('danger')">Danger</button>
-    <button mat-raised-button color="accent" (click)="showToast('warning')">Warning</button>
   </div>
 </div>

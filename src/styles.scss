@@ -59,6 +59,7 @@ $myapp-theme: mat.m2-define-light-theme((color: (primary: $myapp-theme-primary,
 @include mat.all-component-themes($myapp-theme);
 @include mat.form-field-density(-4);
 @include mat.button-density(0);
+@include mat.icon-button-density(-4);
 
 :root {
   // --mat-form-field-subscript-margin-top: 30px;

@@ -11,7 +11,6 @@ import { AuthHttpService } from '@features/auth/services';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ToasterService } from '@core/services';
-import { ToasterType } from '@core/types';
 import { GoogleIconComponent } from '@shared/components';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
@@ -103,6 +102,7 @@ export class RegisterComponent {
     }
   };
 
+  showPassword = false;
   isRegistering = signal<boolean>(false);
 
   onSubmit() {
@@ -115,7 +115,7 @@ export class RegisterComponent {
         .pipe(takeUntilDestroyed(this._destroyRef))
         .subscribe({
           next: response => {
-            this.isRegistering.set(true);
+            this.isRegistering.set(false);
             this._toasterService.success("Registered successfully.");
           },
           error: err => {
@@ -136,24 +136,5 @@ export class RegisterComponent {
       email: this.form.value.email!,
       password: this.form.value.password!
     };
-  }
-
-  showToast(type: ToasterType) {
-    switch (type) {
-      case 'success':
-        this._toasterService.success(type, `This is a ${type} toast!`);
-        break;
-      case 'info':
-        this._toasterService.info(type);
-        break;
-      case 'warning':
-        this._toasterService.warning(type, `This is a ${type} toast!`);
-        break;
-      case 'danger':
-        this._toasterService.error(type, `This is a ${type} toast!`);
-        break;
-      default:
-        console.error(`Invalid toaster type: ${type}`);
-    }
   }
 }
