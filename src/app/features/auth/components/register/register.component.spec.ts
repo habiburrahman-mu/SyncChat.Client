@@ -10,7 +10,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { LottieComponent } from 'ngx-lottie';
+import { AnimationOptions, LottieComponent, provideLottieOptions } from 'ngx-lottie';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
+
+const options: AnimationOptions = {
+  path: 'assets/animations/register.json',
+  loop: true,
+  autoplay: true
+};
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -25,12 +33,15 @@ describe('RegisterComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         LottieComponent,
-
-        RegisterComponent
+        RegisterComponent,
       ],
       providers: [
         { provide: AuthHttpService, useValue: authSpy },
         { provide: ToasterService, useValue: toasterSpy },
+        provideLottieOptions({
+          player: () => import('lottie-web'),
+        }),
+        { provide: ActivatedRoute, useValue: { params: of({}), snapshot: { paramMap: { get: () => null } } } },
       ]
     })
       .compileComponents();
