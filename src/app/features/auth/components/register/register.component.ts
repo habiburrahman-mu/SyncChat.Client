@@ -76,7 +76,7 @@ export class RegisterComponent {
     })
   }, {
     validators: [this.passwordMatchValidator],
-    updateOn: "change"
+    updateOn: "blur"
   });
 
   readonly errorMessages = {
