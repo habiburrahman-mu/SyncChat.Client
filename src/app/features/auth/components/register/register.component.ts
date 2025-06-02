@@ -41,7 +41,7 @@ export class RegisterComponent {
   private readonly _fb = inject(FormBuilder);
   private readonly _authHttpService = inject(AuthHttpService);
   private readonly _destroyRef = inject(DestroyRef);
-  private readonly _toasterService = inject(ToasterService)
+  private readonly _toasterService = inject(ToasterService);
 
   readonly options: AnimationOptions = {
     path: 'assets/animations/register.json',
