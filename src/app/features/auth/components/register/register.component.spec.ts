@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { LottieComponent } from 'ngx-lottie';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -23,16 +24,10 @@ describe('RegisterComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        ReactiveFormsModule,
-        FormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatIconModule,
-        MatButtonModule,
-        MatProgressSpinnerModule,
-        NoopAnimationsModule,
+        LottieComponent,
+
+        RegisterComponent
       ],
-      declarations: [RegisterComponent],
       providers: [
         { provide: AuthHttpService, useValue: authSpy },
         { provide: ToasterService, useValue: toasterSpy },
