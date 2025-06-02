@@ -25,7 +25,10 @@
       "@core/*": ["app/core/*"],
       "@shared/*": ["app/shared/*"]
     },
-    "typeRoots": ["node_modules/@angular/material"]
+    "typeRoots": [
+       "node_modules/@types",
+      "node_modules/@angular/material"
+    ]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
