@@ -1,6 +1,6 @@
 import { Routes } from "@angular/router";
 
-const AUTH_ROUTE_PATH = {
+export const AUTH_ROUTE_PATH = {
   Login: 'login',
   Register: 'register'
 };

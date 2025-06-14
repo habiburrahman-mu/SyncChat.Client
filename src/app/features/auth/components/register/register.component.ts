@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RegisterUserRequest } from '@features/auth/models';
 import { AuthHttpService } from '@features/auth/services';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
@@ -14,6 +14,7 @@ import { ToasterService } from '@core/services';
 import { GoogleIconComponent } from '@shared/components';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { AUTH_ROUTE_PATH } from '@features/auth/auth.routes';
 
 @Component({
   selector: 'chat-register',
@@ -42,6 +43,8 @@ export class RegisterComponent {
   private readonly _authHttpService = inject(AuthHttpService);
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _toasterService = inject(ToasterService);
+  private readonly _router = inject(Router);
+  private readonly _route = inject(ActivatedRoute);
 
   readonly options: AnimationOptions = {
     path: 'assets/animations/register.json',
@@ -117,6 +120,7 @@ export class RegisterComponent {
           next: response => {
             this.isRegistering.set(false);
             this._toasterService.success("Registered successfully.");
+            this.routeToLogin();
           },
           error: err => {
             this.isRegistering.set(false);
@@ -136,5 +140,9 @@ export class RegisterComponent {
       email: this.form.value.email!,
       password: this.form.value.password!
     };
+  }
+
+  private routeToLogin() {
+    this._router.navigate(['../', AUTH_ROUTE_PATH.Login], { relativeTo: this._route });
   }
 }
