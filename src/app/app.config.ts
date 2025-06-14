@@ -5,14 +5,14 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideLottieOptions } from 'ngx-lottie';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
-import { authInterceptor } from '@core/interceptors';
+import { httpErrorInterceptor } from '@core/interceptors';
 import { ToasterService } from '@core/services';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([httpErrorInterceptor])),
     provideLottieOptions({
       player: () => import('lottie-web'),
     }),

@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { ToasterService } from '@core/services';
 import { catchError, throwError } from 'rxjs';
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
+export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const toasterService = inject(ToasterService);
 
   return next(req).pipe(
