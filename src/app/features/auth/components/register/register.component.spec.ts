@@ -20,8 +20,8 @@ describe('RegisterComponent', () => {
   let toasterServiceSpy: jasmine.SpyObj<ToasterService>;
 
   beforeEach(async () => {
-    const authSpy = jasmine.createSpyObj('AuthHttpService', ['register']);
-    const toasterSpy = jasmine.createSpyObj('ToasterService', ['success', 'invalidForm']);
+    authServiceSpy = jasmine.createSpyObj('AuthHttpService', ['register']);
+    const toasterServiceSpy = jasmine.createSpyObj('ToasterService', ['success', 'invalidForm']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -29,8 +29,8 @@ describe('RegisterComponent', () => {
         RegisterComponent,
       ],
       providers: [
-        { provide: AuthHttpService, useValue: authSpy },
-        { provide: ToasterService, useValue: toasterSpy },
+        { provide: AuthHttpService, useValue: authServiceSpy },
+        { provide: ToasterService, useValue: toasterServiceSpy },
         provideLottieOptions({
           player: () => import('lottie-web'),
         }),
@@ -38,9 +38,6 @@ describe('RegisterComponent', () => {
       ]
     })
       .compileComponents();
-
-    authServiceSpy = TestBed.inject(AuthHttpService) as jasmine.SpyObj<AuthHttpService>;
-    toasterServiceSpy = TestBed.inject(ToasterService) as jasmine.SpyObj<ToasterService>;
   });
 
   beforeEach(() => {
