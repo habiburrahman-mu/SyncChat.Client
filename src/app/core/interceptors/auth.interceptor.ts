@@ -21,8 +21,8 @@ function handleError(error: HttpErrorResponse, toasterService: ToasterService) {
     toasterService.error('Network Error', 'Unable to connect to the server. Please check your connection.');
   }
   else if (error.status >= 400 && error.status < 500) {
-    message = `Client Error: ${error.status} - ${error.message}`;
-    toasterService.warning('Warning', message);
+    message = error.error.detail;
+    toasterService.warning(`Client Error: ${error.status}`, message);
   } else if (error.status >= 500) {
     message = `Server Error: ${error.status} - ${error.message}`;
     toasterService.error('Error', message);
