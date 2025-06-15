@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -37,7 +37,7 @@ import { AUTH_ROUTE_PATH } from '@features/auth/auth.routes';
   styleUrl: './register.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
 
   private readonly _fb = inject(FormBuilder);
   private readonly _authHttpService = inject(AuthHttpService);
@@ -52,10 +52,10 @@ export class RegisterComponent {
     autoplay: true
   };
 
-  private passwordMatchValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
-
-    const password = group.get('password')?.value;
-    const confirmPassword = group.get('confirmPassword')?.value;
+  private confirmPasswordValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    if (!control.parent) return null;
+    const password = control.parent.get('password')?.value;
+    const confirmPassword = control.value;
 
     return password === confirmPassword ? null : { passwordMismatch: true };
   };
@@ -72,13 +72,10 @@ export class RegisterComponent {
     }),
     password: this._fb.nonNullable.control<string>('', {
       validators: [Validators.required, Validators.minLength(8)]
-    }),
+    },),
     confirmPassword: this._fb.nonNullable.control<string>('', {
-      validators: [Validators.required]
+      validators: [Validators.required, this.confirmPasswordValidator]
     })
-  }, {
-    validators: [this.passwordMatchValidator],
-    updateOn: "change"
   });
 
   readonly errorMessages = {
@@ -107,6 +104,18 @@ export class RegisterComponent {
 
   showPassword = false;
   isRegistering = signal<boolean>(false);
+
+  ngOnInit(): void {
+    this.setupPasswordConfirmationWatcher();
+  }
+
+  private setupPasswordConfirmationWatcher() {
+    this.form.controls.password.valueChanges
+      .pipe(takeUntilDestroyed(this._destroyRef))
+      .subscribe(() => {
+        this.form.controls.confirmPassword.updateValueAndValidity();
+      });
+  }
 
   onSubmit() {
     if (this.form.valid) {

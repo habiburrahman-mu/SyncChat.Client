@@ -30,22 +30,29 @@
         </mat-error>
       </mat-form-field>
 
-      <button mat-flat-button color="primary" class="w-full py-3 text-lg">Login</button>
-
-      <div class="relative flex items-center">
-        <div class="flex-grow border-t border-gray-300"></div>
-        <span class="mx-4 text-gray-500">or</span>
-        <div class="flex-grow border-t border-gray-300"></div>
-      </div>
-
-      <button mat-stroked-button color="primary" class="w-full py-3 text-base font-medium normal-case">
-        Continue with Google
+      <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="isLoginInProgress()">
+        <mat-icon *ngIf="isLoginInProgress()"><mat-spinner diameter="18"></mat-spinner></mat-icon>
+        <span>Login</span>
       </button>
-
-      <div class="text-center text-sm text-gray-600 mt-4">
-        Don't have an account?
-        <a [routerLink]="['../register']" class="text-blue-600 hover:underline">Register here</a>
-      </div>
     </form>
+
+    <div class="relative flex items-center my-3">
+      <div class="flex-grow border-t border-gray-200"></div>
+      <span class="mx-4 text-gray-400 text-sm">or</span>
+      <div class="flex-grow border-t border-gray-200"></div>
+    </div>
+
+    <button mat-stroked-button class="w-full py-3 text-base font-medium normal-case hover:bg-gray-50 transition"
+      [disabled]="isLoginInProgress()">
+      <div class="flex gap-1">
+        <chat-google-icon [width]="20" [height]="20" />
+        <div>Continue with Google</div>
+      </div>
+    </button>
+
+    <div class="text-center text-sm text-gray-600 mt-4">
+      Don't have an account?
+      <a [routerLink]="['../register']" class="text-blue-600 hover:underline">Register here</a>
+    </div>
   </div>
 </div>

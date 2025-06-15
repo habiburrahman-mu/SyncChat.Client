@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +11,9 @@ import { AuthHttpService } from '@features/auth/services';
 import { CommonModule } from '@angular/common';
 import { TokenRequest } from '@features/auth/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { GoogleIconComponent } from '@shared/components';
 
 @Component({
   selector: 'chat-login',
@@ -22,10 +25,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    LottieComponent
+    MatIconModule,
+    MatProgressSpinnerModule,
+
+    LottieComponent,
+    GoogleIconComponent
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
   options: AnimationOptions = {
@@ -36,7 +44,7 @@ export class LoginComponent {
 
   private readonly _authHttpService = inject(AuthHttpService);
   private readonly _fb = inject(FormBuilder);
-  private readonly _destroyRef = Inject(DestroyRef);
+  private readonly _destroyRef = inject(DestroyRef);
 
   public form = this._fb.nonNullable.group({
     email: this._fb.nonNullable.control<string>('', { validators: [Validators.required, Validators.email] }),

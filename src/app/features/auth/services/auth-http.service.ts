@@ -13,5 +13,6 @@ export class AuthHttpService {
 
   register = (request: RegisterUserRequest): Observable<string> => this.http.post<string>(API_ROUTES.Auth.Register, request);
 
-  getToken = (request: TokenRequest): Observable<string> => this.http.get<string>(API_ROUTES.Auth.Token);
+  getToken = (request: TokenRequest): Observable<string> =>
+    this.http.post<string>(API_ROUTES.Auth.Token, request);
 }

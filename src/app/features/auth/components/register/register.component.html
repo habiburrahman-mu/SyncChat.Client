@@ -77,7 +77,7 @@
         <mat-error *ngIf="form.controls.confirmPassword.hasError('required')">
           {{ errorMessages.confirmPassword.required }}
         </mat-error>
-        <mat-error *ngIf="!form.controls.confirmPassword.hasError('required') && form.hasError('passwordMismatch')">
+        <mat-error *ngIf="form.controls.confirmPassword.hasError('passwordMismatch')">
           {{ errorMessages.confirmPassword.passwordMismatch }}
         </mat-error>
       </mat-form-field>
