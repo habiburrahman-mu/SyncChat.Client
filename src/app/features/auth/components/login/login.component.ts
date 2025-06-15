@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, Inject, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,6 +9,8 @@ import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { ToasterService } from '@core/services';
 import { AuthHttpService } from '@features/auth/services';
 import { CommonModule } from '@angular/common';
+import { TokenRequest } from '@features/auth/models';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'chat-login',
@@ -34,6 +36,7 @@ export class LoginComponent {
 
   private readonly _authHttpService = inject(AuthHttpService);
   private readonly _fb = inject(FormBuilder);
+  private readonly _destroyRef = Inject(DestroyRef);
 
   public form = this._fb.nonNullable.group({
     email: this._fb.nonNullable.control<string>('', { validators: [Validators.required, Validators.email] }),
@@ -50,7 +53,38 @@ export class LoginComponent {
     },
   };
 
+  isLoginInProgress = signal<boolean>(false);
+
   public onSubmit() {
+    if (this.form.valid) {
+      this.isLoginInProgress.set(true);
+
+      const tokenRequest = this.createRequest();
+
+      this._authHttpService.getToken(tokenRequest)
+        .pipe(takeUntilDestroyed(this._destroyRef))
+        .subscribe({
+          next: token => {
+            this.storeToken(token);
+            this.isLoginInProgress.set(false);
+          },
+          error: _ => {
+            this.isLoginInProgress.set(false);
+          }
+        });
+    }
+  }
+
+  private createRequest() {
+    const request: TokenRequest = {
+      userName: this.form.value.email!,
+      password: this.form.value.password!
+    };
+
+    return request;
+  }
+
+  private storeToken(token: string) {
 
   }
 }
