@@ -47,14 +47,13 @@ export class LoginComponent {
   private readonly _destroyRef = inject(DestroyRef);
 
   public form = this._fb.nonNullable.group({
-    email: this._fb.nonNullable.control<string>('', { validators: [Validators.required, Validators.email] }),
+    userName: this._fb.nonNullable.control<string>('', { validators: [Validators.required] }),
     password: this._fb.nonNullable.control<string>('', { validators: [Validators.required] }),
   });
 
   readonly errorMessages = {
-    email: {
-      required: 'Email is required',
-      email: 'Please enter a valid email'
+    userName: {
+      required: 'Username is required',
     },
     password: {
       required: 'Password is required',
@@ -85,7 +84,7 @@ export class LoginComponent {
 
   private createRequest() {
     const request: TokenRequest = {
-      userName: this.form.value.email!,
+      userName: this.form.value.userName!,
       password: this.form.value.password!
     };
 

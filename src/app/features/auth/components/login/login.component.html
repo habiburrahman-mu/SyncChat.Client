@@ -12,13 +12,10 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <mat-form-field class="w-full mb-1">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email" />
-        <mat-error *ngIf="form.controls.email.hasError('required')">
-          {{errorMessages.email.required}}
-        </mat-error>
-        <mat-error *ngIf="form.controls.email.hasError('email')">
-          {{errorMessages.email.email}}
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="userName" />
+        <mat-error *ngIf="form.controls.userName.hasError('required')">
+          {{errorMessages.userName.required}}
         </mat-error>
       </mat-form-field>
 
