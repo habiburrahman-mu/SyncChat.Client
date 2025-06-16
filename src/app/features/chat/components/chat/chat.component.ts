@@ -5,70 +5,51 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'chat-chat',
   imports: [
     CommonModule,
-    MatExpansionModule,
-    MatSidenavModule,
     FormsModule,
     MatIconModule,
-    MatSidenavModule,
-    MatListModule
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
 export class ChatComponent {
-  // Mock chat list for display
-  chatList = [
-    { name: 'John Doe', lastMessage: 'Hey, how are you?' },
-    { name: 'Jane Smith', lastMessage: 'Let’s catch up soon!' },
-    // Add more chats as needed
+   chats = [
+    { name: 'John Doe', lastMessage: 'Hey, what’s up?' },
+    { name: 'Alice', lastMessage: 'See you tomorrow!' },
+    { name: 'Bob', lastMessage: 'Good night.' },
   ];
 
-  // Selected chat and its messages
-  selectedChat: any;
+  selectedChat: any = null;
+
   messages = [
-    { text: 'Hello!', isOwn: true, time: '10:30 AM' },
-    { text: 'Hi there!', isOwn: false, time: '10:31 AM' },
-    // Add more messages as needed
+    { text: 'Hello!', fromMe: false },
+    { text: 'Hi, how are you?', fromMe: true },
   ];
 
-  newMessage: string = '';
+  messageText = '';
 
-  // Method to create a new chat
-  newChat() {
-    // Open a new chat or show chat creation functionality
-  }
-
-  // Method to select a chat
   selectChat(chat: any) {
     this.selectedChat = chat;
     this.messages = [
-      { text: 'Hello!', isOwn: true, time: '10:30 AM' },
-      { text: 'Hi there!', isOwn: false, time: '10:31 AM' },
-      // Fetch or simulate messages for the selected chat
+      { text: 'Hello!', fromMe: false },
+      { text: 'Hi, how are you?', fromMe: true },
     ];
   }
 
-  // Send a new message
   sendMessage() {
-    if (this.newMessage.trim()) {
-      const message = {
-        text: this.newMessage,
-        isOwn: true,
-        time: new Date().toLocaleTimeString(),
-      };
-      this.messages.push(message);
-      this.newMessage = ''; // Clear input field
-    }
-  }
-}
+    if (!this.messageText.trim()) return;
 
-export interface Message {
-  text: string;
-  isOwn: boolean;
-  time: string;
+    this.messages.push({ text: this.messageText, fromMe: true });
+    this.messageText = '';
+  }
 }
