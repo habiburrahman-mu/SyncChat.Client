@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ToasterService } from './toaster.service';
+import { ToasterService } from '../toaster/toaster.service';
 
 @Injectable({ providedIn: 'root' })
 export class ErrorHandlerService {
