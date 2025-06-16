@@ -4,7 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { AuthHttpService } from '@features/auth/services';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleIconComponent } from '@shared/components';
+import { CHAT_ROUTES } from '@features/chat/chat.routes';
 
 @Component({
   selector: 'chat-login',
@@ -44,6 +45,7 @@ export class LoginComponent {
   private readonly _authHttpService = inject(AuthHttpService);
   private readonly _fb = inject(FormBuilder);
   private readonly _destroyRef = inject(DestroyRef);
+  private readonly _router = inject(Router);
 
   public form = this._fb.nonNullable.group({
     userName: this._fb.nonNullable.control<string>('', { validators: [Validators.required] }),
@@ -73,6 +75,7 @@ export class LoginComponent {
           next: token => {
             this.storeToken(token);
             this.isLoginInProgress.set(false);
+            this.routeToLChatHome();
           },
           error: _ => {
             this.isLoginInProgress.set(false);
@@ -92,5 +95,9 @@ export class LoginComponent {
 
   private storeToken(token: TokenResponse) {
 
+  }
+
+  private routeToLChatHome() {
+    this._router.navigate(['chat']);
   }
 }
