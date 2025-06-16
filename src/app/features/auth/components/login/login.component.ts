@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { AuthHttpService } from '@features/auth/services';
 import { CommonModule } from '@angular/common';
-import { TokenRequest } from '@features/auth/models';
+import { TokenRequest, TokenResponse } from '@features/auth/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -90,7 +90,7 @@ export class LoginComponent {
     return request;
   }
 
-  private storeToken(token: string) {
+  private storeToken(token: TokenResponse) {
 
   }
 }
