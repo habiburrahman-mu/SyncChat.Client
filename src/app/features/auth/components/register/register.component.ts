@@ -14,7 +14,7 @@ import { ToasterService } from '@core/services';
 import { GoogleIconComponent } from '@shared/components';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-import { AUTH_ROUTE_PATH } from '@features/auth/auth.routes';
+import { AUTH_ROUTE_PATH } from '@core/constants';
 
 @Component({
   selector: 'chat-register',

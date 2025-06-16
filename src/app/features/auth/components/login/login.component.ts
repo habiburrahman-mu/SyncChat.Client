@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleIconComponent } from '@shared/components';
 import { CHAT_ROUTES } from '@features/chat/chat.routes';
+import { FEATURE_ROUTE_PATH } from '@core/constants';
 
 @Component({
   selector: 'chat-login',
@@ -98,6 +99,6 @@ export class LoginComponent {
   }
 
   private routeToLChatHome() {
-    this._router.navigate(['chat']);
+    this._router.navigate([FEATURE_ROUTE_PATH.Chat]);
   }
 }
