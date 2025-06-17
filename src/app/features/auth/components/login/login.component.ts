@@ -17,6 +17,7 @@ import { CHAT_ROUTES } from '@features/chat/chat.routes';
 import { FEATURE_ROUTE_PATH } from '@core/constants';
 import { LocalStorageService } from '@core/services';
 import { LocalStorageKey } from '@core/enums';
+import { AuthService } from '@core/services/auth/auth.service';
 
 @Component({
   selector: 'chat-login',
@@ -50,6 +51,7 @@ export class LoginComponent {
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _router = inject(Router);
   private readonly _localStorageService = inject(LocalStorageService);
+  private readonly _authService = inject(AuthService);
 
   public form = this._fb.nonNullable.group({
     userName: this._fb.nonNullable.control<string>('', { validators: [Validators.required] }),
@@ -80,6 +82,7 @@ export class LoginComponent {
             this.storeToken(token);
             this.isLoginInProgress.set(false);
             this.routeToLChatHome();
+            this._authService.setAuthState(true);
           },
           error: _ => {
             this.isLoginInProgress.set(false);
