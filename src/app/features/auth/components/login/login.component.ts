@@ -15,6 +15,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleIconComponent } from '@shared/components';
 import { CHAT_ROUTES } from '@features/chat/chat.routes';
 import { FEATURE_ROUTE_PATH } from '@core/constants';
+import { LocalStorageService } from '@core/services';
+import { LocalStorageKey } from '@core/enums';
 
 @Component({
   selector: 'chat-login',
@@ -47,6 +49,7 @@ export class LoginComponent {
   private readonly _fb = inject(FormBuilder);
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _router = inject(Router);
+  private readonly _localStorageService = inject(LocalStorageService);
 
   public form = this._fb.nonNullable.group({
     userName: this._fb.nonNullable.control<string>('', { validators: [Validators.required] }),
@@ -94,8 +97,9 @@ export class LoginComponent {
     return request;
   }
 
-  private storeToken(token: TokenResponse) {
-
+  private storeToken(response: TokenResponse) {
+    this._localStorageService.setItem(LocalStorageKey.Token, response.token);
+    this._localStorageService.setItem(LocalStorageKey.ExpirationInMinutes, response.expirationInMinutes);
   }
 
   private routeToLChatHome() {
