@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { LocalStorageKey } from '@core/enums';
 import { DecodedToken } from '@core/models';
@@ -9,15 +9,13 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AuthService {
 
+  private readonly _localStorageService = inject(LocalStorageService);
+
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(
-    private localStorageService: LocalStorageService
-  ) { }
-
   hasValidToken(): boolean {
-    const token = this.localStorageService.getItem<string>(LocalStorageKey.Token);
+    const token = this._localStorageService.getItem<string>(LocalStorageKey.Token);
 
     if (!token) return false;
 
@@ -36,7 +34,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.localStorageService.clear();
+    this._localStorageService.clear();
     this.setAuthState(false);
   }
 
