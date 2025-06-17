@@ -15,9 +15,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleIconComponent } from '@shared/components';
 import { CHAT_ROUTES } from '@features/chat/chat.routes';
 import { FEATURE_ROUTE_PATH } from '@core/constants';
-import { LocalStorageService } from '@core/services';
+import { AuthService, LocalStorageService } from '@core/services';
 import { LocalStorageKey } from '@core/enums';
-import { AuthService } from '@core/services/auth/auth.service';
 
 @Component({
   selector: 'chat-login',
