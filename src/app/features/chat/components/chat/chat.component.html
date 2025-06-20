@@ -5,11 +5,14 @@
 
     <div class="p-4 text-xl font-bold border-b flex items-center justify-between">
       <span>Chats</span>
-      <button mat-icon-button aria-label="New chat"
-        class="bg-primary-500 text-white hover:bg-primary-600 rounded-full p-2 transition">
-        <mat-icon>add</mat-icon>
-      </button>
+      <div class="bg-primary-900 rounded-full p-1 hover:bg-primary-600 transition">
+        <button mat-icon-button color="primary" (click)="createNewChat()" aria-label="New chat">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
     </div>
+
 
     <mat-form-field class="m-2" appearance="outline">
       <mat-label>Search</mat-label>

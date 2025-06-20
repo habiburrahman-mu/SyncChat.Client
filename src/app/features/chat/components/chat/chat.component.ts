@@ -49,4 +49,8 @@ export class ChatComponent {
     this.messages.push({ text: this.messageText, fromMe: true });
     this.messageText = '';
   }
+
+  createNewChat() {
+
+  }
 }
