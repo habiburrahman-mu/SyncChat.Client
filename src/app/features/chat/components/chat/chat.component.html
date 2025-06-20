@@ -1,8 +1,15 @@
 <div class="flex h-screen">
 
   <!-- Sidebar -->
-  <div class="w-72 h-full border-r border-gray-300 bg-white flex flex-col">
-    <div class="p-4 text-xl font-bold border-b">Chats</div>
+  <div class="w-72 h-full border-r border-gray-300 bg-white flex flex-col relative">
+
+    <div class="p-4 text-xl font-bold border-b flex items-center justify-between">
+      <span>Chats</span>
+      <button mat-icon-button aria-label="New chat"
+        class="bg-primary-500 text-white hover:bg-primary-600 rounded-full p-2 transition">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
 
     <mat-form-field class="m-2" appearance="outline">
       <mat-label>Search</mat-label>
@@ -38,10 +45,10 @@
     <div class="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50 flex flex-col">
 
       <div *ngFor="let message of messages" [ngClass]="
-      message.fromMe
-        ? 'self-end bg-blue-500 text-white'
-        : 'self-start bg-white text-gray-800 border'
-    " class="max-w-xs p-3 rounded-2xl shadow">
+        message.fromMe
+          ? 'self-end bg-blue-500 text-white'
+          : 'self-start bg-white text-gray-800 border'
+      " class="max-w-xs p-3 rounded-2xl shadow">
         {{ message.text }}
       </div>
 
