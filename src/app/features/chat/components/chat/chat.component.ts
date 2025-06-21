@@ -21,9 +21,9 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class ChatComponent {
    chats = [
-    { name: 'John Doe', lastMessage: 'Hey, what’s up?' },
-    { name: 'Alice', lastMessage: 'See you tomorrow!' },
-    { name: 'Bob', lastMessage: 'Good night.' },
+    { id: 1, name: 'John Doe', lastMessage: 'Hey, what’s up?' },
+    { id: 2, name: 'Alice', lastMessage: 'See you tomorrow!' },
+    { id: 3, name: 'Bob', lastMessage: 'Good night.' },
   ];
 
   selectedChat: any = null;
@@ -51,6 +51,10 @@ export class ChatComponent {
   }
 
   createNewChat() {
+
+  }
+
+  logout() {
 
   }
 }
