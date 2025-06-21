@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>New Chat</h2>
+
+<mat-dialog-content class="p-0">
+  <mat-form-field appearance="outline" class="w-full p-3">
+    <mat-label>Search users</mat-label>
+    <input matInput [(ngModel)]="searchText" (input)="filterUsers()" placeholder="Type to search..."
+      autocomplete="off" />
+  </mat-form-field>
+
+
+  <mat-selection-list #userList class="max-h-72 overflow-auto">
+    <mat-list-option *ngFor="let user of filteredUsers" [value]="user" [disabled]="isUserSelected(user)">
+      {{ user.name }}
+    </mat-list-option>
+  </mat-selection-list>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="px-4 pb-4">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="onCreate(userList.selectedOptions.selected)"
+    [disabled]="!userList.selectedOptions.selected.length">
+    Create
+  </button>
+</mat-dialog-actions>

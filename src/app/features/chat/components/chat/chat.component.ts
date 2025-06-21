@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { NewChatDialogComponent, User } from '../new-chat-dialog/new-chat-dialog.component';
 
 @Component({
   selector: 'chat-chat',
@@ -14,13 +16,23 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
 export class ChatComponent {
-   chats = [
+
+  private readonly _dialog = inject(MatDialog);
+
+  users = [  // replace with actual users list from your backend/api
+    { id: '1', name: 'Alice' },
+    { id: '2', name: 'Bob' },
+    { id: '3', name: 'Charlie' },
+    // ...
+  ];
+
+  chats = [
     { id: 1, name: 'John Doe', lastMessage: 'Hey, what’s up?' },
     { id: 2, name: 'Alice', lastMessage: 'See you tomorrow!' },
     { id: 3, name: 'Bob', lastMessage: 'Good night.' },
@@ -51,7 +63,17 @@ export class ChatComponent {
   }
 
   createNewChat() {
+    const dialogRef = this._dialog.open(NewChatDialogComponent, {
+      width: '400px',
+      data: { users: this.users },
+    });
 
+    dialogRef.afterClosed().subscribe((selectedUsers: User[] | undefined) => {
+      if (selectedUsers?.length) {
+        // Handle creating a new chat with selected users here
+        console.log('Create chat with users:', selectedUsers);
+      }
+    });
   }
 
   logout() {
