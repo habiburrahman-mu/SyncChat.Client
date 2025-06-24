@@ -6,6 +6,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 
 export interface User {
   id: string;
@@ -14,6 +16,7 @@ export interface User {
 
 @Component({
   selector: 'chat-new-chat-dialog',
+  standalone: true,
   imports: [
     MatDialogModule,
     MatFormFieldModule,
@@ -21,20 +24,23 @@ export interface User {
     CommonModule,
     FormsModule,
     MatListModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
   ],
   templateUrl: './new-chat-dialog.component.html',
-  styleUrl: './new-chat-dialog.component.scss'
+  styleUrl: './new-chat-dialog.component.scss',
 })
 export class NewChatDialogComponent implements OnInit {
   users: User[] = [];
   filteredUsers: User[] = [];
+  selectedUsers: User[] = [];
   searchText: string = '';
 
   constructor(
     public dialogRef: MatDialogRef<NewChatDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { users: User[] }
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.users = this.data.users;
@@ -43,20 +49,27 @@ export class NewChatDialogComponent implements OnInit {
 
   filterUsers() {
     const query = this.searchText.toLowerCase().trim();
-    this.filteredUsers = this.users.filter(u => u.name.toLowerCase().includes(query));
+    this.filteredUsers = this.users.filter(
+      (u) => u.name.toLowerCase().includes(query) && !this.selectedUsers.some((su) => su.id === u.id)
+    );
   }
 
-  isUserSelected(user: User): boolean {
-    // optionally disable already added users here if needed
-    return false;
+  selectUser(user: User) {
+    this.selectedUsers.push(user);
+    this.searchText = '';
+    this.filterUsers();
+  }
+
+  removeUser(user: User) {
+    this.selectedUsers = this.selectedUsers.filter((u) => u.id !== user.id);
+    this.filterUsers();
   }
 
   onCancel() {
     this.dialogRef.close();
   }
 
-  onCreate(selected: { value: User }[]) {
-    const selectedUsers = selected.map(s => s.value);
-    this.dialogRef.close(selectedUsers);
+  onCreate() {
+    this.dialogRef.close(this.selectedUsers);
   }
 }

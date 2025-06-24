@@ -1,24 +1,41 @@
-<h2 mat-dialog-title>New Chat</h2>
+<h2 mat-dialog-title class="text-lg font-semibold">New Chat</h2>
 
-<mat-dialog-content class="p-0">
-  <mat-form-field appearance="outline" class="w-full p-3">
+<mat-dialog-content class="p-4 pt-0 space-y-4">
+
+  <!-- Selected Users (Chips) -->
+  <div *ngIf="selectedUsers.length" class="flex flex-wrap gap-2 mb-5">
+    <mat-chip-listbox>
+      <mat-chip *ngFor="let user of selectedUsers" selected removable color="primary" (removed)="removeUser(user)">
+        {{ user.name }}
+        <button matChipRemove>
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+    </mat-chip-listbox>
+  </div>
+
+  <!-- Search Field -->
+  <mat-form-field appearance="outline" class="w-full">
     <mat-label>Search users</mat-label>
-    <input matInput [(ngModel)]="searchText" (input)="filterUsers()" placeholder="Type to search..."
+    <input matInput type="text" [(ngModel)]="searchText" (input)="filterUsers()" placeholder="Type to search..."
       autocomplete="off" />
   </mat-form-field>
 
-
-  <mat-selection-list #userList class="max-h-72 overflow-auto">
-    <mat-list-option *ngFor="let user of filteredUsers" [value]="user" [disabled]="isUserSelected(user)">
-      {{ user.name }}
-    </mat-list-option>
-  </mat-selection-list>
+  <!-- User List -->
+  <div class="max-h-96 overflow-auto space-y-1">
+    <div *ngFor="let user of filteredUsers" (click)="selectUser(user)"
+      class="cursor-pointer flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+      <div class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-700 font-semibold">
+        {{ user.name.charAt(0).toUpperCase() }}
+      </div>
+      <span class="text-sm font-medium text-gray-800">{{ user.name }}</span>
+    </div>
+  </div>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end" class="px-4 pb-4">
+<mat-dialog-actions align="end" class="p-4 pt-0">
   <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-flat-button color="primary" (click)="onCreate(userList.selectedOptions.selected)"
-    [disabled]="!userList.selectedOptions.selected.length">
+  <button mat-flat-button color="primary" [disabled]="!selectedUsers.length" (click)="onCreate()">
     Create
   </button>
 </mat-dialog-actions>
