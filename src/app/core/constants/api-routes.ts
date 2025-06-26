@@ -7,4 +7,7 @@ export const API_ROUTES = {
     Register: `${BASE_URL}/auth/register`,
     Token: `${BASE_URL}/auth/token`,
   },
+  User: {
+    GetUserByUserName: `${BASE_URL}/user/GetByUserName`
+  }
 };
