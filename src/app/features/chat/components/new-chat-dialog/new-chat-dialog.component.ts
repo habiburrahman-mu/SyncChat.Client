@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, Inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -8,11 +8,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { UserService } from '@features/chat/services';
+import { GetUserByUserNameResponse } from '@features/chat/models';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
-export interface User {
-  id: string;
-  name: string;
-}
 
 @Component({
   selector: 'chat-new-chat-dialog',
@@ -27,20 +27,26 @@ export interface User {
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
+    MatProgressSpinner
   ],
   templateUrl: './new-chat-dialog.component.html',
   styleUrl: './new-chat-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewChatDialogComponent implements OnInit {
-  users: User[] = [];
-  filteredUsers: User[] = [];
-  selectedUsers: User[] = [];
+  users: GetUserByUserNameResponse[] = [];
+  filteredUsers: GetUserByUserNameResponse[] = [];
+  selectedUsers: GetUserByUserNameResponse[] = [];
   searchText: string = '';
+  isLoading = signal(false);
+  userSearchResponse: GetUserByUserNameResponse | null = null;
 
   constructor(
-    public dialogRef: MatDialogRef<NewChatDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { users: User[] }
-  ) {}
+    private dialogRef: MatDialogRef<NewChatDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: { users: GetUserByUserNameResponse[] },
+    private userService: UserService,
+    private destroyRef: DestroyRef
+  ) { }
 
   ngOnInit() {
     this.users = this.data.users;
@@ -49,19 +55,33 @@ export class NewChatDialogComponent implements OnInit {
 
   filterUsers() {
     const query = this.searchText.toLowerCase().trim();
-    this.filteredUsers = this.users.filter(
-      (u) => u.name.toLowerCase().includes(query) && !this.selectedUsers.some((su) => su.id === u.id)
-    );
+
+    if(query.length > 0) {
+      this.isLoading.set(true);
+      this.userSearchResponse = null;
+
+      this.userService.getUserByUserName(query)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: response => {
+          this.userSearchResponse = response;
+          this.isLoading.set(false);
+        },
+        error: err => {
+          this.isLoading.set(false);
+        }
+      });
+  }
   }
 
-  selectUser(user: User) {
+  selectUser(user: GetUserByUserNameResponse) {
     this.selectedUsers.push(user);
     this.searchText = '';
     this.filterUsers();
   }
 
-  removeUser(user: User) {
-    this.selectedUsers = this.selectedUsers.filter((u) => u.id !== user.id);
+  removeUser(user: GetUserByUserNameResponse) {
+    this.selectedUsers = this.selectedUsers.filter((u) => u.userId !== user.userId);
     this.filterUsers();
   }
 

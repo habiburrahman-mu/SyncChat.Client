@@ -1,6 +1,6 @@
 export interface GetUserByUserNameResponse {
-  UserID: number;
-  UUID: string;
-  UserName: string;
-  Name: string;
+  userId: number;
+  uuId: string;
+  userName: string;
+  name: string;
 }

@@ -6,7 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { NewChatDialogComponent, User } from '../new-chat-dialog/new-chat-dialog.component';
+import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
+import { GetUserByUserNameResponse } from '@features/chat/models';
 
 @Component({
   selector: 'chat-chat',
@@ -68,7 +69,7 @@ export class ChatComponent {
       data: { users: this.users },
     });
 
-    dialogRef.afterClosed().subscribe((selectedUsers: User[] | undefined) => {
+    dialogRef.afterClosed().subscribe((selectedUsers: GetUserByUserNameResponse[] | undefined) => {
       if (selectedUsers?.length) {
         // Handle creating a new chat with selected users here
         console.log('Create chat with users:', selectedUsers);
