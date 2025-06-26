@@ -39,7 +39,7 @@ export class NewChatDialogComponent implements OnInit {
   selectedUsers: GetUserByUserNameResponse[] = [];
   searchText: string = '';
   isLoading = signal(false);
-  userSearchResponse: GetUserByUserNameResponse | null = null;
+  userSearchResponse: GetUserByUserNameResponse | null | undefined = undefined;
 
   constructor(
     private dialogRef: MatDialogRef<NewChatDialogComponent>,
@@ -53,36 +53,36 @@ export class NewChatDialogComponent implements OnInit {
     this.filteredUsers = [...this.users];
   }
 
-  filterUsers() {
+  searchUser() {
     const query = this.searchText.toLowerCase().trim();
 
-    if(query.length > 0) {
+    if (query.length > 0) {
       this.isLoading.set(true);
       this.userSearchResponse = null;
 
       this.userService.getUserByUserName(query)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: response => {
-          this.userSearchResponse = response;
-          this.isLoading.set(false);
-        },
-        error: err => {
-          this.isLoading.set(false);
-        }
-      });
-  }
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: response => {
+            this.userSearchResponse = response;
+            this.isLoading.set(false);
+          },
+          error: err => {
+            this.isLoading.set(false);
+          }
+        });
+    }
   }
 
   selectUser(user: GetUserByUserNameResponse) {
-    this.selectedUsers.push(user);
-    this.searchText = '';
-    this.filterUsers();
+    const userAlreadySelected = this.selectedUsers.some(x => x.userID === user.userID);
+    if (!userAlreadySelected) {
+      this.selectedUsers.push(user);
+    }
   }
 
   removeUser(user: GetUserByUserNameResponse) {
-    this.selectedUsers = this.selectedUsers.filter((u) => u.userId !== user.userId);
-    this.filterUsers();
+    this.selectedUsers = this.selectedUsers.filter((u) => u.userID !== user.userID);
   }
 
   onCancel() {

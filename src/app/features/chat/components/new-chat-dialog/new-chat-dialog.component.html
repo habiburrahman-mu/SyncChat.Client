@@ -19,10 +19,10 @@
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="flex-1">
       <mat-label>Username</mat-label>
       <input matInput type="text" [(ngModel)]="searchText" required placeholder="Type to search..."
-        autocomplete="off" />
+        autocomplete="off" (keydown.enter)="searchUser()" />
     </mat-form-field>
 
-    <button mat-raised-button color="primary" (click)="filterUsers()">
+    <button mat-raised-button color="primary" (click)="searchUser()">
       @if(isLoading()) {<mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>}
       @else {<mat-icon aria-hidden="false" aria-label="Search by username" fontIcon="search"></mat-icon>}
       Search
@@ -43,7 +43,7 @@
       </span>
     </div>
 
-    <div *ngIf="!userSearchResponse" class="text-sm text-gray-500 p-3">
+    <div *ngIf="userSearchResponse === null" class="text-sm text-gray-500 p-3">
       No user found.
     </div>
   </div>
