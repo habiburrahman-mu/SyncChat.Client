@@ -61,6 +61,11 @@ export class ChatComponent {
   }
 
   createNewChat() {
+    this.chats = this.chats.filter(x => x.id !== 0);
+
+    if (this.selectedChat?.id === 0)
+      this.selectedChat = null;
+
     const dialogRef = this.dialog.open(NewChatDialogComponent, {
       width: '400px',
       // data: { users: this.users },
@@ -76,7 +81,7 @@ export class ChatComponent {
             name: selectedUsers.map(x => x.name).join(', ')
           };
 
-          this.chats.push(newChat);
+          this.chats = [newChat, ...this.chats];
           this.selectedChat = newChat;
         }
       });
@@ -88,7 +93,7 @@ export class ChatComponent {
 }
 
 interface Chat {
-    id: number;
-    name: string;
-    lastMessage: string | null;
+  id: number;
+  name: string;
+  lastMessage: string | null;
 }
