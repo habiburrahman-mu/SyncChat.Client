@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
 import { GetUserByUserNameResponse } from '@features/chat/models';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'chat-chat',
@@ -24,22 +25,18 @@ import { GetUserByUserNameResponse } from '@features/chat/models';
 })
 export class ChatComponent {
 
-  private readonly _dialog = inject(MatDialog);
+  constructor(
+    private dialog: MatDialog,
+    private destroyRef: DestroyRef
+  ) { }
 
-  users = [  // replace with actual users list from your backend/api
-    { id: '1', name: 'Alice' },
-    { id: '2', name: 'Bob' },
-    { id: '3', name: 'Charlie' },
-    // ...
-  ];
-
-  chats = [
-    { id: 1, name: 'John Doe', lastMessage: 'Hey, what’s up?' },
+  chats: Chat[] = [
+    { id: 1, name: 'John Doe', lastMessage: "Hey, what's up?" },
     { id: 2, name: 'Alice', lastMessage: 'See you tomorrow!' },
-    { id: 3, name: 'Bob', lastMessage: 'Good night.' },
+    { id: 3, name: 'Bob', lastMessage: null },
   ];
 
-  selectedChat: any = null;
+  selectedChat: Chat | null = null;
 
   messages = [
     { text: 'Hello!', fromMe: false },
@@ -48,7 +45,7 @@ export class ChatComponent {
 
   messageText = '';
 
-  selectChat(chat: any) {
+  selectChat(chat: Chat) {
     this.selectedChat = chat;
     this.messages = [
       { text: 'Hello!', fromMe: false },
@@ -64,20 +61,34 @@ export class ChatComponent {
   }
 
   createNewChat() {
-    const dialogRef = this._dialog.open(NewChatDialogComponent, {
+    const dialogRef = this.dialog.open(NewChatDialogComponent, {
       width: '400px',
-      data: { users: this.users },
+      // data: { users: this.users },
     });
 
-    dialogRef.afterClosed().subscribe((selectedUsers: GetUserByUserNameResponse[] | undefined) => {
-      if (selectedUsers?.length) {
-        // Handle creating a new chat with selected users here
-        console.log('Create chat with users:', selectedUsers);
-      }
-    });
+    dialogRef.afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((selectedUsers: GetUserByUserNameResponse[] | undefined) => {
+        if (selectedUsers !== undefined && selectedUsers.length > 0) {
+          const newChat: Chat = {
+            id: 0,
+            lastMessage: null,
+            name: selectedUsers.map(x => x.name).join(', ')
+          };
+
+          this.chats.push(newChat);
+          this.selectedChat = newChat;
+        }
+      });
   }
 
   logout() {
 
   }
+}
+
+interface Chat {
+    id: number;
+    name: string;
+    lastMessage: string | null;
 }
