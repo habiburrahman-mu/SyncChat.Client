@@ -17,14 +17,13 @@ export class AuthService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
+  private _userId: number | null = this.getUserId();
+
   hasValidToken(): boolean {
-    const token = this._localStorageService.getItem<string>(LocalStorageKey.Token);
 
-    if (!token) return false;
+    const decodedToken = this._getDecodedToken();
 
-    const decodedToken = this._decodeToken(token);
-
-    if(decodedToken && decodedToken.exp) {
+    if (decodedToken && decodedToken.exp) {
       const expiryTime = decodedToken.exp * 1000; // exp is in seconds
       return expiryTime > Date.now();
     }
@@ -34,6 +33,15 @@ export class AuthService {
 
   setAuthState(isAuthenticated: boolean): void {
     this.isAuthenticatedSubject.next(isAuthenticated);
+    this.updateUserId();
+  }
+
+  updateUserId() {
+    this._userId = this.getUserId();
+  }
+
+  get userId() {
+    return this._userId;
   }
 
   logout(): void {
@@ -42,12 +50,27 @@ export class AuthService {
     this._router.navigate([FEATURE_ROUTE_PATH.Auth, AUTH_ROUTE_PATH.Login]);
   }
 
-  private _decodeToken(token: string): DecodedToken | null {
+  private _getDecodedToken(): DecodedToken | null {
     try {
+      const token = this._localStorageService.getItem<string>(LocalStorageKey.Token);
+
+      if (!token) return null;
+
       const payload = token.split('.')[1];
+
       return JSON.parse(atob(payload)) as DecodedToken;
     } catch {
       return null;
     }
+  }
+
+  private getUserId() {
+    if (this.hasValidToken()) {
+      const token = this._getDecodedToken()!;
+
+      return +token.sub;
+    }
+
+    return null;
   }
 }
