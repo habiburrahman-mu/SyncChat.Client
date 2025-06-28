@@ -53,14 +53,14 @@ export class ChatSidebarComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((selectedUsers: GetUserByUserNameResponse[] | undefined) => {
         if (selectedUsers !== undefined && selectedUsers.length > 0) {
-          const newChat: Conversation = {
+          const newConversation: Conversation = {
             id: 0,
             lastMessage: null,
             name: selectedUsers.map(x => x.name).join(', ')
           };
 
-          this.conversations = [newChat, ...this.conversations];
-          this.selectedConversation = newChat;
+          this.conversations = [newConversation, ...this.conversations];
+          this.selectChat(newConversation);
         }
       });
   }
