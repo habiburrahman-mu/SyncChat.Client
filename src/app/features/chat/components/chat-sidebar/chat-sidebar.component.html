@@ -1,0 +1,48 @@
+<div class="flex flex-col h-full">
+  <!-- Sidebar Header -->
+  <div class="flex items-center justify-between px-5 py-4">
+    <span class="text-lg font-semibold">Chats</span>
+  </div>
+
+  <!-- Search & New Chat Button -->
+  <div class="px-5 py-4 space-y-3 flex felx-row items-center gap-2">
+    <mat-form-field appearance="outline" class="w-full h-10">
+      <input matInput placeholder="Search chats" />
+    </mat-form-field>
+
+    <button mat-mini-fab color="primary" (click)="createNewChat()" aria-label="New Chat">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <!-- Chat List -->
+  <div class="flex-1 overflow-y-auto px-4 py-3">
+    <div *ngFor="let chat of conversations" (click)="selectChat(chat)" class="flex items-center gap-4 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition
+           border border-transparent hover:border-gray-200 h-18 mb-2"
+      [class.bg-gray-100]="selectedConversation?.id === chat.id">
+      <!-- Avatar -->
+      <mat-icon class="text-gray-500 text-xl flex-shrink-0">account_circle</mat-icon>
+
+      <!-- Chat Info -->
+      <div class="flex flex-col overflow-hidden">
+        <div class="text-base font-semibold text-gray-900 truncate max-w-xs">
+          {{ chat.name }}
+        </div>
+        <div class="text-sm text-gray-600 truncate max-w-xs">
+          {{ chat.lastMessage }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Logout -->
+  <div class="px-5 py-4">
+    <button mat-raised-button (click)="logout()"
+      class="flex items-center gap-2 text-sm text-gray-500 hover:text-red-600 normal-case">
+      <mat-icon class="text-base">logout</mat-icon>
+      Logout
+    </button>
+  </div>
+</div>

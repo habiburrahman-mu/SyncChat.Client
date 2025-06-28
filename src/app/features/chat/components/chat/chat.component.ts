@@ -5,10 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
-import { GetUserByUserNameResponse } from '@features/chat/models';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Conversation, GetUserByUserNameResponse } from '@features/chat/models';
+import { ChatSidebarComponent } from "../chat-sidebar/chat-sidebar.component";
 
 @Component({
   selector: 'chat-chat',
@@ -19,34 +17,20 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    ChatSidebarComponent
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
 export class ChatComponent {
 
-  constructor(
-    private dialog: MatDialog,
-    private destroyRef: DestroyRef
-  ) { }
-
-  chats: Chat[] = [
-    { id: 1, name: 'John Doe', lastMessage: "Hey, what's up?" },
-    { id: 2, name: 'Alice', lastMessage: 'See you tomorrow!' },
-    { id: 3, name: 'Bob', lastMessage: null },
-  ];
-
-  selectedChat: Chat | null = null;
-
-  messages = [
-    { text: 'Hello!', fromMe: false },
-    { text: 'Hi, how are you?', fromMe: true },
-  ];
-
+  conversation: Conversation | undefined = undefined;
   messageText = '';
+  messages: any;
 
-  selectChat(chat: Chat) {
-    this.selectedChat = chat;
+  onSelectConversation(selectedConversation: Conversation) {
+    this.conversation = selectedConversation;
+
     this.messages = [
       { text: 'Hello!', fromMe: false },
       { text: 'Hi, how are you?', fromMe: true },
@@ -59,41 +43,4 @@ export class ChatComponent {
     this.messages.push({ text: this.messageText, fromMe: true });
     this.messageText = '';
   }
-
-  createNewChat() {
-    this.chats = this.chats.filter(x => x.id !== 0);
-
-    if (this.selectedChat?.id === 0)
-      this.selectedChat = null;
-
-    const dialogRef = this.dialog.open(NewChatDialogComponent, {
-      width: '400px',
-      // data: { users: this.users },
-    });
-
-    dialogRef.afterClosed()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((selectedUsers: GetUserByUserNameResponse[] | undefined) => {
-        if (selectedUsers !== undefined && selectedUsers.length > 0) {
-          const newChat: Chat = {
-            id: 0,
-            lastMessage: null,
-            name: selectedUsers.map(x => x.name).join(', ')
-          };
-
-          this.chats = [newChat, ...this.chats];
-          this.selectedChat = newChat;
-        }
-      });
-  }
-
-  logout() {
-
-  }
-}
-
-interface Chat {
-  id: number;
-  name: string;
-  lastMessage: string | null;
 }
