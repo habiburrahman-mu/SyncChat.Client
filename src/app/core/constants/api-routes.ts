@@ -9,5 +9,8 @@ export const API_ROUTES = {
   },
   User: {
     GetUserByUserName: `${BASE_URL}/user/GetByUserName`
+  },
+  Conversation: {
+    Create: `${BASE_URL}/conversation/create`
   }
 };
