@@ -67,6 +67,7 @@ export class ChatSidebarComponent {
 
   selectChat(chat: Conversation) {
     this.selectedConversation = chat;
+    this.onSelectConversation.emit(this.selectedConversation);
   }
 
   logout() {
