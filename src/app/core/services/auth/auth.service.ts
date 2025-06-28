@@ -3,6 +3,8 @@ import { LocalStorageService } from '../local-storage/local-storage.service';
 import { LocalStorageKey } from '@core/enums';
 import { DecodedToken } from '@core/models';
 import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
+import { AUTH_ROUTE_PATH, FEATURE_ROUTE_PATH } from '@core/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,7 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
 
   private readonly _localStorageService = inject(LocalStorageService);
+  private readonly _router = inject(Router);
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -36,6 +39,7 @@ export class AuthService {
   logout(): void {
     this._localStorageService.clear();
     this.setAuthState(false);
+    this._router.navigate([FEATURE_ROUTE_PATH.Auth, AUTH_ROUTE_PATH.Login]);
   }
 
   private _decodeToken(token: string): DecodedToken | null {

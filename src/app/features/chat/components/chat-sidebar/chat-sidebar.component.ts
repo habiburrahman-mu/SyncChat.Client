@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Conversation, GetUserByUserNameResponse } from '@features/chat/models';
 import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthService } from '@core/services';
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -34,8 +35,9 @@ export class ChatSidebarComponent {
   ];
 
   constructor(
-    private dialog: MatDialog,
-    private destroyRef: DestroyRef
+    private readonly dialog: MatDialog,
+    private readonly destroyRef: DestroyRef,
+    private readonly authService: AuthService
   ) { }
 
   createNewChat() {
@@ -71,7 +73,7 @@ export class ChatSidebarComponent {
   }
 
   logout() {
-
+    this.authService.logout();
   }
 
 }
