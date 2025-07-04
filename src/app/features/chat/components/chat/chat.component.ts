@@ -66,7 +66,7 @@ export class ChatComponent {
       memberIdList: this.conversation!.members,
       name: this.conversation!.name,
       type: this.conversation!.members.length > 1 ? ConversationType.Group : ConversationType.Direct,
-      initialMessage: ''
+      initialMessage: this.messageText
     };
 
     this.sendingMessage.set(true);

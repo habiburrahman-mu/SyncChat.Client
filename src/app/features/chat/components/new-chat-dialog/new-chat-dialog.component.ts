@@ -9,7 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { UserService } from '@features/chat/services';
-import { GetUserByUserNameResponse } from '@features/chat/models';
+import { GetUserByUserNameResponse, NewConversation } from '@features/chat/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { AuthService } from '@core/services';
@@ -44,7 +44,7 @@ export class NewChatDialogComponent implements OnInit {
   userSearchResponse: GetUserByUserNameResponse | null | undefined = undefined;
 
   constructor(
-    private dialogRef: MatDialogRef<NewChatDialogComponent>,
+    private dialogRef: MatDialogRef<NewChatDialogComponent, NewConversation>,
     @Inject(MAT_DIALOG_DATA) private data: { users: GetUserByUserNameResponse[] },
     private userService: UserService,
     private destroyRef: DestroyRef,
@@ -93,7 +93,12 @@ export class NewChatDialogComponent implements OnInit {
   }
 
   onCreate() {
-    this.dialogRef.close(this.selectedUsers);
+    const newConversation: NewConversation = {
+      selectedUsers: this.selectedUsers,
+      conversationName: this.selectedUsers.length > 1 ? this.groupName : ''
+    };
+
+    this.dialogRef.close(newConversation);
   }
 
   onChangeGroupName() {

@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Conversation, GetUserByUserNameResponse } from '@features/chat/models';
+import { Conversation, GetUserByUserNameResponse, NewConversation } from '@features/chat/models';
 import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services';
@@ -42,24 +42,24 @@ export class ChatSidebarComponent {
     if (this.selectedConversation?.id === 0)
       this.selectedConversation = null;
 
-    const dialogRef = this.dialog.open(NewChatDialogComponent, {
+    const dialogRef = this.dialog.open<NewChatDialogComponent, any, NewConversation>(NewChatDialogComponent, {
       width: '400px',
       // data: { users: this.users },
     });
 
     dialogRef.afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((selectedUsers: GetUserByUserNameResponse[] | undefined) => {
-        if (selectedUsers !== undefined && selectedUsers.length > 0) {
-          const newConversation: Conversation = {
+      .subscribe((newConversation: NewConversation | undefined) => {
+        if (newConversation !== undefined && newConversation.selectedUsers.length > 0) {
+          const conversation: Conversation = {
             id: 0,
             lastMessage: null,
-            members: selectedUsers.map(x => x.userID),
-            name: selectedUsers.map(x => x.name).join(', '),
+            members: newConversation.selectedUsers.map(x => x.userID),
+            name: newConversation.conversationName,
           };
 
-          this.conversations = [newConversation, ...this.conversations];
-          this.selectChat(newConversation);
+          this.conversations = [conversation, ...this.conversations];
+          this.selectChat(conversation);
         }
       });
   }
