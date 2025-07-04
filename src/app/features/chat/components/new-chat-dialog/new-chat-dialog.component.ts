@@ -12,6 +12,7 @@ import { UserService } from '@features/chat/services';
 import { GetUserByUserNameResponse } from '@features/chat/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { AuthService } from '@core/services';
 
 
 @Component({
@@ -38,6 +39,7 @@ export class NewChatDialogComponent implements OnInit {
   filteredUsers: GetUserByUserNameResponse[] = [];
   selectedUsers: GetUserByUserNameResponse[] = [];
   searchText: string = '';
+  groupName: string = '';
   isLoading = signal(false);
   userSearchResponse: GetUserByUserNameResponse | null | undefined = undefined;
 
@@ -45,7 +47,8 @@ export class NewChatDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<NewChatDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: { users: GetUserByUserNameResponse[] },
     private userService: UserService,
-    private destroyRef: DestroyRef
+    private destroyRef: DestroyRef,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -91,5 +94,9 @@ export class NewChatDialogComponent implements OnInit {
 
   onCreate() {
     this.dialogRef.close(this.selectedUsers);
+  }
+
+  onChangeGroupName() {
+    this.groupName = this.groupName.trim();
   }
 }

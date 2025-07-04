@@ -28,11 +28,7 @@ export class ChatSidebarComponent {
 
   selectedConversation: Conversation | null = null;
 
-  conversations: Conversation[] = [
-    { id: 1, name: 'John Doe', lastMessage: "Hey, what's up?" },
-    { id: 2, name: 'Alice', lastMessage: 'See you tomorrow!' },
-    { id: 3, name: 'Bob', lastMessage: null },
-  ];
+  conversations: Conversation[] = [];
 
   constructor(
     private readonly dialog: MatDialog,
@@ -58,7 +54,8 @@ export class ChatSidebarComponent {
           const newConversation: Conversation = {
             id: 0,
             lastMessage: null,
-            name: selectedUsers.map(x => x.name).join(', ')
+            members: selectedUsers.map(x => x.userID),
+            name: selectedUsers.map(x => x.name).join(', '),
           };
 
           this.conversations = [newConversation, ...this.conversations];

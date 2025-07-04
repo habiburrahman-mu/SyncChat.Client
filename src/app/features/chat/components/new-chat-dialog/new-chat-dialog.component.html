@@ -2,6 +2,15 @@
 
 <mat-dialog-content class="p-4 pt-0 space-y-4">
 
+  @if(selectedUsers.length > 1)
+  {
+  <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full mb-5 pt-2">
+    <mat-label>Group Name</mat-label>
+    <input matInput type="text" [(ngModel)]="groupName" (blur)="onChangeGroupName()" required
+      autocomplete="off"/>
+  </mat-form-field>
+  }
+
   <!-- Selected Users (Chips) -->
   <div *ngIf="selectedUsers.length" class="flex flex-wrap gap-2 mb-5">
     <mat-chip-listbox>
@@ -18,12 +27,12 @@
   <div class="flex items-center align-middle gap-2 pt-2">
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="flex-1">
       <mat-label>Username</mat-label>
-      <input matInput type="text" [(ngModel)]="searchText" required placeholder="Type to search..."
-        autocomplete="off" (keydown.enter)="searchUser()" />
+      <input matInput type="text" [(ngModel)]="searchText" required placeholder="Type to search..." autocomplete="off"
+        (keydown.enter)="searchUser()" />
     </mat-form-field>
 
-    <button mat-raised-button color="primary" (click)="searchUser()">
-      @if(isLoading()) {<mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>}
+    <button mat-raised-button color="outline" (click)="searchUser()">
+      @if(isLoading()) {<mat-icon><mat-spinner diameter="18" color="accent"></mat-spinner></mat-icon>}
       @else {<mat-icon aria-hidden="false" aria-label="Search by username" fontIcon="search"></mat-icon>}
       Search
     </button>
@@ -53,7 +62,9 @@
 
 <mat-dialog-actions align="end" class="p-4 pt-0">
   <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-flat-button color="primary" [disabled]="!selectedUsers.length" (click)="onCreate()">
+  <button mat-flat-button color="primary"
+    [disabled]="!selectedUsers.length || (this.selectedUsers.length > 1 && this.groupName.length === 0)"
+    (click)="onCreate()">
     Create
   </button>
 </mat-dialog-actions>

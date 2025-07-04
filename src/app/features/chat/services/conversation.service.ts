@@ -14,6 +14,6 @@ export class ConversationService {
 
   create = (request: CreateConversationRequest) => {
     const url = API_ROUTES.Conversation.Create;
-    return this.http.post(url, request);
+    return this.http.post<number>(url, request);
   }
 }
