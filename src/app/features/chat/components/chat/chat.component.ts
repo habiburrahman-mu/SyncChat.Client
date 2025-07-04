@@ -63,7 +63,7 @@ export class ChatComponent {
   private createConversation() {
     const request: CreateConversationRequest = {
       createdBy: this.authService.userId!,
-      memberIdList: this.conversation!.members,
+      memberIdList: [...this.conversation!.members, this.authService.userId!],
       name: this.conversation!.name,
       type: this.conversation!.members.length > 1 ? ConversationType.Group : ConversationType.Direct,
       initialMessage: this.messageText

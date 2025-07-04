@@ -2,19 +2,18 @@
 
 <mat-dialog-content class="p-4 pt-0 space-y-4">
 
-  @if(selectedUsers.length > 1)
+  @if(selectedUsers().length > 1)
   {
   <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full mb-5 pt-2">
     <mat-label>Group Name</mat-label>
-    <input matInput type="text" [(ngModel)]="groupName" (blur)="onChangeGroupName()" required
-      autocomplete="off"/>
+    <input matInput type="text" [(ngModel)]="groupName" (blur)="onChangeGroupName()" required autocomplete="off" />
   </mat-form-field>
   }
 
   <!-- Selected Users (Chips) -->
-  <div *ngIf="selectedUsers.length" class="flex flex-wrap gap-2 mb-5">
+  <div *ngIf="selectedUsers().length" class="flex flex-wrap gap-2 mb-5">
     <mat-chip-listbox>
-      <mat-chip *ngFor="let user of selectedUsers" selected removable color="primary" (removed)="removeUser(user)">
+      <mat-chip *ngFor="let user of selectedUsers()" selected removable color="primary" (removed)="removeUser(user)">
         &#64;{{ user.userName}}
         <button matChipRemove>
           <mat-icon>cancel</mat-icon>
@@ -27,11 +26,11 @@
   <div class="flex items-center align-middle gap-2 pt-2">
     <mat-form-field subscriptSizing="dynamic" appearance="outline" class="flex-1">
       <mat-label>Username</mat-label>
-      <input matInput type="text" [(ngModel)]="searchText" required placeholder="Type to search..." autocomplete="off"
+      <input matInput type="text" [(ngModel)]="searchText" placeholder="Type to search..." autocomplete="off"
         (keydown.enter)="searchUser()" />
     </mat-form-field>
 
-    <button mat-raised-button color="outline" (click)="searchUser()">
+    <button mat-raised-button color="outline" (click)="searchUser()" [disabled]="searchText.length === 0">
       @if(isLoading()) {<mat-icon><mat-spinner diameter="18" color="accent"></mat-spinner></mat-icon>}
       @else {<mat-icon aria-hidden="false" aria-label="Search by username" fontIcon="search"></mat-icon>}
       Search
@@ -40,22 +39,30 @@
 
 
   <div class="max-h-96 overflow-auto space-y-1 mt-2" *ngIf="!isLoading()">
-    <div *ngIf="userSearchResponse" (click)="selectUser(userSearchResponse)"
-      class="cursor-pointer flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+    <div *ngIf="userSearchResponse() as user"
+      (click)="user.userID !== currentUserId && selectUser(user)"
+      [class.cursor-default]="user.userID === currentUserId"
+      [class.cursor-pointer]="user.userID !== currentUserId"
+      [class.bg-gray-100]="user.userID === currentUserId"
+      class="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-gray-100 transition">
 
       <div class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-700 font-semibold">
-        {{ userSearchResponse.name.charAt(0).toUpperCase() }}
+        {{ user.name.charAt(0).toUpperCase() }}
       </div>
 
       <span class="text-sm font-medium text-gray-800">
-        {{ userSearchResponse.name }}
+        {{ user.name }}
       </span>
+
+      <span *ngIf="user.userID === currentUserId" class="text-xs text-gray-500 ml-1">(You)</span>
+      <span *ngIf="isUserSelected()" class="text-xs text-gray-500 ml-1">(Already added)</span>
     </div>
 
-    <div *ngIf="userSearchResponse === null" class="text-sm text-gray-500 p-3">
+    <div *ngIf="userSearchResponse() === null" class="text-sm text-gray-500 p-3">
       No user found.
     </div>
   </div>
+
 
 
 </mat-dialog-content>
@@ -63,7 +70,7 @@
 <mat-dialog-actions align="end" class="p-4 pt-0">
   <button mat-button (click)="onCancel()">Cancel</button>
   <button mat-flat-button color="primary"
-    [disabled]="!selectedUsers.length || (this.selectedUsers.length > 1 && this.groupName.length === 0)"
+    [disabled]="!selectedUsers().length || (this.selectedUsers().length > 1 && this.groupName.length === 0)"
     (click)="onCreate()">
     Create
   </button>

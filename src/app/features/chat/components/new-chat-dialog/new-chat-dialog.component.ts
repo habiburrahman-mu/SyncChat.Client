@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, Inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, Inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
@@ -35,25 +35,34 @@ import { AuthService } from '@core/services';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewChatDialogComponent implements OnInit {
-  users: GetUserByUserNameResponse[] = [];
-  filteredUsers: GetUserByUserNameResponse[] = [];
-  selectedUsers: GetUserByUserNameResponse[] = [];
+  selectedUsers = signal<GetUserByUserNameResponse[]>([]);
   searchText: string = '';
   groupName: string = '';
   isLoading = signal(false);
-  userSearchResponse: GetUserByUserNameResponse | null | undefined = undefined;
+  userSearchResponse = signal<GetUserByUserNameResponse | null | undefined>(undefined);
+  currentUserId: number = 0;
+
+  isUserSelected = computed(() => {
+    console.log("compute")
+
+    const user = this.userSearchResponse();
+
+    if (user) {
+      return this.selectedUsers().some(x => x.userID === user.userID);
+    }
+
+    return false;
+  });
 
   constructor(
     private dialogRef: MatDialogRef<NewChatDialogComponent, NewConversation>,
-    @Inject(MAT_DIALOG_DATA) private data: { users: GetUserByUserNameResponse[] },
     private userService: UserService,
     private destroyRef: DestroyRef,
     private authService: AuthService
   ) { }
 
   ngOnInit() {
-    this.users = this.data.users;
-    this.filteredUsers = [...this.users];
+    this.currentUserId = this.authService.userId!;
   }
 
   searchUser() {
@@ -61,13 +70,13 @@ export class NewChatDialogComponent implements OnInit {
 
     if (query.length > 0) {
       this.isLoading.set(true);
-      this.userSearchResponse = null;
+      this.userSearchResponse.set(null);
 
       this.userService.getUserByUserName(query)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: response => {
-            this.userSearchResponse = response;
+            this.userSearchResponse.set(response);
             this.isLoading.set(false);
           },
           error: err => {
@@ -78,14 +87,15 @@ export class NewChatDialogComponent implements OnInit {
   }
 
   selectUser(user: GetUserByUserNameResponse) {
-    const userAlreadySelected = this.selectedUsers.some(x => x.userID === user.userID);
-    if (!userAlreadySelected) {
-      this.selectedUsers.push(user);
+    if (!this.isUserSelected()) {
+      this.selectedUsers.update(users => [...users, user]);
+      this.searchText = '';
+      this.userSearchResponse.set(undefined);
     }
   }
 
   removeUser(user: GetUserByUserNameResponse) {
-    this.selectedUsers = this.selectedUsers.filter((u) => u.userID !== user.userID);
+    this.selectedUsers.update(users => users.filter(u => u.userID !== user.userID));
   }
 
   onCancel() {
@@ -94,8 +104,8 @@ export class NewChatDialogComponent implements OnInit {
 
   onCreate() {
     const newConversation: NewConversation = {
-      selectedUsers: this.selectedUsers,
-      conversationName: this.selectedUsers.length > 1 ? this.groupName : ''
+      selectedUsers: this.selectedUsers(),
+      conversationName: this.selectedUsers().length > 1 ? this.groupName : ''
     };
 
     this.dialogRef.close(newConversation);
