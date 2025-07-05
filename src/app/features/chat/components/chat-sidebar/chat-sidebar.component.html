@@ -17,7 +17,7 @@
 
   <!-- Chat List -->
   <div class="flex-1 overflow-y-auto px-4 py-3">
-    <div *ngFor="let chat of conversations" (click)="selectChat(chat)" class="flex items-center gap-4 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition
+    <div *ngFor="let chat of conversations$ | async" (click)="selectChat(chat)" class="flex items-center gap-4 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition
            border border-transparent hover:border-gray-200 h-18 mb-2"
       [class.bg-gray-100]="selectedConversation?.id === chat.id">
       <!-- Avatar -->

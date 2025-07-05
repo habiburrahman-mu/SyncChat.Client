@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, output } from '@angular/core';
+import { Component, DestroyRef, inject, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +9,8 @@ import { Conversation, GetUserByUserNameResponse, NewConversation } from '@featu
 import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services';
+import { ConversationService } from '@features/chat/services';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -30,11 +32,26 @@ export class ChatSidebarComponent {
 
   conversations: Conversation[] = [];
 
-  constructor(
-    private readonly dialog: MatDialog,
-    private readonly destroyRef: DestroyRef,
-    private readonly authService: AuthService
-  ) { }
+  private readonly dialog = inject(MatDialog);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
+  private readonly conversationService = inject(ConversationService);
+
+  conversations$ = this.conversationService.getList()
+    .pipe(
+      map(response => {
+        return response.conversations.map(c => {
+          const conversation: Conversation = {
+            id: c.conversationId,
+            name: c.name ?? 'Single chat',
+            lastMessage: c.lastMessage,
+            members: []
+          };
+
+          return conversation;
+        });
+      })
+    );
 
   createNewChat() {
     this.conversations = this.conversations.filter(x => x.id !== 0);

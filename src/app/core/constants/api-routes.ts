@@ -11,6 +11,7 @@ export const API_ROUTES = {
     GetUserByUserName: `${BASE_URL}/user/GetByUserName`
   },
   Conversation: {
-    Create: `${BASE_URL}/conversation/create`
+    Create: `${BASE_URL}/conversation/create`,
+    GetList: `${BASE_URL}/conversation/getList`,
   }
 };

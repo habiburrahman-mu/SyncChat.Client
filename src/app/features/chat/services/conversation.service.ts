@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CreateConversationRequest } from '../models';
+import { CreateConversationRequest, GetConversationsResponse } from '../models';
 import { API_ROUTES } from '@core/constants';
 
 @Injectable({
@@ -15,5 +15,10 @@ export class ConversationService {
   create = (request: CreateConversationRequest) => {
     const url = API_ROUTES.Conversation.Create;
     return this.http.post<number>(url, request);
+  }
+
+  getList = () => {
+    const url = API_ROUTES.Conversation.GetList;
+    return this.http.get<GetConversationsResponse>(url);
   }
 }
