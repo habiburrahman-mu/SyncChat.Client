@@ -38,6 +38,7 @@ export class ChatStateService {
             otherUserId: c.otherUserId
           } as Conversation));
           this.conversations.set(conversations);
+          this.selectFirstConversation();
         },
         complete: () => this.conversationsLoading.set(false)
       });
@@ -49,6 +50,12 @@ export class ChatStateService {
 
     // Set selected conversation
     this.selectedConversationId.set(conversationId);
+  }
+
+  private selectFirstConversation() {
+    if (this.conversations().length > 0) {
+      this.selectConversation(this.conversations()[0].id);
+    }
   }
 
   addConversation(conversation: Conversation) {
