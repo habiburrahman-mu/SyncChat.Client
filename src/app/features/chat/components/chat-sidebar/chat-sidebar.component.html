@@ -26,7 +26,7 @@
     <!-- Chat List -->
     <div *ngFor="let chat of conversationList()" (click)="selectChat(chat)" class="flex items-center gap-4 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition
            border border-transparent hover:border-gray-200 h-18 mb-2"
-      [class.bg-gray-100]="selectedConversation?.id === chat.id">
+      [class.bg-gray-100]="selectedConversation()?.id === chat.id">
       <!-- Avatar -->
       <mat-icon class="text-gray-500 text-xl flex-shrink-0">account_circle</mat-icon>
 
@@ -43,10 +43,6 @@
     }
 
   </div>
-
-
-
-
 
   <!-- Logout -->
   <div class="px-5 py-4">

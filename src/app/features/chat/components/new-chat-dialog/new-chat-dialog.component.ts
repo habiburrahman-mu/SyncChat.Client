@@ -13,6 +13,7 @@ import { GetUserByUserNameResponse, NewConversation } from '@features/chat/model
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { AuthService } from '@core/services';
+import { ConversationType } from '@core/enums';
 
 
 @Component({
@@ -103,9 +104,13 @@ export class NewChatDialogComponent implements OnInit {
   }
 
   onCreate() {
+    const selectedUsers = this.selectedUsers();
+    const isGroup = selectedUsers.length > 1;
+
     const newConversation: NewConversation = {
-      selectedUsers: this.selectedUsers(),
-      conversationName: this.selectedUsers().length > 1 ? this.groupName : ''
+      selectedUsers: selectedUsers,
+      conversationName: isGroup ? this.groupName : '',
+      conversationType: isGroup ? ConversationType.Group : ConversationType.Direct
     };
 
     this.dialogRef.close(newConversation);

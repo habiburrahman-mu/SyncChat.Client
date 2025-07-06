@@ -7,8 +7,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   providedIn: 'root'
 })
 export class ChatStateService {
-
-  // conversations list state
   private conversations = signal<Conversation[]>([]);
   private conversationsLoading = signal<boolean>(false);
   private selectedConversationId = signal<number | null>(null);
@@ -35,7 +33,9 @@ export class ChatStateService {
             name: c.name,
             lastMessage: c.lastMessage,
             members: [],
-            messages: null
+            messages: null,
+            conversationType: c.type,
+            otherUserId: c.otherUserId
           } as Conversation));
           this.conversations.set(conversations);
         },
@@ -49,22 +49,17 @@ export class ChatStateService {
 
     // Set selected conversation
     this.selectedConversationId.set(conversationId);
+  }
 
-    // if (conv.messages) return; // already loaded
+  addConversation(conversation: Conversation) {
+    this.conversations.update(x => [conversation, ...x]);
+  }
 
-    // // Mark messages loading
-    // this.setMessageLoading(conversationId, true);
+  removeInvalidChats() {
+    if (this.selectedConversationId() === 0) {
+      this.selectedConversationId.set(null);
+    }
 
-    // // Fetch messages
-    // this.conversationService.getMessagesByConversationId(conversationId).subscribe({
-    //   next: (msgs) => {
-    //     this.conversations.update(list =>
-    //       list.map(c =>
-    //         c.id === conversationId ? { ...c, messages: msgs } : c
-    //       )
-    //     );
-    //   },
-    //   complete: () => this.setMessageLoading(conversationId, false)
-    // });
+    this.conversations.update(conversations => conversations.filter(x => x.id !== 0));
   }
 }

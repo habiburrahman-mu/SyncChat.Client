@@ -11,6 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services';
 import { ChatStateService, ConversationService } from '@features/chat/services';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ConversationType } from '@core/enums';
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -26,44 +27,21 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
   styleUrl: './chat-sidebar.component.scss'
 })
 export class ChatSidebarComponent implements OnInit {
-  selectedConversation: Conversation | null = null;
-
-  conversations: Conversation[] = [];
-
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
-  private readonly conversationService = inject(ConversationService);
   private readonly chatStateService = inject(ChatStateService);
 
   readonly conversationList = this.chatStateService.conversationList;
   readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
-
-  // conversations$ = this.conversationService.getList()
-  //   .pipe(
-  //     map(response => {
-  //       return response.conversations.map(c => {
-  //         const conversation: Conversation = {
-  //           id: c.conversationId,
-  //           name: c.name ,
-  //           lastMessage: c.lastMessage,
-  //           members: []
-  //         };
-
-  //         return conversation;
-  //       });
-  //     })
-  //   );
+  readonly selectedConversation = this.chatStateService.selectedConversation;
 
   ngOnInit(): void {
     this.chatStateService.loadConversations();
   }
 
   createNewChat() {
-    this.conversations = this.conversations.filter(x => x.id !== 0);
-
-    if (this.selectedConversation?.id === 0)
-      this.selectedConversation = null;
+    this.chatStateService.removeInvalidChats();
 
     const dialogRef = this.dialog.open<NewChatDialogComponent, any, NewConversation>(NewChatDialogComponent, {
       width: '400px',
@@ -74,22 +52,36 @@ export class ChatSidebarComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((newConversation: NewConversation | undefined) => {
         if (newConversation !== undefined && newConversation.selectedUsers.length > 0) {
+          const isDirect = newConversation.conversationType === ConversationType.Direct;
+
           const conversation: Conversation = {
             id: 0,
             lastMessage: null,
             members: newConversation.selectedUsers.map(x => x.userID),
             name: newConversation.conversationName,
+            conversationType: newConversation.conversationType,
+            otherUserId: isDirect ? newConversation.selectedUsers[0].userID : null
           };
 
-          this.conversations = [conversation, ...this.conversations];
+          const conversationList = this.conversationList();
+
+          if (newConversation.conversationType === ConversationType.Direct) {
+            const otherUserId = newConversation.selectedUsers.find(x => x.userID !== this.authService.userId!)!.userID;
+            const conversationExist = conversationList.find(x => x.otherUserId === otherUserId);
+            if(conversationExist) {
+              this.selectChat(conversationExist);
+              return;
+            }
+          }
+
+          this.chatStateService.addConversation(conversation);
           this.selectChat(conversation);
         }
       });
   }
 
-  selectChat(chat: Conversation) {
-    this.selectedConversation = chat;
-    this.chatStateService.selectConversation(this.selectedConversation.id);
+  selectChat(conversation: Conversation) {
+    this.chatStateService.selectConversation(conversation.id);
   }
 
   logout() {
