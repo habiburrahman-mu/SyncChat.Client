@@ -4,7 +4,7 @@ export interface ConversationDTO {
   conversationId: number;
   uuid: string;
   type: ConversationType;
-  name: string | null;
+  name: string;
   avatarUrl: string | null;
   createdBy: number | null;
   createdAt: string;       // ISO 8601 date string

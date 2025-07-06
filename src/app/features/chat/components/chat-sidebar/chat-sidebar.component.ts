@@ -43,7 +43,7 @@ export class ChatSidebarComponent {
         return response.conversations.map(c => {
           const conversation: Conversation = {
             id: c.conversationId,
-            name: c.name ?? 'Single chat',
+            name: c.name ,
             lastMessage: c.lastMessage,
             members: []
           };
