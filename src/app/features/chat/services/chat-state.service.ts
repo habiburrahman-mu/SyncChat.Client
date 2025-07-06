@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, Injectable, signal } from '@angular/core';
 import { ConversationService } from '.';
 import { Conversation } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,6 +11,9 @@ export class ChatStateService {
   // conversations list state
   private conversations = signal<Conversation[]>([]);
   private conversationsLoading = signal<boolean>(false);
+
+  readonly conversationList = computed(() => this.conversations());
+  readonly isConversationsLoading = computed(() => this.conversationsLoading());
 
   constructor(
     private readonly conversationService: ConversationService,
