@@ -11,6 +11,7 @@ import { ConversationService } from '@features/chat/services/conversation.servic
 import { AuthService } from '@core/services';
 import { ConversationType } from '@core/enums';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChatStateService } from '@features/chat/services';
 
 @Component({
   selector: 'chat-chat',
@@ -27,32 +28,25 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrl: './chat.component.scss',
 })
 export class ChatComponent {
-
-  conversation: Conversation | undefined = undefined;
   messageText = '';
   messages: any;
 
   sendingMessage = signal(false);
 
-  constructor(
-    private conversationService: ConversationService,
-    private authService: AuthService,
-    private destroyRef: DestroyRef
-  ) {}
+  private readonly conversationService = inject(ConversationService);
+  private readonly authService = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly chatStateService = inject(ChatStateService);
 
-  onSelectConversation(selectedConversation: Conversation) {
-    this.conversation = selectedConversation;
 
-    this.messages = [
-      { text: 'Hello!', fromMe: false },
-      { text: 'Hi, how are you?', fromMe: true },
-    ];
-  }
+  readonly selectedConversation = this.chatStateService.selectedConversation;
 
   sendMessage() {
     if (!this.messageText.trim()) return;
 
-    if(this.conversation && this.conversation.id === 0) {
+    const conversation = this.selectedConversation();
+
+    if (conversation && conversation.id === 0) {
       this.createConversation();
     }
 
@@ -61,11 +55,12 @@ export class ChatComponent {
   }
 
   private createConversation() {
+    const conversation = this.selectedConversation();
     const request: CreateConversationRequest = {
       createdBy: this.authService.userId!,
-      memberIdList: [...this.conversation!.members, this.authService.userId!],
-      name: this.conversation!.name,
-      type: this.conversation!.members.length > 1 ? ConversationType.Group : ConversationType.Direct,
+      memberIdList: [...conversation!.members, this.authService.userId!],
+      name: conversation!.name,
+      type: conversation!.members.length > 1 ? ConversationType.Group : ConversationType.Direct,
       initialMessage: this.messageText
     };
 
@@ -75,7 +70,7 @@ export class ChatComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: conversationId => {
-          this.conversation!.id = conversationId;
+          this.selectedConversation()!.id = conversationId;
           this.sendingMessage.set(true);
         },
         error: err => {

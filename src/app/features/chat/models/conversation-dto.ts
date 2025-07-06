@@ -12,4 +12,5 @@ export interface ConversationDTO {
   lastMessageId: number | null;
   settings: string;        // JSON string
   lastMessage: string | null;
+  OtherUserId: number | null; // for direct chats, pick the OTHER member's id;
 }

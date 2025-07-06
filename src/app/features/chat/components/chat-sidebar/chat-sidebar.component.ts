@@ -26,9 +26,6 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
   styleUrl: './chat-sidebar.component.scss'
 })
 export class ChatSidebarComponent implements OnInit {
-
-  onSelectConversation = output<Conversation>();
-
   selectedConversation: Conversation | null = null;
 
   conversations: Conversation[] = [];
@@ -92,7 +89,7 @@ export class ChatSidebarComponent implements OnInit {
 
   selectChat(chat: Conversation) {
     this.selectedConversation = chat;
-    this.onSelectConversation.emit(this.selectedConversation);
+    this.chatStateService.selectConversation(this.selectedConversation.id);
   }
 
   logout() {
