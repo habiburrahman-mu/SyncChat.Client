@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +12,7 @@ import { AuthService } from '@core/services';
 import { ConversationType } from '@core/enums';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChatStateService } from '@features/chat/services';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'chat-chat',
@@ -22,7 +23,8 @@ import { ChatStateService } from '@features/chat/services';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    ChatSidebarComponent
+    MatProgressSpinnerModule,
+    ChatSidebarComponent,
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
@@ -40,6 +42,8 @@ export class ChatComponent {
 
 
   readonly selectedConversation = this.chatStateService.selectedConversation;
+
+  readonly isConversationLoading =this.chatStateService.isConversationsLoading;
 
   sendMessage() {
     if (!this.messageText.trim()) return;
