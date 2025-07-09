@@ -4,14 +4,17 @@ const BASE_URL = environment.apiBaseUrl;
 
 export const API_ROUTES = {
   Auth: {
-    Register: `${BASE_URL}/auth/register`,
-    Token: `${BASE_URL}/auth/token`,
+    Register: `${BASE_URL}/auth/register` as const,
+    Token: `${BASE_URL}/auth/token` as const,
   },
   User: {
-    GetUserByUserName: `${BASE_URL}/user/GetByUserName`
+    GetUserByUserName: `${BASE_URL}/user/GetByUserName` as const
   },
   Conversation: {
-    Create: `${BASE_URL}/conversation/create`,
-    GetList: `${BASE_URL}/conversation/getList`,
+    Create: `${BASE_URL}/conversation/create` as const,
+    GetList: `${BASE_URL}/conversation/getList` as const,
+  },
+  Message: {
+    GetList: `${BASE_URL}/message/getList` as const,
   }
 };
