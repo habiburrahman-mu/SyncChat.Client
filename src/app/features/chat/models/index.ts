@@ -4,3 +4,5 @@ export * from './create-conversation-request';
 export * from './new-conversation';
 export * from './conversation-dto';
 export * from './get-conversations-response';
+export * from './get-message-response.model';
+export * from './message-dto.model';
