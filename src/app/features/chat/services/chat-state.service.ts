@@ -79,7 +79,8 @@ export class ChatStateService {
                 messageId: m.messageId,
                 uuid: m.uuid,
                 conversationId: m.conversationId,
-                senderId: m.senderId
+                senderId: m.senderId,
+                content: m.content
               };
 
               return message;
@@ -112,7 +113,13 @@ export class ChatStateService {
   }
 
   /** Helper to set message loading state for a conversation */
+  // private setMessageLoading(conversationId: number, isLoading: boolean) {
+  //   this.messagesLoading.update(t => t.set(conversationId, isLoading));
+  // }
+
   private setMessageLoading(conversationId: number, isLoading: boolean) {
-    this.messagesLoading.update(t => t.set(conversationId, isLoading));
+    const updatedMap = new Map(this.messagesLoading());
+    updatedMap.set(conversationId, isLoading);
+    this.messagesLoading.set(updatedMap);
   }
 }

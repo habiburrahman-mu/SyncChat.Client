@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { CreateConversationRequest } from '@features/chat/models';
+import { CreateConversationRequest, Message } from '@features/chat/models';
 import { ChatSidebarComponent } from "../chat-sidebar/chat-sidebar.component";
 import { ConversationService } from '@features/chat/services/conversation.service';
 import { AuthService } from '@core/services';
@@ -31,7 +31,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class ChatComponent {
   messageText = '';
-  messages: any;
 
   sendingMessage = signal(false);
 
@@ -40,10 +39,16 @@ export class ChatComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly chatStateService = inject(ChatStateService);
 
+  readonly currentUserId = this.authService.userId;
+
 
   readonly selectedConversation = this.chatStateService.selectedConversation;
 
-  readonly isConversationLoading =this.chatStateService.isConversationsLoading;
+  readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
+
+  readonly isSelectedConversationMessagesLoading = this.chatStateService.isSelectedConversationMessagesLoading;
+
+  readonly messages = computed(() => this.selectedConversation()?.messages);
 
   sendMessage() {
     if (!this.messageText.trim()) return;
@@ -54,7 +59,11 @@ export class ChatComponent {
       this.createConversation();
     }
 
-    this.messages.push({ text: this.messageText, fromMe: true });
+    if(conversation) {
+
+    }
+
+    // this.messages.push({ text: this.messageText, fromMe: true });
     this.messageText = '';
   }
 

@@ -7,7 +7,7 @@
   <!-- Chat Thread -->
   <main class="flex-1 flex flex-col relative">
 
-    @if(isConversationLoading()) {
+    @if(isConversationsLoading() || isSelectedConversationMessagesLoading()) {
 
     <div class="absolute inset-0 flex items-center justify-center">
       <mat-progress-spinner color="accent" mode="indeterminate" diameter="40">
@@ -26,13 +26,13 @@
     </div>
 
     <!-- Messages -->
-    <div class="flex-1 p-6 space-y-4 overflow-y-auto flex flex-col bg-gray-50">
-      <div *ngFor="let message of messages" [ngClass]="
-          message.fromMe
+    <div class="flex-1 p-6 space-y-4 overflow-y-auto flex flex-col justify-end bg-gray-50">
+      <div *ngFor="let message of messages() ?? []" [ngClass]="
+          message.senderId === currentUserId
             ? 'self-end bg-blue-600 text-white'
             : 'self-start bg-white text-gray-800 border'
         " class="max-w-xs p-3 rounded-xl text-sm shadow-sm">
-        {{ message.text }}
+        {{ message.content }}
       </div>
     </div>
 

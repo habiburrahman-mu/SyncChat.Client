@@ -3,5 +3,5 @@ export interface Message {
   uuid: string;
   conversationId: number;
   senderId: number;
-  content?: string;
+  content: string | null;
 }
