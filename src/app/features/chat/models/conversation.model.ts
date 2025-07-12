@@ -1,4 +1,5 @@
 import { ConversationType } from "@core/enums";
+import { Message } from ".";
 
 export interface Conversation {
   id: number;
@@ -7,4 +8,5 @@ export interface Conversation {
   conversationType: ConversationType;
   members: number[];
   otherUserId: number | null;
+  messages?: Message[] | undefined
 }

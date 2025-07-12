@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { Conversation, CreateConversationRequest, GetUserByUserNameResponse } from '@features/chat/models';
+import { CreateConversationRequest } from '@features/chat/models';
 import { ChatSidebarComponent } from "../chat-sidebar/chat-sidebar.component";
 import { ConversationService } from '@features/chat/services/conversation.service';
 import { AuthService } from '@core/services';
