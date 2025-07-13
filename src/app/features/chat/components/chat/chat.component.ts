@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { CreateConversationRequest, Message } from '@features/chat/models';
+import { CreateConversationRequest } from '@features/chat/models';
 import { ChatSidebarComponent } from "../chat-sidebar/chat-sidebar.component";
 import { ConversationService } from '@features/chat/services/conversation.service';
 import { AuthService } from '@core/services';
@@ -15,6 +15,7 @@ import { ChatStateService, MessageService } from '@features/chat/services';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ChatTimestampPipe } from '@shared/pipes';
 
 @Component({
   selector: 'chat-chat',
@@ -28,11 +29,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatProgressSpinnerModule,
     MatTooltipModule,
     ChatSidebarComponent,
+    ChatTimestampPipe
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatComponent {
+  messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messageContainer');
+
   messageText = '';
 
   sendingMessage = signal(false);
@@ -53,6 +58,23 @@ export class ChatComponent {
   readonly isSelectedConversationMessagesLoading = this.chatStateService.isSelectedConversationMessagesLoading;
 
   readonly messages = computed(() => this.selectedConversation()?.messages);
+
+  constructor() {
+    effect(() => {
+      const messageLoading = this.isSelectedConversationMessagesLoading();
+      if (!messageLoading) {
+        // delay to ensure DOM updated
+        setTimeout(() => this.scrollToBottom(), 3000);
+      }
+    });
+  }
+
+  private scrollToBottom(): void {
+    const messagesContainer = this.messagesContainer();
+    if (messagesContainer) {
+      messagesContainer.nativeElement.scrollTop = messagesContainer.nativeElement.scrollHeight;
+    }
+  }
 
   sendMessage() {
     if (!this.messageText.trim()) return;
@@ -82,6 +104,7 @@ export class ChatComponent {
                 content: response.content ?? null,
                 senderUserName: response.senderUserName,
                 senderName: response.senderName,
+                updatedAt: response.updatedAt
               });
             },
             error: (err: HttpErrorResponse) => {

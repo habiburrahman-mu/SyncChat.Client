@@ -32,6 +32,12 @@ body {
   @apply antialiased;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 // body {
 //   background: linear-gradient(135deg, #f5faff 0%, #eef7ff 100%);
 //   background-attachment: fixed;

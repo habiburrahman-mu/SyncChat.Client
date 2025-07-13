@@ -82,7 +82,8 @@ export class ChatStateService {
                 senderId: m.senderId,
                 content: m.content,
                 senderUserName: m.senderUserName,
-                senderName: m.senderName
+                senderName: m.senderName,
+                updatedAt: m.updatedAt
               };
 
               return message;

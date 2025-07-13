@@ -1,21 +1,17 @@
 <div class="flex h-screen bg-gray-50 text-gray-800 font-[Inter]">
   <!-- Sidebar -->
-  <aside class="w-72 border-r border-gray-200 bg-white">
-    <chat-chat-sidebar />
+  <aside class="w-72 border-gray-200 bg-white">
+    <chat-chat-sidebar></chat-chat-sidebar>
   </aside>
 
   <!-- Chat Thread -->
-  <main class="flex-1 flex flex-col relative">
+  <main class="flex-1 flex flex-col relative min-h-0">
 
-    @if(isConversationsLoading() || isSelectedConversationMessagesLoading()) {
-
-    <div class="absolute inset-0 flex items-center justify-center">
-      <mat-progress-spinner color="accent" mode="indeterminate" diameter="40">
-      </mat-progress-spinner>
+    @if (isConversationsLoading() || isSelectedConversationMessagesLoading()) {
+    <div class="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
+      <mat-progress-spinner color="accent" mode="indeterminate" diameter="40"></mat-progress-spinner>
     </div>
-
-    }
-    @else {
+    } @else {
 
     <!-- Chat Header -->
     <div class="flex items-center gap-3 px-6 py-4 bg-white">
@@ -25,33 +21,43 @@
       </div>
     </div>
 
-    <!-- Messages -->
-    <div class="flex-1 p-6 space-y-4 overflow-y-auto flex flex-col justify-end bg-gray-50">
-      <div *ngFor="let message of messages() ?? []" class="flex flex-col max-w-xs mb-2" [ngClass]="
-         message.senderId === currentUserId
-           ? 'self-end text-white'
-           : 'self-start text-gray-800'
-       ">
-
-        <!-- Sender username (with @) and matTooltip for full name -->
-        <span *ngIf="message.senderId !== currentUserId" class="text-xs font-medium mb-1"
-          [matTooltip]="message.senderName" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
+    <!-- Messages container -->
+    <div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-2 bg-gray-50 scroll-smooth" #messagesContainer>
+      @let currentMessages = messages() ?? [];
+      @for (message of currentMessages; track message.messageId) {
+      <div class="flex flex-col mb-2" [ngClass]="
+              message.senderId === currentUserId
+                ? 'self-end items-end text-white'
+                : 'self-start items-start text-gray-800'
+            ">
+        <!-- Username with tooltip -->
+        @if (message.senderId !== currentUserId) {
+        <span class="text-xs font-medium mb-1 opacity-80 tracking-wide" [matTooltip]="message.senderName"
+          [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
           &#64;{{ message.senderUserName }}
         </span>
+        }
 
         <!-- Message content -->
         <div [ngClass]="
-            message.senderId === currentUserId
-              ? 'bg-blue-600'
-              : 'bg-white border'
-          " class="p-3 rounded-xl text-sm shadow-sm">
+                message.senderId === currentUserId
+                  ? 'bg-blue-600'
+                  : 'bg-white border'
+              " class="max-w-[75%] p-3 rounded-2xl text-sm shadow-md leading-snug transition hover:shadow-lg break-words">
           {{ message.content }}
         </div>
 
+        <!-- Timestamp -->
+        <span class="text-[10px] mt-1 opacity-60 select-none" [ngClass]="
+                message.senderId === currentUserId
+                  ? 'text-gray-400'
+                  : 'text-gray-500'
+              ">
+          {{ message.updatedAt | chatTimestamp }}
+        </span>
       </div>
+      }
     </div>
-
-
 
     <!-- Message Input -->
     <div class="px-6 py-4 bg-white flex items-center gap-3">
@@ -62,10 +68,6 @@
         Send
       </button>
     </div>
-
     }
   </main>
-
-
-
 </div>

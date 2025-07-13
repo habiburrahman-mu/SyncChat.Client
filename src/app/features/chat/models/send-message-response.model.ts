@@ -11,4 +11,5 @@ export interface SendMessageResponse {
   replyTo?: number | null;
   senderUserName: string;
   senderName: string;
+  updatedAt: string;
 }

@@ -6,4 +6,5 @@ export interface Message {
   content: string | null;
   senderUserName: string;
   senderName: string;
+  updatedAt: string;
 }
