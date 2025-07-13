@@ -7,3 +7,5 @@ export * from './get-conversations-response';
 export * from './get-message-response.model';
 export * from './message-dto.model';
 export * from './message.model';
+export * from './send-message-request.model';
+export * from './send-message-response.model';

@@ -16,5 +16,6 @@ export const API_ROUTES = {
   },
   Message: {
     GetList: `${BASE_URL}/message/getList` as const,
+    Send: `${BASE_URL}/message/send` as const,
   }
 };
