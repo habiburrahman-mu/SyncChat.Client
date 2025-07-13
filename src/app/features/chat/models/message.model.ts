@@ -4,4 +4,6 @@ export interface Message {
   conversationId: number;
   senderId: number;
   content: string | null;
+  senderUserName: string;
+  senderName: string;
 }

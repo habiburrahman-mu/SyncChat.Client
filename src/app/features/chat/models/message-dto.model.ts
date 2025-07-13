@@ -14,4 +14,6 @@ export interface MessageDTO {
   replyTo: number | null;
   isEdited: boolean;
   editedAt: string | null;
+  senderUserName: string;
+  senderName: string;
 }

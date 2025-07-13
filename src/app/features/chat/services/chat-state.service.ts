@@ -80,7 +80,9 @@ export class ChatStateService {
                 uuid: m.uuid,
                 conversationId: m.conversationId,
                 senderId: m.senderId,
-                content: m.content
+                content: m.content,
+                senderUserName: m.senderUserName,
+                senderName: m.senderName
               };
 
               return message;
@@ -112,10 +114,36 @@ export class ChatStateService {
     this.conversations.update(conversations => conversations.filter(x => x.id !== 0));
   }
 
-  /** Helper to set message loading state for a conversation */
-  // private setMessageLoading(conversationId: number, isLoading: boolean) {
-  //   this.messagesLoading.update(t => t.set(conversationId, isLoading));
-  // }
+  addMessageToSelectedConversation(message: Message) {
+    const selectedConversationId = this.selectedConversationId();
+
+    if (selectedConversationId && selectedConversationId > 0) {
+      this.addMessage(selectedConversationId, message);
+    }
+  }
+
+  addMessage(conversationId: number, message: Message) {
+    this.conversations.update(conversations => {
+
+      const conversation = conversations.find(x => x.id === conversationId);
+
+      if (conversation && conversation.messages) {
+        conversation.messages.push(message);
+      }
+
+      // conversations.map(c =>
+      //   c.id === conversationId
+      //     ? {
+      //         ...c,
+      //         messages: [...(c.messages ?? []), message],
+      //         lastMessage: message.text
+      //       }
+      //     : c
+      // )
+
+      return conversations;
+    });
+  }
 
   private setMessageLoading(conversationId: number, isLoading: boolean) {
     const updatedMap = new Map(this.messagesLoading());

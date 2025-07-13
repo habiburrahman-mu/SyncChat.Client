@@ -27,14 +27,31 @@
 
     <!-- Messages -->
     <div class="flex-1 p-6 space-y-4 overflow-y-auto flex flex-col justify-end bg-gray-50">
-      <div *ngFor="let message of messages() ?? []" [ngClass]="
-          message.senderId === currentUserId
-            ? 'self-end bg-blue-600 text-white'
-            : 'self-start bg-white text-gray-800 border'
-        " class="max-w-xs p-3 rounded-xl text-sm shadow-sm">
-        {{ message.content }}
+      <div *ngFor="let message of messages() ?? []" class="flex flex-col max-w-xs mb-2" [ngClass]="
+         message.senderId === currentUserId
+           ? 'self-end text-white'
+           : 'self-start text-gray-800'
+       ">
+
+        <!-- Sender username (with @) and matTooltip for full name -->
+        <span *ngIf="message.senderId !== currentUserId" class="text-xs font-medium mb-1"
+          [matTooltip]="message.senderName" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
+          &#64;{{ message.senderUserName }}
+        </span>
+
+        <!-- Message content -->
+        <div [ngClass]="
+            message.senderId === currentUserId
+              ? 'bg-blue-600'
+              : 'bg-white border'
+          " class="p-3 rounded-xl text-sm shadow-sm">
+          {{ message.content }}
+        </div>
+
       </div>
     </div>
+
+
 
     <!-- Message Input -->
     <div class="px-6 py-4 bg-white flex items-center gap-3">

@@ -9,10 +9,12 @@ import { CreateConversationRequest, Message } from '@features/chat/models';
 import { ChatSidebarComponent } from "../chat-sidebar/chat-sidebar.component";
 import { ConversationService } from '@features/chat/services/conversation.service';
 import { AuthService } from '@core/services';
-import { ConversationType } from '@core/enums';
+import { ConversationType, MessageType } from '@core/enums';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ChatStateService } from '@features/chat/services';
+import { ChatStateService, MessageService } from '@features/chat/services';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'chat-chat',
@@ -24,6 +26,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     ChatSidebarComponent,
   ],
   templateUrl: './chat.component.html',
@@ -35,6 +38,7 @@ export class ChatComponent {
   sendingMessage = signal(false);
 
   private readonly conversationService = inject(ConversationService);
+  private readonly messageService = inject(MessageService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly chatStateService = inject(ChatStateService);
@@ -55,12 +59,36 @@ export class ChatComponent {
 
     const conversation = this.selectedConversation();
 
-    if (conversation && conversation.id === 0) {
-      this.createConversation();
-    }
+    if (conversation) {
+      if (conversation.id === 0) {
+        this.createConversation();
+      } else {
+        this.messageService.sendMessage({
+          conversationId: conversation.id,
+          senderId: this.currentUserId!,
+          type: MessageType.Text,
+          content: this.messageText,
+          metaData: undefined,
+          replyTo: undefined,
+        })
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: response => {
+              this.chatStateService.addMessageToSelectedConversation({
+                messageId: response.messageId,
+                uuid: response.uuid,
+                conversationId: response.conversationId,
+                senderId: response.senderId,
+                content: response.content ?? null,
+                senderUserName: response.senderUserName,
+                senderName: response.senderName,
+              });
+            },
+            error: (err: HttpErrorResponse) => {
 
-    if(conversation) {
-
+            }
+          });
+      }
     }
 
     // this.messages.push({ text: this.messageText, fromMe: true });

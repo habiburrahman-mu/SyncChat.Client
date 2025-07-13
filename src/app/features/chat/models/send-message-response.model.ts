@@ -9,4 +9,6 @@ export interface SendMessageResponse {
   content?: string;
   metaData?: string;
   replyTo?: number | null;
+  senderUserName: string;
+  senderName: string;
 }
