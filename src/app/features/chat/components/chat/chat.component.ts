@@ -36,7 +36,7 @@ import { ChatTimestampPipe } from '@shared/pipes';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatComponent {
-  messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messageContainer');
+  messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
 
   messageText = '';
 
@@ -62,19 +62,38 @@ export class ChatComponent {
   constructor() {
     effect(() => {
       const messageLoading = this.isSelectedConversationMessagesLoading();
-      if (!messageLoading) {
+      const selectedConversation = this.selectedConversation();
+
+      if (!messageLoading || selectedConversation) {
         // delay to ensure DOM updated
-        setTimeout(() => this.scrollToBottom(), 3000);
+        setTimeout(() => this.scrollToBottom(false), 0);
       }
     });
   }
 
-  private scrollToBottom(): void {
+  // private scrollToBottom(): void {
+  //   const messagesContainer = this.messagesContainer();
+  //   if (messagesContainer) {
+  //     messagesContainer.nativeElement.scrollTop = messagesContainer.nativeElement.scrollHeight;
+  //   }
+  // }
+
+  private scrollToBottom(smooth: boolean = false): void {
     const messagesContainer = this.messagesContainer();
     if (messagesContainer) {
-      messagesContainer.nativeElement.scrollTop = messagesContainer.nativeElement.scrollHeight;
+      const container = messagesContainer.nativeElement;
+
+      if (smooth) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth'
+        });
+      } else {
+        container.scrollTop = container.scrollHeight;
+      }
     }
   }
+
 
   sendMessage() {
     if (!this.messageText.trim()) return;
