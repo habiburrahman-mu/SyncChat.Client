@@ -31,6 +31,10 @@ export class AuthService {
     return false;
   }
 
+  getAccessToken() {
+    return this.hasValidToken() ? this._getTokenString() : null;
+  }
+
   setAuthState(isAuthenticated: boolean): void {
     this.isAuthenticatedSubject.next(isAuthenticated);
     this.updateUserId();
@@ -52,7 +56,7 @@ export class AuthService {
 
   private _getDecodedToken(): DecodedToken | null {
     try {
-      const token = this._localStorageService.getItem<string>(LocalStorageKey.Token);
+      const token = this._getTokenString();
 
       if (!token) return null;
 
@@ -62,6 +66,10 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  private _getTokenString() {
+    return this._localStorageService.getItem<string>(LocalStorageKey.Token);
   }
 
   private getUserId() {

@@ -1,6 +1,6 @@
 import { environment } from "@environments/environment";
 
-const BASE_URL = environment.apiBaseUrl;
+export const BASE_URL = environment.apiBaseUrl;
 
 export const API_ROUTES = {
   Auth: {
