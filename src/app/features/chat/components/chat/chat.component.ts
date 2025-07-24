@@ -33,7 +33,7 @@ import { ChatTimestampPipe } from '@shared/pipes';
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatComponent {
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
