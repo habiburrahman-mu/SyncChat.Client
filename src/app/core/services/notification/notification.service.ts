@@ -5,6 +5,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr'
 import { ChatNotificationType } from '@core/enums';
 import { BASE_URL } from '@core/constants';
 import { AuthService } from '../auth/auth.service';
+import { environment } from "@environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class NotificationService {
   readonly isConnected = computed(() => this._isConnected());
   readonly joinedGroups = computed(() => this._joinedGroups());
 
-  private readonly signalRHubURL = `${BASE_URL}/hub/chat` as const;
+  private readonly signalRHubURL = environment.notificationHubUrl;
 
   connect(): Observable<void> {
     if (this._isConnected()) return of(void 0);

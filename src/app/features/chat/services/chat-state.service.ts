@@ -2,6 +2,7 @@ import { computed, DestroyRef, Injectable, signal } from '@angular/core';
 import { ConversationService, MessageService } from '.';
 import { Conversation, Message } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NotificationService } from '@core/services';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,8 @@ export class ChatStateService {
   constructor(
     private readonly conversationService: ConversationService,
     private readonly destroyRef: DestroyRef,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private notificationService: NotificationService,
   ) { }
 
   loadConversations() {
@@ -59,6 +61,8 @@ export class ChatStateService {
 
     // Set selected conversation
     this.selectedConversationId.set(conversationId);
+
+    this._listenNotification(conversationId);
 
     if (conversation.messages) return; // already loaded
 
@@ -95,6 +99,11 @@ export class ChatStateService {
       },
       complete: () => this.setMessageLoading(conversationId, false)
     });
+  }
+
+  private _listenNotification(conversationId: number) {
+    // TODO
+    this.notificationService.joinGroup(conversationId.toString()).subscribe();
   }
 
   private selectFirstConversation() {
