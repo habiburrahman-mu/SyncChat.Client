@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ChatNotification } from '@core/models';
 import { catchError, filter, from, Observable, of, Subject, switchMap, throwError } from 'rxjs';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr'
+import { HubConnection, HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr'
 import { ChatNotificationType } from '@core/enums';
 import { BASE_URL } from '@core/constants';
 import { AuthService } from '../auth/auth.service';
@@ -30,7 +30,8 @@ export class NotificationService {
 
     this.connection = new HubConnectionBuilder()
       .withUrl(this.signalRHubURL, {
-        accessTokenFactory: () => this._getAccessToken()
+        accessTokenFactory: () => this._getAccessToken(),
+        transport: HttpTransportType.WebSockets
       })
       .withAutomaticReconnect()
       .build();
