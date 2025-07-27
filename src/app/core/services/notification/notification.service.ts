@@ -57,10 +57,10 @@ export class NotificationService {
     );
   }
 
-  listen<T = any>(eventType: string) {
+  listen<T>(eventType: string) {
     return this.event$.asObservable().pipe(
       filter(e => e.type === eventType)
-    );
+    ) as Subject<ChatNotification<T>>;
   }
 
   joinGroup(groupName: string) {

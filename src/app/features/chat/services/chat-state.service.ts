@@ -1,8 +1,10 @@
 import { computed, DestroyRef, Injectable, signal } from '@angular/core';
 import { ConversationService, MessageService } from '.';
-import { Conversation, Message } from '../models';
+import { Conversation, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@core/services';
+import { ChatNotificationType } from '@core/enums';
+import { MessageMapper } from '../utils';
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +61,8 @@ export class ChatStateService {
     const conversation = this.conversations().find(c => c.id === conversationId);
     if (!conversation) return;
 
+    this._leftConversationNotificationSubscription();
+
     // Set selected conversation
     this.selectedConversationId.set(conversationId);
 
@@ -78,20 +82,7 @@ export class ChatStateService {
           const conversation = conversations.find(x => x.id === conversationId);
 
           if (conversation) {
-            conversation.messages = messages.map(m => {
-              const message: Message = {
-                messageId: m.messageId,
-                uuid: m.uuid,
-                conversationId: m.conversationId,
-                senderId: m.senderId,
-                content: m.content,
-                senderUserName: m.senderUserName,
-                senderName: m.senderName,
-                updatedAt: m.updatedAt
-              };
-
-              return message;
-            });
+            conversation.messages = messages.map(MessageMapper.fromDTO);
           }
 
           return conversations;
@@ -103,7 +94,25 @@ export class ChatStateService {
 
   private _listenNotification(conversationId: number) {
     // TODO
-    this.notificationService.joinGroup(conversationId.toString()).subscribe();
+    this.notificationService.joinGroup(conversationId.toString())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+
+    this.notificationService.listen<MessageDTO>(ChatNotificationType.MessageReceived)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (chatNotification) => {
+          this.addMessage(conversationId, MessageMapper.fromDTO(chatNotification.data));
+        }
+      });
+
+  }
+
+  private _leftConversationNotificationSubscription() {
+    const selectedConversationId = this.selectedConversationId();
+    if (selectedConversationId && selectedConversationId > 0) {
+      this.notificationService.leaveGroup(selectedConversationId.toString());
+    }
   }
 
   private selectFirstConversation() {
