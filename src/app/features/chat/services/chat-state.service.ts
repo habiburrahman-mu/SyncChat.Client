@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@core/services';
 import { ChatNotificationType } from '@core/enums';
 import { MessageMapper } from '../utils';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,8 @@ export class ChatStateService {
   // per-conversation message loading state (Map of conversationId → boolean)
   private messagesLoading = signal<Map<number, boolean>>(new Map());
 
+  private newMessageSubject = new Subject<void>();
+
   readonly conversationList = computed(() => this.conversations());
   readonly isConversationsLoading = computed(() => this.conversationsLoading());
   readonly selectedConversation = computed(() =>
@@ -27,6 +30,8 @@ export class ChatStateService {
     const conversationId = this.selectedConversationId();
     return conversationId ? this.messagesLoading().get(conversationId) ?? false : false;
   });
+
+  newMessage$ = this.newMessageSubject.asObservable();
 
   constructor(
     private readonly conversationService: ConversationService,
@@ -150,18 +155,10 @@ export class ChatStateService {
         conversation.messages.push(message);
       }
 
-      // conversations.map(c =>
-      //   c.id === conversationId
-      //     ? {
-      //         ...c,
-      //         messages: [...(c.messages ?? []), message],
-      //         lastMessage: message.text
-      //       }
-      //     : c
-      // )
-
       return conversations;
     });
+
+    this.newMessageSubject.next();
   }
 
   private setMessageLoading(conversationId: number, isLoading: boolean) {
