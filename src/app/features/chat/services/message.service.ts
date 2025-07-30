@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GetMessagesResponse, SendMessageRequest, SendMessageResponse } from '../models';
 import { API_ROUTES } from '@core/constants';
@@ -13,9 +13,16 @@ export class MessageService {
     private readonly http: HttpClient
   ) { }
 
-  getMessages = (conversationId: number) => {
+  getMessages = (conversationId: number, lastMessageId?: number, pageSize: number = 20) => {
     const url = API_ROUTES.Message.GetList + '/' + conversationId;
-    return this.http.get<GetMessagesResponse>(url);
+
+    let params = new HttpParams().set('pageSize', pageSize);
+
+    if (lastMessageId) {
+      params = params.set('lastMessageId', lastMessageId);
+    }
+
+    return this.http.get<GetMessagesResponse>(url, {params: params});
   }
 
   sendMessage = (request: SendMessageRequest): Observable<SendMessageResponse> => {

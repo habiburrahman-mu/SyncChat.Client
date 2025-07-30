@@ -5,7 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@core/services';
 import { ChatNotificationType } from '@core/enums';
 import { MessageMapper } from '../utils';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +33,10 @@ export class ChatStateService {
 
   newMessage$ = this.newMessageSubject.asObservable();
 
+  private conversationChangeSubject = new Subject<void>();
+
+  private readonly _pageSize = 20 as const;
+
   constructor(
     private readonly conversationService: ConversationService,
     private readonly destroyRef: DestroyRef,
@@ -53,7 +57,9 @@ export class ChatStateService {
             conversationType: c.type,
             otherUserId: c.otherUserId,
             members: [], // TODO
-            messages: undefined,
+            messages: signal(undefined),
+            hasMoreMessages: true,
+            olderMessageLoading: signal(false)
           } as Conversation));
           this.conversations.set(conversations);
           this.selectFirstConversation();
@@ -68,43 +74,82 @@ export class ChatStateService {
 
     this._leftConversationNotificationSubscription();
 
+    this.conversationChangeSubject = new Subject<void>();
+
     // Set selected conversation
     this.selectedConversationId.set(conversationId);
 
     this._listenNotification(conversationId);
 
-    if (conversation.messages) return; // already loaded
+    if (conversation.messages()) return; // already loaded
 
     // Mark messages loading
     this.setMessageLoading(conversationId, true);
 
     // Fetch messages
-    this.messageService.getMessages(conversationId).subscribe({
-      next: (response) => {
-        const messages = response.messages;
+    this.messageService.getMessages(conversationId, undefined, this._pageSize)
+      .pipe(takeUntil(this.conversationChangeSubject))
+      .subscribe({
+        next: (response) => {
+          const messages = response.messages;
 
-        this.conversations.update(conversations => {
-          const conversation = conversations.find(x => x.id === conversationId);
+          this.conversations.update(conversations => {
+            const conversation = conversations.find(x => x.id === conversationId);
 
-          if (conversation) {
-            conversation.messages = messages.map(MessageMapper.fromDTO);
-          }
+            if (conversation) {
+              conversation.messages.set(messages.map(MessageMapper.fromDTO));
+              conversation.hasMoreMessages = messages.length === this._pageSize;
+            }
 
-          return conversations;
-        });
-      },
-      complete: () => this.setMessageLoading(conversationId, false)
-    });
+            return conversations;
+          });
+        },
+        complete: () => this.setMessageLoading(conversationId, false)
+      });
+  }
+
+  loadOlderMessages(conversationId: number) {
+    const conversation = this.conversations().find(c => c.id === conversationId);
+
+    if (!conversation || !conversation.hasMoreMessages || conversation.olderMessageLoading()) return;
+
+    conversation.olderMessageLoading.set(true);
+
+    const oldestMessageId = conversation.messages()?.[0]?.messageId;
+
+
+    this.messageService.getMessages(conversationId, oldestMessageId)
+      .pipe(takeUntil(this.conversationChangeSubject))
+      .subscribe({
+        next: (response) => {
+          const olderMessages = response.messages.map(MessageMapper.fromDTO);
+
+          this.conversations.update(conversations => {
+            const conversation = conversations.find(x => x.id === conversationId);
+
+            if (conversation) {
+              conversation.messages.set([...olderMessages, ...(conversation.messages() ?? [])]);
+              conversation.hasMoreMessages = olderMessages.length === 20;
+            }
+
+            return conversations;
+          });
+        },
+        complete: () => {
+          const conversation = this.conversations().find(c => c.id === conversationId);
+          if (conversation) conversation.olderMessageLoading.set(false);
+        }
+      });
   }
 
   private _listenNotification(conversationId: number) {
     // TODO
     this.notificationService.joinGroup(conversationId.toString())
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.conversationChangeSubject))
       .subscribe();
 
     this.notificationService.listen<MessageDTO>(ChatNotificationType.MessageReceived)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.conversationChangeSubject))
       .subscribe({
         next: (chatNotification) => {
           this.addMessage(conversationId, MessageMapper.fromDTO(chatNotification.data));
@@ -118,6 +163,9 @@ export class ChatStateService {
     if (selectedConversationId && selectedConversationId > 0) {
       this.notificationService.leaveGroup(selectedConversationId.toString());
     }
+
+    this.conversationChangeSubject.next();
+    this.conversationChangeSubject.complete();
   }
 
   private selectFirstConversation() {
@@ -151,8 +199,14 @@ export class ChatStateService {
 
       const conversation = conversations.find(x => x.id === conversationId);
 
-      if (conversation && conversation.messages) {
-        conversation.messages.push(message);
+      if (conversation && conversation.messages()) {
+
+        conversation.messages.update(messages => {
+          messages!.push(message);
+          return messages;
+        });
+
+        conversation.lastMessage = message.content;
       }
 
       return conversations;

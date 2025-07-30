@@ -57,7 +57,9 @@ export class ChatComponent implements OnInit {
 
   readonly isSelectedConversationMessagesLoading = this.chatStateService.isSelectedConversationMessagesLoading;
 
-  readonly messages = computed(() => this.selectedConversation()?.messages);
+  readonly messages = computed(() => this.selectedConversation()?.messages());
+
+  private scrollPositionBeforeLoadingPreviousMessages = 0;
 
   constructor() {
     effect(() => {
@@ -69,6 +71,14 @@ export class ChatComponent implements OnInit {
         setTimeout(() => this.scrollToBottom(false), 0);
       }
     });
+
+    effect(() => {
+      const olderMessageLoading = this.selectedConversation()!.olderMessageLoading();
+
+      if (!olderMessageLoading) {
+        this.restoreScrollAfterPrepend();
+      }
+    })
   }
 
   ngOnInit(): void {
@@ -91,6 +101,25 @@ export class ChatComponent implements OnInit {
   //     messagesContainer.nativeElement.scrollTop = messagesContainer.nativeElement.scrollHeight;
   //   }
   // }
+
+  onScrollMessage() {
+    const container = this.messagesContainer()?.nativeElement;
+    if (container && container.scrollTop < 200) {
+      this.scrollPositionBeforeLoadingPreviousMessages = container.scrollHeight;
+      this.chatStateService.loadOlderMessages(this.selectedConversation()!.id);
+    }
+  }
+
+  private restoreScrollAfterPrepend() {
+    setTimeout(() => {
+      const container = this.messagesContainer()?.nativeElement;
+
+      if (container) {
+        const scrollDiff = container.scrollHeight - this.scrollPositionBeforeLoadingPreviousMessages;
+        container.scrollTop = scrollDiff;
+      }
+    });
+  }
 
   private scrollToBottom(smooth: boolean = false): void {
     const messagesContainer = this.messagesContainer();

@@ -1,5 +1,6 @@
 import { ConversationType } from "@core/enums";
 import { Message } from ".";
+import { Signal, WritableSignal } from "@angular/core";
 
 export interface Conversation {
   id: number;
@@ -8,5 +9,7 @@ export interface Conversation {
   conversationType: ConversationType;
   members: number[];
   otherUserId: number | null;
-  messages?: Message[] | undefined
+  messages: WritableSignal<Message[] | undefined>;
+  hasMoreMessages: boolean;
+  olderMessageLoading: WritableSignal<boolean>
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit, output } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, output, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -60,7 +60,10 @@ export class ChatSidebarComponent implements OnInit {
             members: newConversation.selectedUsers.map(x => x.userID),
             name: newConversation.conversationName,
             conversationType: newConversation.conversationType,
-            otherUserId: isDirect ? newConversation.selectedUsers[0].userID : null
+            otherUserId: isDirect ? newConversation.selectedUsers[0].userID : null,
+            hasMoreMessages: false,
+            olderMessageLoading: signal(false),
+            messages: signal(undefined)
           };
 
           const conversationList = this.conversationList();
@@ -68,7 +71,7 @@ export class ChatSidebarComponent implements OnInit {
           if (newConversation.conversationType === ConversationType.Direct) {
             const otherUserId = newConversation.selectedUsers.find(x => x.userID !== this.authService.userId!)!.userID;
             const conversationExist = conversationList.find(x => x.otherUserId === otherUserId);
-            if(conversationExist) {
+            if (conversationExist) {
               this.selectChat(conversationExist);
               return;
             }
