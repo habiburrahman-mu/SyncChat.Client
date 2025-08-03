@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ChatNotification } from '@core/models';
-import { catchError, filter, from, Observable, of, Subject, switchMap, throwError } from 'rxjs';
+import { catchError, filter, from, Observable, of, shareReplay, Subject, switchMap, throwError } from 'rxjs';
 import { HubConnection, HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr'
 import { ChatNotificationType } from '@core/enums';
 import { BASE_URL } from '@core/constants';
@@ -16,6 +16,7 @@ export class NotificationService {
 
   private connection!: HubConnection;
   private _isConnected = signal(false);
+  private _connect$?: Observable<void>;
   private _joinedGroups = signal<Set<string>>(new Set());
 
   private event$ = new Subject<ChatNotification<any>>();
@@ -26,8 +27,13 @@ export class NotificationService {
   private readonly signalRHubURL = environment.notificationHubUrl;
 
   connect(): Observable<void> {
+    // Already connected
     if (this._isConnected()) return of(void 0);
 
+    // Connection is in progress
+    if (this._connect$) return this._connect$;
+
+    // Build connection
     this.connection = new HubConnectionBuilder()
       .withUrl(this.signalRHubURL, {
         accessTokenFactory: () => this._getAccessToken(),
@@ -38,23 +44,35 @@ export class NotificationService {
 
     this._registerHandlers();
 
-    this.connection.onclose(() => this._isConnected.set(false));
+    this.connection.onclose(() => {
+      this._isConnected.set(false);
+      this._connect$ = undefined; // reset so connect can be retried
+    });
+
     this.connection.onreconnected(() => {
       this._isConnected.set(true);
       this._rejoinAllGroups();
     });
 
-    return from(this.connection.start()).pipe(
+    this._connect$ = from(this.connection.start()).pipe(
       switchMap(() => {
         this._isConnected.set(true);
         return of(void 0);
       }),
       catchError(err => {
         this._isConnected.set(false);
+        this._connect$ = undefined; // reset so retry works
         console.error('SignalR connection failed:', err);
         return throwError(() => err);
-      })
+      }),
+
+      // Share the same observable for all concurrent calls
+      // and complete it only once
+      // Ensures no double connections
+      // Automatically cached until disconnect
+      shareReplay(1)
     );
+    return this._connect$;
   }
 
   listen<T>(eventType: string) {

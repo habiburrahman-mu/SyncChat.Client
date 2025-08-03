@@ -34,6 +34,7 @@ export class ChatStateService {
   newMessage$ = this.newMessageSubject.asObservable();
 
   private conversationChangeSubject = new Subject<void>();
+  private destroySubscriptionSubject = new Subject<void>();
 
   private readonly _pageSize = 20 as const;
 
@@ -43,6 +44,20 @@ export class ChatStateService {
     private messageService: MessageService,
     private notificationService: NotificationService,
   ) { }
+
+  onInitialize() {
+    this.notificationService.connect()
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe();
+
+    this.notificationService.listen<number>(ChatNotificationType.HasNewMessage)
+      .subscribe({
+        next: (notification) => {
+          // this.addMessage(conversationId, MessageMapper.fromDTO(chatNotification.data));
+          console.log("HasNewMessage", notification.data);
+        }
+      });
+  }
 
   loadConversations() {
     this.conversationsLoading.set(true);
@@ -219,5 +234,12 @@ export class ChatStateService {
     const updatedMap = new Map(this.messagesLoading());
     updatedMap.set(conversationId, isLoading);
     this.messagesLoading.set(updatedMap);
+  }
+
+  onDestroy() {
+    this.destroySubscriptionSubject.next();
+    this.destroySubscriptionSubject.complete();
+
+    this.notificationService.disconnect();
   }
 }

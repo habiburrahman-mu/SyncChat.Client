@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,7 +35,7 @@ import { ChatTimestampPipe } from '@shared/pipes';
   styleUrl: './chat.component.scss',
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
 
   messageText = '';
@@ -82,6 +82,8 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.chatStateService.onInitialize();
+
     this.chatStateService.newMessage$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(_ => this.onNewMessage());
@@ -203,5 +205,9 @@ export class ChatComponent implements OnInit {
           this.sendingMessage.set(true);
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.chatStateService.onDestroy();
   }
 }
