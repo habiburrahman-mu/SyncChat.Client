@@ -5,7 +5,7 @@
   </div>
 
   <!-- Search & New Chat Button -->
-  <div class="px-5 py-4 space-y-3 flex felx-row items-center gap-2">
+  <div class="px-5 py-4 space-y-3 flex flex-row items-center gap-2">
     <mat-form-field appearance="outline" class="w-full h-10">
       <input matInput placeholder="Search chats" />
     </mat-form-field>
@@ -15,18 +15,17 @@
     </button>
   </div>
 
+  <!-- Chat List -->
   <div class="flex-1 overflow-y-auto px-4 py-3 relative">
     @if(isConversationsLoading()) {
     <div class="absolute inset-0 flex items-center justify-center">
-      <mat-progress-spinner color="accent" mode="indeterminate" diameter="40">
-      </mat-progress-spinner>
+      <mat-progress-spinner color="accent" mode="indeterminate" diameter="40"></mat-progress-spinner>
     </div>
-    }
-    @else {
-    <!-- Chat List -->
-    <div *ngFor="let chat of conversationList()" (click)="selectChat(chat)" class="flex items-center gap-4 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition
-           border border-transparent hover:border-gray-200 h-18 mb-2"
+    } @else {
+    <div *ngFor="let chat of conversationList()" (click)="selectChat(chat)" class="flex items-center gap-4 p-3 rounded-lg cursor-pointer
+                  border border-transparent hover:bg-gray-100 hover:border-gray-200 transition h-18 mb-2 relative"
       [class.bg-gray-100]="selectedConversation()?.id === chat.id">
+
       <!-- Avatar -->
       <mat-icon class="text-gray-500 text-xl flex-shrink-0">account_circle</mat-icon>
 
@@ -35,13 +34,18 @@
         <div class="text-base font-semibold text-gray-900 truncate max-w-xs">
           {{ chat.name }}
         </div>
-        <div class="text-sm text-gray-600 truncate max-w-xs">
+
+        <div class="text-sm text-gray-600 truncate max-w-xs flex items-center gap-1"
+          [ngClass]="chat.hasUnreadMessages ? 'text-blue-600 font-bold' : 'text-gray-500'">
           {{ chat.lastMessage }}
         </div>
       </div>
+
+      <span *ngIf="chat.hasUnreadMessages"
+        class="absolute top-3 right-3 w-2 h-2 rounded-full bg-blue-500"></span>
+
     </div>
     }
-
   </div>
 
   <!-- Logout -->

@@ -11,5 +11,6 @@ export interface Conversation {
   otherUserId: number | null;
   messages: WritableSignal<Message[] | undefined>;
   hasMoreMessages: boolean;
-  olderMessageLoading: WritableSignal<boolean>
+  olderMessageLoading: WritableSignal<boolean>;
+  hasUnreadMessages?: boolean;
 }

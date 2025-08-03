@@ -53,8 +53,32 @@ export class ChatStateService {
     this.notificationService.listen<number>(ChatNotificationType.HasNewMessage)
       .subscribe({
         next: (notification) => {
+          const conversationId = notification.data;
           // this.addMessage(conversationId, MessageMapper.fromDTO(chatNotification.data));
-          console.log("HasNewMessage", notification.data);
+          console.log("HasNewMessage", conversationId);
+
+          this.refreshLastMessage(conversationId);
+        }
+      });
+  }
+
+  private refreshLastMessage(conversationId: number) {
+    this.conversationService.getLastMessage(conversationId)
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe({
+        next: (lastMessage) => {
+          this.conversations.update(conversations => {
+            const conversation = conversations.find(c => c.id === conversationId);
+            if (conversation) {
+              conversation.lastMessage = lastMessage;
+              conversation.hasUnreadMessages = true;
+              conversation.messages.update(messages => {
+                messages = undefined; // Reset messages to trigger reloading
+                return messages;
+              });
+            }
+            return conversations;
+          });
         }
       });
   }
@@ -114,6 +138,7 @@ export class ChatStateService {
             if (conversation) {
               conversation.messages.set(messages.map(MessageMapper.fromDTO));
               conversation.hasMoreMessages = messages.length === this._pageSize;
+              conversation.hasUnreadMessages = false;
             }
 
             return conversations;

@@ -21,4 +21,9 @@ export class ConversationService {
     const url = API_ROUTES.Conversation.GetList;
     return this.http.get<GetConversationsResponse>(url);
   }
+
+  getLastMessage = (conversationId: number) => {
+    const url = `${API_ROUTES.Conversation.GetLastMessage}/${conversationId}`;
+    return this.http.get<string>(url);
+  }
 }
