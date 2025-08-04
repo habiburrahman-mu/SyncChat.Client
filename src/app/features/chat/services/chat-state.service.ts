@@ -56,10 +56,10 @@ export class ChatStateService {
       .subscribe({
         next: (notification) => {
           const conversationId = notification.data;
-          // this.addMessage(conversationId, MessageMapper.fromDTO(chatNotification.data));
-          console.log("HasNewMessage", conversationId);
 
-          this.refreshLastMessage(conversationId);
+          if (conversationId !== this.selectedConversationId()) {
+            this.refreshLastMessage(conversationId);
+          }
         }
       });
 
