@@ -221,6 +221,7 @@ export class ChatStateService {
       .subscribe({
         next: (chatNotification) => {
           this.addMessage(conversationId, MessageMapper.fromDTO(chatNotification.data));
+          this.sortConversationSubject.next(conversationId);
         }
       });
 
@@ -259,6 +260,7 @@ export class ChatStateService {
 
     if (selectedConversationId && selectedConversationId > 0) {
       this.addMessage(selectedConversationId, message);
+      this.sortConversationSubject.next(selectedConversationId);
     }
   }
 
