@@ -5,7 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@core/services';
 import { ChatNotificationType } from '@core/enums';
 import { MessageMapper } from '../utils';
-import { Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +32,8 @@ export class ChatStateService {
   });
 
   newMessage$ = this.newMessageSubject.asObservable();
+
+  readonly sortConversationSubject = new BehaviorSubject<number | null>(null);
 
   private conversationChangeSubject = new Subject<void>();
   private destroySubscriptionSubject = new Subject<void>();
@@ -60,7 +62,31 @@ export class ChatStateService {
           this.refreshLastMessage(conversationId);
         }
       });
+
+    this.sortConversationSubject.asObservable()
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe({
+        next: (conversationId) => {
+          if (conversationId !== null) {
+            this.sortConversations(conversationId);
+          }
+        }
+      });
   }
+
+  private sortConversations(conversationId: number): void {
+    this.conversations.update(conversations => {
+      const index = conversations.findIndex(c => c.id === conversationId);
+      if (index <= 0) return conversations; // Already at top or not found
+
+      const [target] = conversations.splice(index, 1); // Remove from current position
+      conversations.unshift(target); // Insert at the front
+
+      return conversations;
+    });
+  }
+
+
 
   private refreshLastMessage(conversationId: number) {
     this.conversationService.getLastMessage(conversationId)
@@ -79,6 +105,8 @@ export class ChatStateService {
             }
             return conversations;
           });
+
+          this.sortConversationSubject.next(conversationId);
         }
       });
   }
