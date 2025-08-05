@@ -148,7 +148,7 @@ export class ChatStateService {
 
     this._listenNotification(conversationId);
 
-    if (conversation.messages()) return; // already loaded
+    if (conversation.messages() || this.selectedConversationId() === 0) return;
 
     // Mark messages loading
     this.setMessageLoading(conversationId, true);
