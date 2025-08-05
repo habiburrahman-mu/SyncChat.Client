@@ -67,6 +67,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       const selectedConversation = this.selectedConversation();
 
       if (!messageLoading || selectedConversation) {
+        this.scrollPositionBeforeLoadingPreviousMessages = 0;
         // delay to ensure DOM updated
         setTimeout(() => this.scrollToBottom(false), 0);
       }
