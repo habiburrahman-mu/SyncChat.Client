@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { CreateConversationRequest } from '@features/chat/models';
+import { Conversation, CreateConversationRequest, Message } from '@features/chat/models';
 import { ChatSidebarComponent } from "../chat-sidebar/chat-sidebar.component";
 import { ConversationService } from '@features/chat/services/conversation.service';
 import { AuthService } from '@core/services';
@@ -199,11 +199,38 @@ export class ChatComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: conversationId => {
-          this.selectedConversation()!.id = conversationId;
-          this.sendingMessage.set(true);
+
+          const conversation: Conversation = {
+            id: conversationId,
+            name: request.name,
+            lastMessage: request.initialMessage,
+            conversationType: request.type,
+            members: request.memberIdList,
+            otherUserId: request.type === ConversationType.Direct ? request.memberIdList[0] : null,
+            messages: signal(undefined),
+            hasMoreMessages: false,
+            olderMessageLoading: signal(false),
+            hasUnreadMessages: false
+          }
+
+          this.chatStateService.updateSelectedConversation(conversation);
+          this.sendingMessage.set(false);
+
+          // const message: Message = {
+          //   messageId: 0,
+          //   uuid: '',
+          //   conversationId: 0,
+          //   senderId: 0,
+          //   content: null,
+          //   senderUserName: '',
+          //   senderName: '',
+          //   updatedAt: ''
+          // };
+
+          // this.chatStateService.addMessageToSelectedConversation()
         },
         error: err => {
-          this.sendingMessage.set(true);
+          this.sendingMessage.set(false);
         }
       });
   }

@@ -319,6 +319,17 @@ export class ChatStateService {
     this.messagesLoading.set(updatedMap);
   }
 
+  updateSelectedConversation(conversation: Conversation) {
+    this.selectedConversationId.set(conversation.id);
+    this.conversations.update(conversations => {
+      const index = conversations.findIndex(c => c.id === conversation.id);
+      if (index !== -1) {
+        conversations[index] = conversation;
+      }
+      return conversations;
+    });
+  }
+
   onDestroy() {
     this.destroySubscriptionSubject.next();
     this.destroySubscriptionSubject.complete();
