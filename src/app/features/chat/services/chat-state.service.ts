@@ -1,6 +1,6 @@
 import { computed, DestroyRef, Injectable, signal } from '@angular/core';
 import { ConversationService, MessageService } from '.';
-import { Conversation, Message, MessageDTO } from '../models';
+import { Conversation, ConversationDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@core/services';
 import { ChatNotificationType } from '@core/enums';
@@ -53,6 +53,7 @@ export class ChatStateService {
       .subscribe();
 
     this.notificationService.listen<number>(ChatNotificationType.HasNewMessage)
+      .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
         next: (notification) => {
           const conversationId = notification.data;
@@ -60,6 +61,33 @@ export class ChatStateService {
           if (conversationId !== this.selectedConversationId()) {
             this.refreshLastMessage(conversationId);
           }
+        }
+      });
+
+    this.notificationService.listen<ConversationDTO>(ChatNotificationType.NewConversationCreated)
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe({
+        next: (notification) => {
+          const newConversation = notification.data;
+
+          this.conversations.update(conversations => {
+            const conversation: Conversation = {
+              id: newConversation.conversationId,
+              name: newConversation.name,
+              lastMessage: newConversation.lastMessage,
+              conversationType: newConversation.type,
+              otherUserId: newConversation.otherUserId,
+              members: [], // TODO
+              messages: signal(undefined),
+              hasMoreMessages: true,
+              olderMessageLoading: signal(false),
+              hasUnreadMessages: true // New conversation is unread
+            };
+
+            conversations.unshift(conversation);
+
+            return conversations;
+          });
         }
       });
 
