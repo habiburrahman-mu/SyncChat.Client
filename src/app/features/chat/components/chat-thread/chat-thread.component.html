@@ -1,1 +1,64 @@
-<p>chat-thread works!</p>
+@if (isConversationsLoading() || isSelectedConversationMessagesLoading()) {
+<div class="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
+  <mat-progress-spinner color="accent" mode="indeterminate" diameter="40"></mat-progress-spinner>
+</div>
+} @else {
+
+<!-- Chat Header -->
+<div class="flex items-center gap-3 px-6 py-4 bg-white flex-shrink-0">
+  <mat-icon class="text-gray-400">account_circle</mat-icon>
+  <div class="font-medium text-base">
+    {{ selectedConversation()?.name || 'Select a Chat' }}
+  </div>
+</div>
+
+<!-- Messages container -->
+<div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-2 bg-gray-50" #messagesContainer (scroll)="onScrollMessage()">
+  @if (selectedConversation()?.olderMessageLoading()) {
+  <div class="flex justify-center py-2">
+    <mat-progress-spinner mode="indeterminate" diameter="24" color="warn" strokeWidth="3"></mat-progress-spinner>
+  </div>
+  }
+
+  @for (message of messages() ?? []; track message.messageId) {
+  <div class="flex flex-col mb-2" [ngClass]="
+          message.senderId === currentUserId
+            ? 'self-end items-end text-white'
+            : 'self-start items-start text-gray-800'
+        ">
+    @if (message.senderId !== currentUserId) {
+    <span class="text-xs font-medium mb-1 opacity-80 tracking-wide" [matTooltip]="message.senderName"
+      [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
+      &#64;{{ message.senderUserName }}
+    </span>
+    }
+
+    <div [ngClass]="
+            message.senderId === currentUserId
+              ? 'bg-blue-600'
+              : 'bg-white border'
+          " class="max-w-[75%] p-3 rounded-2xl text-sm shadow-md leading-snug transition hover:shadow-lg break-words">
+      {{ message.content }}
+    </div>
+
+    <span class="text-[10px] mt-1 opacity-60 select-none" [ngClass]="
+            message.senderId === currentUserId
+              ? 'text-gray-400'
+              : 'text-gray-500'
+          ">
+      {{ message.updatedAt | chatTimestamp }}
+    </span>
+  </div>
+  }
+</div>
+
+<!-- Message Input -->
+<div class="px-6 py-4 bg-white flex items-center gap-3 flex-shrink-0">
+  <mat-form-field subscriptSizing="dynamic" class="flex-1 appearance-outline">
+    <input matInput placeholder="Message..." [(ngModel)]="messageText" (keydown.enter)="sendMessage()" />
+  </mat-form-field>
+  <button mat-flat-button color="primary" (click)="sendMessage()" class="normal-case">
+    Send
+  </button>
+</div>
+}
