@@ -68,10 +68,14 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="p-4 pt-0">
-  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+    Cancel
+  </button>
   <button mat-flat-button color="primary"
     [disabled]="!selectedUsers().length || (this.selectedUsers().length > 1 && this.groupName.length === 0)"
     (click)="onCreate()">
+    <mat-icon>add</mat-icon>
     Create
   </button>
 </mat-dialog-actions>
