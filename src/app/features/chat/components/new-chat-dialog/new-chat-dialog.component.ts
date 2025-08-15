@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, Inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, Inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -8,8 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { UserService } from '@features/chat/services';
-import { GetUserByUserNameResponse, NewConversation } from '@features/chat/models';
+import { ChatStateService, ConversationService, UserService } from '@features/chat/services';
+import { Conversation, CreateConversationRequest, GetUserByUserNameResponse, NewConversation } from '@features/chat/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { AuthService } from '@core/services';
@@ -42,9 +42,9 @@ export class NewChatDialogComponent implements OnInit {
   isLoading = signal(false);
   userSearchResponse = signal<GetUserByUserNameResponse | null | undefined>(undefined);
   currentUserId: number = 0;
+  saveInProgress = signal(false);
 
   isUserSelected = computed(() => {
-    console.log("compute")
 
     const user = this.userSearchResponse();
 
@@ -55,12 +55,14 @@ export class NewChatDialogComponent implements OnInit {
     return false;
   });
 
-  constructor(
-    private dialogRef: MatDialogRef<NewChatDialogComponent, NewConversation>,
-    private userService: UserService,
-    private destroyRef: DestroyRef,
-    private authService: AuthService
-  ) { }
+  private readonly dialogRef = inject(MatDialogRef<NewChatDialogComponent, NewConversation>);
+  private readonly userService = inject(UserService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
+  private readonly conversationService = inject(ConversationService);
+  private readonly chatStateService = inject(ChatStateService);
+
+  readonly conversationList = this.chatStateService.conversationList;
 
   ngOnInit() {
     this.currentUserId = this.authService.userId!;
@@ -107,13 +109,58 @@ export class NewChatDialogComponent implements OnInit {
     const selectedUsers = this.selectedUsers();
     const isGroup = selectedUsers.length > 1;
 
-    const newConversation: NewConversation = {
-      selectedUsers: selectedUsers,
-      conversationName: isGroup ? this.groupName : '',
-      conversationType: isGroup ? ConversationType.Group : ConversationType.Direct
+    const conversationList = this.conversationList();
+
+    if (!isGroup) {
+      const otherUserId = selectedUsers.find(x => x.userID !== this.authService.userId!)!.userID;
+      const conversationExist = conversationList.find(x => x.otherUserId === otherUserId);
+      if (conversationExist) {
+        this.chatStateService.selectConversation(conversationExist.id);
+        return;
+      }
+    }
+
+    // const newConversation: NewConversation = {
+    //   selectedUsers: selectedUsers,
+    //   conversationName: isGroup ? this.groupName : '',
+    //   conversationType: isGroup ? ConversationType.Group : ConversationType.Direct
+    // };
+
+    const request: CreateConversationRequest = {
+      createdBy: this.authService.userId!,
+      memberIdList: [...selectedUsers.map(user => user.userID), this.authService.userId!],
+      name: isGroup ? this.groupName : '',
+      type: isGroup ? ConversationType.Group : ConversationType.Direct
     };
 
-    this.dialogRef.close(newConversation);
+    this.saveInProgress.set(true);
+
+    this.conversationService.create(request)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: conversationId => {
+          this.saveInProgress.set(false);
+
+          const conversation: Conversation = {
+            id: 0,
+            lastMessage: null,
+            members: selectedUsers.map(x => x.userID),
+            name: isGroup ? this.groupName : '',
+            conversationType: isGroup ? ConversationType.Group : ConversationType.Direct,
+            otherUserId: isGroup ? null : selectedUsers[0].userID,
+            hasMoreMessages: false,
+            olderMessageLoading: signal(false),
+            messages: signal(undefined)
+          };
+
+          this.chatStateService.addConversation(conversation);
+          this.chatStateService.selectConversation(conversation.id);
+          this.dialogRef.close();
+        },
+        error: err => {
+          this.saveInProgress.set(false);
+        }
+      });
   }
 
   onChangeGroupName() {

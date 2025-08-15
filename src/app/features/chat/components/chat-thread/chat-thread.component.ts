@@ -70,10 +70,12 @@ export class ChatThreadComponent implements OnInit {
     });
 
     effect(() => {
-      const olderMessageLoading = this.selectedConversation()!.olderMessageLoading();
+      if (this.selectedConversation()) {
+        const olderMessageLoading = this.selectedConversation()!.olderMessageLoading();
 
-      if (!olderMessageLoading) {
-        this.restoreScrollAfterPrepend();
+        if (!olderMessageLoading) {
+          this.restoreScrollAfterPrepend();
+        }
       }
     })
   }
@@ -134,91 +136,87 @@ export class ChatThreadComponent implements OnInit {
     const conversation = this.selectedConversation();
 
     if (conversation) {
-      if (conversation.id === 0) {
-        this.createConversation();
-      } else {
-        this.messageService.sendMessage({
-          conversationId: conversation.id,
-          senderId: this.currentUserId!,
-          type: MessageType.Text,
-          content: this.messageText,
-          metaData: undefined,
-          replyTo: undefined,
-        })
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe({
-            next: response => {
-              this.chatStateService.addMessageToSelectedConversation({
-                messageId: response.messageId,
-                uuid: response.uuid,
-                conversationId: response.conversationId,
-                senderId: response.senderId,
-                content: response.content ?? null,
-                senderUserName: response.senderUserName,
-                senderName: response.senderName,
-                updatedAt: response.updatedAt
-              });
-            },
-            error: (err: HttpErrorResponse) => {
+      this.messageService.sendMessage({
+        conversationId: conversation.id,
+        senderId: this.currentUserId!,
+        type: MessageType.Text,
+        content: this.messageText,
+        metaData: undefined,
+        replyTo: undefined,
+      })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: response => {
+            this.chatStateService.addMessageToSelectedConversation({
+              messageId: response.messageId,
+              uuid: response.uuid,
+              conversationId: response.conversationId,
+              senderId: response.senderId,
+              content: response.content ?? null,
+              senderUserName: response.senderUserName,
+              senderName: response.senderName,
+              updatedAt: response.updatedAt
+            });
+          },
+          error: (err: HttpErrorResponse) => {
 
-            }
-          });
-      }
+          }
+        });
     }
 
     // this.messages.push({ text: this.messageText, fromMe: true });
     this.messageText = '';
   }
 
-  private createConversation() {
-    const conversation = this.selectedConversation();
-    const request: CreateConversationRequest = {
-      createdBy: this.authService.userId!,
-      memberIdList: [...conversation!.members, this.authService.userId!],
-      name: conversation!.name,
-      type: conversation!.members.length > 1 ? ConversationType.Group : ConversationType.Direct,
-      initialMessage: this.messageText
-    };
+  // private createConversation() {
+  //   const conversation = this.selectedConversation();
+  //   const request: CreateConversationRequest = {
+  //     createdBy: this.authService.userId!,
+  //     memberIdList: [...conversation!.members, this.authService.userId!],
+  //     name: conversation!.name,
+  //     type: conversation!.members.length > 1 ? ConversationType.Group : ConversationType.Direct,
+  //     initialMessage: this.messageText
+  //   };
 
-    this.sendingMessage.set(true);
+  //   this.sendingMessage.set(true);
 
-    this.conversationService.create(request)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: conversationId => {
+  //   this.conversationService.create(request)
+  //     .pipe(takeUntilDestroyed(this.destroyRef))
+  //     .subscribe({
+  //       next: conversationId => {
 
-          const conversation: Conversation = {
-            id: conversationId,
-            name: request.name,
-            lastMessage: request.initialMessage,
-            conversationType: request.type,
-            members: request.memberIdList,
-            otherUserId: request.type === ConversationType.Direct ? request.memberIdList[0] : null,
-            messages: signal(undefined),
-            hasMoreMessages: false,
-            olderMessageLoading: signal(false),
-            hasUnreadMessages: false
-          }
+  //         const conversation: Conversation = {
+  //           id: conversationId,
+  //           name: request.name,
+  //           lastMessage: request.initialMessage,
+  //           conversationType: request.type,
+  //           members: request.memberIdList,
+  //           otherUserId: request.type === ConversationType.Direct ? request.memberIdList[0] : null,
+  //           messages: signal(undefined),
+  //           hasMoreMessages: false,
+  //           olderMessageLoading: signal(false),
+  //           hasUnreadMessages: false
+  //         }
 
-          this.chatStateService.updateSelectedConversation(conversation);
-          this.sendingMessage.set(false);
+  //         this.chatStateService.updateSelectedConversation(conversation);
+  //         this.sendingMessage.set(false);
 
-          // const message: Message = {
-          //   messageId: 0,
-          //   uuid: '',
-          //   conversationId: 0,
-          //   senderId: 0,
-          //   content: null,
-          //   senderUserName: '',
-          //   senderName: '',
-          //   updatedAt: ''
-          // };
+  //         // const message: Message = {
+  //         //   messageId: 0,
+  //         //   uuid: '',
+  //         //   conversationId: 0,
+  //         //   senderId: 0,
+  //         //   content: null,
+  //         //   senderUserName: '',
+  //         //   senderName: '',
+  //         //   updatedAt: ''
+  //         // };
 
-          // this.chatStateService.addMessageToSelectedConversation()
-        },
-        error: err => {
-          this.sendingMessage.set(false);
-        }
-      });
-  }
+  //         // this.chatStateService.addMessageToSelectedConversation()
+  //       },
+  //       error: err => {
+  //         this.sendingMessage.set(false);
+  //       }
+  //     });
+  // }
 }
