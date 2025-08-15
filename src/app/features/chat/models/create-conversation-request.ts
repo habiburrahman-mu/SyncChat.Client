@@ -5,5 +5,4 @@ export interface CreateConversationRequest {
   memberIdList: number[];
   name: string;
   type: ConversationType;
-  initialMessage: string;
 }
