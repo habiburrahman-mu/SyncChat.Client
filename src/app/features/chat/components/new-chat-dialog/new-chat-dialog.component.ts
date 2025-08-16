@@ -116,6 +116,7 @@ export class NewChatDialogComponent implements OnInit {
       const conversationExist = conversationList.find(x => x.otherUserId === otherUserId);
       if (conversationExist) {
         this.chatStateService.selectConversation(conversationExist.id);
+        this.dialogRef.close();
         return;
       }
     }
@@ -142,7 +143,7 @@ export class NewChatDialogComponent implements OnInit {
           this.saveInProgress.set(false);
 
           const conversation: Conversation = {
-            id: 0,
+            id: conversationId,
             lastMessage: null,
             members: selectedUsers.map(x => x.userID),
             name: isGroup ? this.groupName : selectedUsers[0].name,
