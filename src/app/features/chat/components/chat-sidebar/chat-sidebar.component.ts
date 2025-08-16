@@ -45,42 +45,7 @@ export class ChatSidebarComponent implements OnInit {
 
     const dialogRef = this.dialog.open<NewChatDialogComponent, any, NewConversation>(NewChatDialogComponent, {
       width: '400px',
-      // data: { users: this.users },
     });
-
-    // dialogRef.afterClosed()
-    //   .pipe(takeUntilDestroyed(this.destroyRef))
-    //   .subscribe((newConversation: NewConversation | undefined) => {
-    //     if (newConversation !== undefined && newConversation.selectedUsers.length > 0) {
-    //       const isDirect = newConversation.conversationType === ConversationType.Direct;
-
-    //       const conversation: Conversation = {
-    //         id: 0,
-    //         lastMessage: null,
-    //         members: newConversation.selectedUsers.map(x => x.userID),
-    //         name: newConversation.conversationName,
-    //         conversationType: newConversation.conversationType,
-    //         otherUserId: isDirect ? newConversation.selectedUsers[0].userID : null,
-    //         hasMoreMessages: false,
-    //         olderMessageLoading: signal(false),
-    //         messages: signal(undefined)
-    //       };
-
-    //       const conversationList = this.conversationList();
-
-    //       if (newConversation.conversationType === ConversationType.Direct) {
-    //         const otherUserId = newConversation.selectedUsers.find(x => x.userID !== this.authService.userId!)!.userID;
-    //         const conversationExist = conversationList.find(x => x.otherUserId === otherUserId);
-    //         if (conversationExist) {
-    //           this.selectChat(conversationExist);
-    //           return;
-    //         }
-    //       }
-
-    //       this.chatStateService.addConversation(conversation);
-    //       this.selectChat(conversation);
-    //     }
-    //   });
   }
 
   selectChat(conversation: Conversation) {

@@ -121,12 +121,6 @@ export class NewChatDialogComponent implements OnInit {
       }
     }
 
-    // const newConversation: NewConversation = {
-    //   selectedUsers: selectedUsers,
-    //   conversationName: isGroup ? this.groupName : '',
-    //   conversationType: isGroup ? ConversationType.Group : ConversationType.Direct
-    // };
-
     const request: CreateConversationRequest = {
       createdBy: this.authService.userId!,
       memberIdList: [...selectedUsers.map(user => user.userID), this.authService.userId!],
