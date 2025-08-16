@@ -11,7 +11,6 @@ import { ChatThreadComponent } from '../chat-thread/chat-thread.component';
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatComponent implements OnInit, OnDestroy {
 

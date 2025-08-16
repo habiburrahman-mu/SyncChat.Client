@@ -39,10 +39,8 @@
 
 
   <div class="max-h-96 overflow-auto space-y-1 mt-2" *ngIf="!isLoading()">
-    <div *ngIf="userSearchResponse() as user"
-      (click)="user.userID !== currentUserId && selectUser(user)"
-      [class.cursor-default]="user.userID === currentUserId"
-      [class.cursor-pointer]="user.userID !== currentUserId"
+    <div *ngIf="userSearchResponse() as user" (click)="user.userID !== currentUserId && selectUser(user)"
+      [class.cursor-default]="user.userID === currentUserId" [class.cursor-pointer]="user.userID !== currentUserId"
       [class.bg-gray-100]="user.userID === currentUserId"
       class="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-gray-100 transition">
 
@@ -73,9 +71,16 @@
     Cancel
   </button>
   <button mat-flat-button color="primary"
-    [disabled]="!selectedUsers().length || (this.selectedUsers().length > 1 && this.groupName.length === 0)"
+    [disabled]="saveInProgress() || !selectedUsers().length || (this.selectedUsers().length > 1 && this.groupName.length === 0)"
     (click)="onCreate()">
-    <mat-icon>add</mat-icon>
+
+    @if(saveInProgress()) {
+    <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
+    }
+    @else {
+    <mat-icon *ngIf="!saveInProgress()">add</mat-icon>
+    }
+
     Create
   </button>
 </mat-dialog-actions>

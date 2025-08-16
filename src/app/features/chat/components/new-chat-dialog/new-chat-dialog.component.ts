@@ -145,7 +145,7 @@ export class NewChatDialogComponent implements OnInit {
             id: 0,
             lastMessage: null,
             members: selectedUsers.map(x => x.userID),
-            name: isGroup ? this.groupName : '',
+            name: isGroup ? this.groupName : selectedUsers[0].name,
             conversationType: isGroup ? ConversationType.Group : ConversationType.Direct,
             otherUserId: isGroup ? null : selectedUsers[0].userID,
             hasMoreMessages: false,
