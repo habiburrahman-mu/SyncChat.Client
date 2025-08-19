@@ -12,5 +12,6 @@ export interface Conversation {
   messages: WritableSignal<Message[] | undefined>;
   hasMoreMessages: boolean;
   olderMessageLoading: WritableSignal<boolean>;
-  hasUnreadMessages?: boolean;
+  lastSeenMessageId: number | null;
+  hasUnreadMessages: boolean;
 }

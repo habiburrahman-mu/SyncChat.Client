@@ -145,7 +145,9 @@ export class NewChatDialogComponent implements OnInit {
             otherUserId: isGroup ? null : selectedUsers[0].userID,
             hasMoreMessages: false,
             olderMessageLoading: signal(false),
-            messages: signal(undefined)
+            messages: signal(undefined),
+            hasUnreadMessages: false,
+            lastSeenMessageId: null
           };
 
           this.chatStateService.addConversation(conversation);

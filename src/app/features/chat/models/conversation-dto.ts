@@ -13,4 +13,6 @@ export interface ConversationDTO {
   settings: string;        // JSON string
   lastMessage: string | null;
   otherUserId: number | null; // for direct chats, pick the OTHER member's id;
+  lastSeenMessageId: number | null;
+  haveUnreadMessages: boolean; // for direct chats, pick the OTHER member's id;
 }

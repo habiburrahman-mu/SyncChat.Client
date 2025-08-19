@@ -81,7 +81,8 @@ export class ChatStateService {
               messages: signal(undefined),
               hasMoreMessages: true,
               olderMessageLoading: signal(false),
-              hasUnreadMessages: true // New conversation is unread
+              hasUnreadMessages: true, // New conversation is unread
+              lastSeenMessageId: null // Initialize as null
             };
 
             conversations.unshift(conversation);
@@ -154,7 +155,9 @@ export class ChatStateService {
             members: [], // TODO
             messages: signal(undefined),
             hasMoreMessages: true,
-            olderMessageLoading: signal(false)
+            olderMessageLoading: signal(false),
+            hasUnreadMessages: c.haveUnreadMessages,
+            lastSeenMessageId: c.lastSeenMessageId
           } as Conversation));
           this.conversations.set(conversations);
           this.selectFirstConversation();
