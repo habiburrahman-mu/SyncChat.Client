@@ -164,59 +164,6 @@ export class ChatThreadComponent implements OnInit {
         });
     }
 
-    // this.messages.push({ text: this.messageText, fromMe: true });
     this.messageText = '';
   }
-
-  // private createConversation() {
-  //   const conversation = this.selectedConversation();
-  //   const request: CreateConversationRequest = {
-  //     createdBy: this.authService.userId!,
-  //     memberIdList: [...conversation!.members, this.authService.userId!],
-  //     name: conversation!.name,
-  //     type: conversation!.members.length > 1 ? ConversationType.Group : ConversationType.Direct,
-  //     initialMessage: this.messageText
-  //   };
-
-  //   this.sendingMessage.set(true);
-
-  //   this.conversationService.create(request)
-  //     .pipe(takeUntilDestroyed(this.destroyRef))
-  //     .subscribe({
-  //       next: conversationId => {
-
-  //         const conversation: Conversation = {
-  //           id: conversationId,
-  //           name: request.name,
-  //           lastMessage: request.initialMessage,
-  //           conversationType: request.type,
-  //           members: request.memberIdList,
-  //           otherUserId: request.type === ConversationType.Direct ? request.memberIdList[0] : null,
-  //           messages: signal(undefined),
-  //           hasMoreMessages: false,
-  //           olderMessageLoading: signal(false),
-  //           hasUnreadMessages: false
-  //         }
-
-  //         this.chatStateService.updateSelectedConversation(conversation);
-  //         this.sendingMessage.set(false);
-
-  //         // const message: Message = {
-  //         //   messageId: 0,
-  //         //   uuid: '',
-  //         //   conversationId: 0,
-  //         //   senderId: 0,
-  //         //   content: null,
-  //         //   senderUserName: '',
-  //         //   senderName: '',
-  //         //   updatedAt: ''
-  //         // };
-
-  //         // this.chatStateService.addMessageToSelectedConversation()
-  //       },
-  //       error: err => {
-  //         this.sendingMessage.set(false);
-  //       }
-  //     });
-  // }
 }
