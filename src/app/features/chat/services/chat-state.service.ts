@@ -333,6 +333,21 @@ export class ChatStateService {
     });
   }
 
+  updateLastSeenMessageId(messageId: number) {
+    const conversationId = this.selectedConversationId()
+    if (conversationId) {
+      this.conversations.update(conversations => {
+        const conversation = conversations.find(c => c.id === this.selectedConversationId());
+        if (conversation) {
+          conversation.lastSeenMessageId = messageId;
+        }
+        return conversations;
+      });
+
+      this.conversationService.markMessageAsSeen(conversationId, messageId).subscribe();
+    }
+  }
+
   onDestroy() {
     this.destroySubscriptionSubject.next();
     this.destroySubscriptionSubject.complete();

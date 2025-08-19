@@ -14,6 +14,7 @@ export const API_ROUTES = {
     Create: `${BASE_URL}/conversation/create` as const,
     GetList: `${BASE_URL}/conversation/getList` as const,
     GetLastMessage: `${BASE_URL}/conversation/getLastMessage` as const,
+    MarkMessageAsSeen: `${BASE_URL}/conversation/markMessageAsSeen` as const,
   },
   Message: {
     GetList: `${BASE_URL}/message/getList` as const,

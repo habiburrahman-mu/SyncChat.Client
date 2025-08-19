@@ -126,6 +126,18 @@ export class ChatThreadComponent implements OnInit {
       } else {
         container.scrollTop = container.scrollHeight;
       }
+
+      this.updateLastSeenMessageId();
+    }
+  }
+
+  private updateLastSeenMessageId() {
+    const lastMessage = this.selectedConversation()!.messages()?.at(-1);
+    const lastSeenMessageId = this.selectedConversation()!.lastSeenMessageId;
+    if (lastMessage) {
+      if (lastSeenMessageId === null || lastSeenMessageId !== lastMessage.messageId) {
+        this.chatStateService.updateLastSeenMessageId(lastMessage.messageId);
+      }
     }
   }
 
@@ -166,4 +178,6 @@ export class ChatThreadComponent implements OnInit {
 
     this.messageText = '';
   }
+
+
 }
