@@ -249,6 +249,8 @@ export class ChatStateService {
       });
   }
 
+  timeOut: any; // TODO
+
   private _listenNotification(conversationId: number) {
     // TODO
     this.notificationService.joinGroup(conversationId.toString())
@@ -268,10 +270,13 @@ export class ChatStateService {
       .pipe(takeUntil(this.conversationChangeSubject))
       .subscribe({
         next: (typingNotification) => {
+          clearTimeout(this.timeOut); // TODO
+
           const { conversationId, userId } = typingNotification.data;
+
           this.setTypingIndicator(userId, true);
-          // when to false
-          setTimeout(() => {
+
+          this.timeOut = setTimeout(() => { // TODO
             this.setTypingIndicator(userId, false);
           }, 2000);
         }
