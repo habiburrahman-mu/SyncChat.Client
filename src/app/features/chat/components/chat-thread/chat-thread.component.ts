@@ -53,6 +53,8 @@ export class ChatThreadComponent implements OnInit {
 
   readonly isSelectedConversationMessagesLoading = this.chatStateService.isSelectedConversationMessagesLoading;
 
+  readonly isSelectedConversationTyping = this.chatStateService.isSelectedConversationTyping;
+
   readonly messages = computed(() => this.selectedConversation()?.messages());
 
   private scrollPositionBeforeLoadingPreviousMessages = 0;
@@ -179,5 +181,10 @@ export class ChatThreadComponent implements OnInit {
     this.messageText = '';
   }
 
+  onKeydown() {
+    if (this.messageText.trim()) {
+      this.chatStateService.typingIndicator(this.selectedConversation()!.id);
+    }
+  }
 
 }

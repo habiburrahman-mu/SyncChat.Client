@@ -4,4 +4,5 @@ export enum ChatNotificationType {
   UserTyping = 'UserTyping',
   ConversationUpdated = 'ConversationUpdated',
   NewConversationCreated = 'NewConversationCreated',
+  Typing = 'Typing',
 }

@@ -6,6 +6,7 @@ import { NotificationService } from '@core/services';
 import { ChatNotificationType } from '@core/enums';
 import { MessageMapper } from '../utils';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { TypingEvent } from '@core/models';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,8 @@ export class ChatStateService {
   // per-conversation message loading state (Map of conversationId → boolean)
   private messagesLoading = signal<Map<number, boolean>>(new Map());
 
+  private selectedChatTypingIndicators = signal<Set<number>>(new Set());
+
   private newMessageSubject = new Subject<void>();
 
   readonly conversationList = computed(() => this.conversations());
@@ -29,6 +32,11 @@ export class ChatStateService {
   readonly isSelectedConversationMessagesLoading = computed(() => {
     const conversationId = this.selectedConversationId();
     return conversationId ? this.messagesLoading().get(conversationId) ?? false : false;
+  });
+
+  readonly isSelectedConversationTyping = computed(() => {
+    const conversationId = this.selectedConversationId();
+    return conversationId ? this.selectedChatTypingIndicators().size > 0 : false;
   });
 
   newMessage$ = this.newMessageSubject.asObservable();
@@ -256,6 +264,18 @@ export class ChatStateService {
         }
       });
 
+    this.notificationService.listen<TypingEvent>(ChatNotificationType.Typing)
+      .pipe(takeUntil(this.conversationChangeSubject))
+      .subscribe({
+        next: (typingNotification) => {
+          const { conversationId, userId } = typingNotification.data;
+          this.setTypingIndicator(userId, true);
+          // when to false
+          setTimeout(() => {
+            this.setTypingIndicator(userId, false);
+          }, 2000);
+        }
+      });
   }
 
   private _leftConversationNotificationSubscription() {
@@ -322,6 +342,18 @@ export class ChatStateService {
     this.messagesLoading.set(updatedMap);
   }
 
+  private setTypingIndicator(userId: number, isTyping: boolean) {
+    const updatedSet = new Set(this.selectedChatTypingIndicators());
+
+    if (isTyping) {
+      updatedSet.add(userId);
+    } else {
+      updatedSet.delete(userId);
+    }
+
+    this.selectedChatTypingIndicators.set(updatedSet);
+  }
+
   updateSelectedConversation(conversation: Conversation) {
     this.selectedConversationId.set(conversation.id);
     this.conversations.update(conversations => {
@@ -346,6 +378,10 @@ export class ChatStateService {
 
       this.conversationService.markMessageAsSeen(conversationId, messageId).subscribe();
     }
+  }
+
+  typingIndicator(conversationId: number) {
+    this.notificationService.typing(conversationId);
   }
 
   onDestroy() {

@@ -97,6 +97,13 @@ export class NotificationService {
     );
   }
 
+  typing(conversationId: number) {
+    if (!this._isConnected()) return;
+
+    this.connection.invoke('Typing', conversationId.toString()) // TODO
+      .catch(console.error);
+  }
+
   leaveGroup(groupName: string) {
     if (!this._isConnected()) return;
     this.connection.invoke('LeaveGroup', groupName)
