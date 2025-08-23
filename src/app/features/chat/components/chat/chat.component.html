@@ -4,8 +4,21 @@
     <chat-chat-sidebar />
   </aside>
 
+  <button type="button" matButton (click)="drawer.toggle()">
+    Toggle sidenav
+  </button>
+
   <!-- Chat Thread -->
-  <main class="flex-1 flex flex-row min-h-0">
-    <chat-chat-thread />
+  <main class="flex-1 min-h-0">
+    <mat-drawer-container autosize>
+      <mat-drawer-content>
+        <chat-chat-thread />
+      </mat-drawer-content>
+
+      <mat-drawer #drawer mode="side" position="end">
+        <chat-detail-panel />
+      </mat-drawer>
+
+    </mat-drawer-container>
   </main>
 </div>
