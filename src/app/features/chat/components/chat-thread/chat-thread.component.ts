@@ -157,6 +157,10 @@ export class ChatThreadComponent implements OnInit {
     }
   }
 
+  onClickViewSidebar() {
+    this.chatStateService.toggleChatDetailPanel();
+  }
+
 
   sendMessage() {
     if (!this.messageText.trim()) return;

@@ -24,6 +24,8 @@ export class ChatStateService {
 
   private newMessageSubject = new Subject<void>();
 
+  chatDetailPanelOpen = signal<boolean>(false);
+
   readonly conversationList = computed(() => this.conversations());
   readonly isConversationsLoading = computed(() => this.conversationsLoading());
   readonly selectedConversation = computed(() =>
@@ -113,6 +115,10 @@ export class ChatStateService {
           }
         }
       });
+  }
+
+  toggleChatDetailPanel() {
+    this.chatDetailPanelOpen.set(!this.chatDetailPanelOpen());
   }
 
   private sortConversations(conversationId: number): void {

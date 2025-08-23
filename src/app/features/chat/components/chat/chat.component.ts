@@ -20,6 +20,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   private readonly chatStateService = inject(ChatStateService);
 
+  readonly isChatDetailPanelOpen = this.chatStateService.chatDetailPanelOpen;
+
   ngOnInit(): void {
     this.chatStateService.onInitialize();
   }
