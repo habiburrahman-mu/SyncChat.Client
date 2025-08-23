@@ -15,6 +15,7 @@ import { AuthService } from '@core/services';
 import { ConversationService, MessageService, ChatStateService } from '@features/chat/services';
 import { ChatTimestampPipe } from '@shared/pipes';
 import { Subject, throttleTime } from 'rxjs';
+import { ChatTypingIndicatorComponent } from '../chat-typing-indicator/chat-typing-indicator.component';
 
 @Component({
   selector: 'chat-chat-thread',
@@ -27,7 +28,8 @@ import { Subject, throttleTime } from 'rxjs';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    ChatTimestampPipe
+    ChatTimestampPipe,
+    ChatTypingIndicatorComponent
   ],
   templateUrl: './chat-thread.component.html',
   styleUrl: './chat-thread.component.scss'

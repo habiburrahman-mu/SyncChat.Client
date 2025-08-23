@@ -52,12 +52,15 @@
   }
 </div>
 
-<div class="text-sm" *ngIf="isSelectedConversationTyping()">Typing...</div>
+<div class="text-sm" *ngIf="isSelectedConversationTyping()">
+  <chat-chat-typing-indicator />
+</div>
 
 <!-- Message Input -->
 <div class="px-6 py-4 bg-white flex items-center gap-3 flex-shrink-0">
   <mat-form-field subscriptSizing="dynamic" class="flex-1 appearance-outline">
-    <input matInput placeholder="Message..." [(ngModel)]="messageText" (keydown.enter)="sendMessage()" (keydown)="onKeydown()"/>
+    <input matInput placeholder="Message..." [(ngModel)]="messageText" (keydown.enter)="sendMessage()"
+      (keydown)="onKeydown()" />
   </mat-form-field>
   <button mat-flat-button color="primary" (click)="sendMessage()" class="normal-case">
     Send
