@@ -188,6 +188,8 @@ export class ChatStateService {
     const conversation = this.conversations().find(c => c.id === conversationId);
     if (!conversation) return;
 
+    this.chatDetailPanelOpen.set(false)
+
     this._leftConversationNotificationSubscription();
 
     this.conversationChangeSubject = new Subject<void>();
