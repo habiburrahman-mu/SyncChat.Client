@@ -2,7 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { ChatNotification } from '@core/models';
 import { catchError, filter, from, Observable, of, shareReplay, Subject, switchMap, throwError } from 'rxjs';
 import { HubConnection, HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr'
-import { ChatNotificationType } from '@core/enums';
+import { ChatNotificationType, HubMethods } from '@core/enums';
 import { BASE_URL } from '@core/constants';
 import { AuthService } from '../auth/auth.service';
 import { environment } from "@environments/environment";
@@ -85,7 +85,7 @@ export class NotificationService {
     return this.connect().pipe(
       switchMap(() => {
         if (this._joinedGroups().has(groupName)) return of(void 0);
-        return from(this.connection.invoke('JoinGroup', groupName)).pipe(
+        return from(this.connection.invoke(HubMethods.JoinGroup, groupName)).pipe(
           switchMap(() => {
             const updated = new Set(this._joinedGroups());
             updated.add(groupName);
@@ -97,16 +97,22 @@ export class NotificationService {
     );
   }
 
-  typing(conversationId: number) {
+  typing(conversationId: number, isTyping: boolean) {
     if (!this._isConnected()) return;
 
-    this.connection.invoke('Typing', conversationId.toString()) // TODO
-      .catch(console.error);
+    if (isTyping) {
+      this.connection.invoke(HubMethods.TypingStarted, conversationId.toString())
+        .catch(console.error);
+    }
+    else {
+      this.connection.invoke(HubMethods.TypingStopped, conversationId.toString())
+        .catch(console.error);
+    }
   }
 
   leaveGroup(groupName: string) {
     if (!this._isConnected()) return;
-    this.connection.invoke('LeaveGroup', groupName)
+    this.connection.invoke(HubMethods.LeaveGroup, groupName)
       .then(() => {
         const updated = new Set(this._joinedGroups());
         updated.delete(groupName);
@@ -149,7 +155,7 @@ export class NotificationService {
 
   private _rejoinAllGroups() {
     this._joinedGroups().forEach(group =>
-      this.connection.invoke('JoinGroup', group).catch(console.error)
+      this.connection.invoke(HubMethods.JoinGroup, group).catch(console.error)
     );
   }
 

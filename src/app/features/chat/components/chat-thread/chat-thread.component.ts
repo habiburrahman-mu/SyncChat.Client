@@ -183,7 +183,7 @@ export class ChatThreadComponent implements OnInit {
 
   onKeydown() {
     if (this.messageText.trim()) {
-      this.chatStateService.typingIndicator(this.selectedConversation()!.id);
+      this.chatStateService.typingIndicator(this.selectedConversation()!.id, true);
     }
   }
 

@@ -249,7 +249,7 @@ export class ChatStateService {
       });
   }
 
-  timeOut: any; // TODO
+  // timeOut: any; // TODO
 
   private _listenNotification(conversationId: number) {
     // TODO
@@ -266,19 +266,30 @@ export class ChatStateService {
         }
       });
 
-    this.notificationService.listen<TypingEvent>(ChatNotificationType.Typing)
+    this.notificationService.listen<TypingEvent>(ChatNotificationType.TypingStarted)
       .pipe(takeUntil(this.conversationChangeSubject))
       .subscribe({
         next: (typingNotification) => {
-          clearTimeout(this.timeOut); // TODO
+          // clearTimeout(this.timeOut); // TODO
 
           const { conversationId, userId } = typingNotification.data;
 
           this.setTypingIndicator(userId, true);
 
-          this.timeOut = setTimeout(() => { // TODO
-            this.setTypingIndicator(userId, false);
-          }, 2000);
+          // this.timeOut = setTimeout(() => { // TODO
+          //   this.setTypingIndicator(userId, false);
+          // }, 2000);
+        }
+      });
+
+    this.notificationService.listen<TypingEvent>(ChatNotificationType.TypingStopped)
+      .pipe(takeUntil(this.conversationChangeSubject))
+      .subscribe({
+        next: (typingNotification) => {
+
+          const { conversationId, userId } = typingNotification.data;
+
+          this.setTypingIndicator(userId, false);
         }
       });
   }
@@ -385,8 +396,8 @@ export class ChatStateService {
     }
   }
 
-  typingIndicator(conversationId: number) {
-    this.notificationService.typing(conversationId);
+  typingIndicator(conversationId: number, isTyping: boolean) {
+    this.notificationService.typing(conversationId, isTyping);
   }
 
   onDestroy() {
