@@ -9,11 +9,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { UI_CONSTANTS } from '@core/constants';
 import { ConversationType, MessageType } from '@core/enums';
 import { AuthService } from '@core/services';
 import { CreateConversationRequest, Conversation } from '@features/chat/models';
 import { ConversationService, MessageService, ChatStateService } from '@features/chat/services';
 import { ChatTimestampPipe } from '@shared/pipes';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'chat-chat-thread',
@@ -59,6 +61,8 @@ export class ChatThreadComponent implements OnInit {
 
   private scrollPositionBeforeLoadingPreviousMessages = 0;
 
+  private readonly typing$ = new Subject<void>();
+
   constructor() {
     effect(() => {
       const messageLoading = this.isSelectedConversationMessagesLoading();
@@ -86,6 +90,15 @@ export class ChatThreadComponent implements OnInit {
     this.chatStateService.newMessage$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(_ => this.onNewMessage());
+
+    this.typing$
+      .pipe(
+        debounceTime(UI_CONSTANTS.CHAT.TYPING_INDICATOR_DELAY),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(_ => {
+        this.chatStateService.typingIndicator(this.selectedConversation()!.id, true);
+      });
   }
 
   onNewMessage() {
@@ -183,7 +196,7 @@ export class ChatThreadComponent implements OnInit {
 
   onKeydown() {
     if (this.messageText.trim()) {
-      this.chatStateService.typingIndicator(this.selectedConversation()!.id, true);
+      this.typing$.next();
     }
   }
 

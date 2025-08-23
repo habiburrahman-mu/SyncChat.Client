@@ -41,6 +41,9 @@ export class ChatStateService {
 
   newMessage$ = this.newMessageSubject.asObservable();
 
+  private typingTimeouts = new Map<number, ReturnType<typeof setTimeout>>();
+
+
   readonly sortConversationSubject = new BehaviorSubject<number | null>(null);
 
   private conversationChangeSubject = new Subject<void>();
@@ -270,15 +273,17 @@ export class ChatStateService {
       .pipe(takeUntil(this.conversationChangeSubject))
       .subscribe({
         next: (typingNotification) => {
-          // clearTimeout(this.timeOut); // TODO
-
           const { conversationId, userId } = typingNotification.data;
-
           this.setTypingIndicator(userId, true);
 
-          // this.timeOut = setTimeout(() => { // TODO
-          //   this.setTypingIndicator(userId, false);
-          // }, 2000);
+          clearTimeout(this.typingTimeouts.get(userId));
+
+          // Set a new timeout to auto-hide after 2 seconds
+          const timeout = setTimeout(() => {
+            this.setTypingIndicator(userId, false);
+            this.typingTimeouts.delete(userId);
+          }, 2000);
+          this.typingTimeouts.set(userId, timeout);
         }
       });
 
@@ -286,10 +291,12 @@ export class ChatStateService {
       .pipe(takeUntil(this.conversationChangeSubject))
       .subscribe({
         next: (typingNotification) => {
-
           const { conversationId, userId } = typingNotification.data;
 
+          clearTimeout(this.typingTimeouts.get(userId));
+          this.typingTimeouts.delete(userId);
           this.setTypingIndicator(userId, false);
+
         }
       });
   }
