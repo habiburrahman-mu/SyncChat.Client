@@ -10,12 +10,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UI_CONSTANTS } from '@core/constants';
-import { ConversationType, MessageType } from '@core/enums';
+import { MessageType } from '@core/enums';
 import { AuthService } from '@core/services';
-import { CreateConversationRequest, Conversation } from '@features/chat/models';
 import { ConversationService, MessageService, ChatStateService } from '@features/chat/services';
 import { ChatTimestampPipe } from '@shared/pipes';
-import { debounceTime, Subject } from 'rxjs';
+import { Subject, throttleTime } from 'rxjs';
 
 @Component({
   selector: 'chat-chat-thread',
@@ -93,7 +92,7 @@ export class ChatThreadComponent implements OnInit {
 
     this.typing$
       .pipe(
-        debounceTime(UI_CONSTANTS.CHAT.TYPING_INDICATOR_DELAY),
+        throttleTime(UI_CONSTANTS.CHAT.TYPING_INDICATOR_DELAY - 500),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(_ => {
@@ -174,6 +173,8 @@ export class ChatThreadComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: response => {
+            this.chatStateService.typingIndicator(this.selectedConversation()!.id, false);
+
             this.chatStateService.addMessageToSelectedConversation({
               messageId: response.messageId,
               uuid: response.uuid,
