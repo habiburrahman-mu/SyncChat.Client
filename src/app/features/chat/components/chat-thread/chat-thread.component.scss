@@ -5,4 +5,5 @@
   flex: 1 1 auto;  /* flex-grow + flex-shrink + flex-basis */
   min-height: 0;    /* ensures inner scroll works */
   position: relative; /* for absolute loader overlay */
+  height: 100vh; /* full viewport height */
 }
