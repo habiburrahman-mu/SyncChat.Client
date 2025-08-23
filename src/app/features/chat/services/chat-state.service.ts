@@ -7,6 +7,7 @@ import { ChatNotificationType } from '@core/enums';
 import { MessageMapper } from '../utils';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { TypingEvent } from '@core/models';
+import { UI_CONSTANTS } from '@core/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -282,7 +283,7 @@ export class ChatStateService {
           const timeout = setTimeout(() => {
             this.setTypingIndicator(userId, false);
             this.typingTimeouts.delete(userId);
-          }, 2000);
+          }, UI_CONSTANTS.CHAT.TYPING_INDICATOR_DELAY);
           this.typingTimeouts.set(userId, timeout);
         }
       });

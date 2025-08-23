@@ -60,7 +60,7 @@
 <div class="px-6 py-4 bg-white flex items-center gap-3 flex-shrink-0">
   <mat-form-field subscriptSizing="dynamic" class="flex-1 appearance-outline">
     <input matInput placeholder="Message..." [(ngModel)]="messageText" (keydown.enter)="sendMessage()"
-      (keydown)="onKeydown()" />
+      (keydown)="onKeydown()"  />
   </mat-form-field>
   <button mat-flat-button color="primary" (click)="sendMessage()" class="normal-case">
     Send

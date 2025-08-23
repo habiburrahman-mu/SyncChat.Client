@@ -94,7 +94,7 @@ export class ChatThreadComponent implements OnInit {
 
     this.typing$
       .pipe(
-        throttleTime(UI_CONSTANTS.CHAT.TYPING_INDICATOR_DELAY - 500),
+        throttleTime(UI_CONSTANTS.CHAT.TYPING_INDICATOR_DELAY - UI_CONSTANTS.CHAT.SERVER_ACCEPTABLE_DELAY),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(_ => {
@@ -198,8 +198,11 @@ export class ChatThreadComponent implements OnInit {
   }
 
   onKeydown() {
-    if (this.messageText.trim()) {
+    var hasMessage = this.messageText.trim().length > 0;
+    if (hasMessage) {
       this.typing$.next();
+    } else {
+      this.chatStateService.typingIndicator(this.selectedConversation()!.id, false);
     }
   }
 
