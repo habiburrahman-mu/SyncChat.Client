@@ -5,9 +5,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 @Component({
   selector: 'chat-detail-panel',
   imports: [
-    ChatDetailInfoComponent,
-
-    MatExpansionModule
+    ChatDetailInfoComponent
   ],
   templateUrl: './chat-detail-panel.component.html',
   styleUrl: './chat-detail-panel.component.scss',

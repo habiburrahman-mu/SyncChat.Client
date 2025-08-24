@@ -188,7 +188,7 @@ export class ChatStateService {
     const conversation = this.conversations().find(c => c.id === conversationId);
     if (!conversation) return;
 
-    this.chatDetailPanelOpen.set(false)
+    this.chatDetailPanelOpen.set(true); // TODO: change to false
 
     this._leftConversationNotificationSubscription();
 
