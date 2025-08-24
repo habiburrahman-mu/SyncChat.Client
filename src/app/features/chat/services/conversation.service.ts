@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CreateConversationRequest, GetConversationsResponse, MarkMessageAsSeenRequest } from '../models';
+import { ConversationMemberDTO, CreateConversationRequest, GetConversationsResponse, MarkMessageAsSeenRequest } from '../models';
 import { API_ROUTES } from '@core/constants';
 
 @Injectable({
@@ -35,5 +35,10 @@ export class ConversationService {
 
     const url = `${API_ROUTES.Conversation.MarkMessageAsSeen}`;
     return this.http.put<string>(url, request);
+  }
+
+  getMembers = (conversationId: number) => {
+    const url = `${API_ROUTES.Conversation.GetMembers}/${conversationId}`;
+    return this.http.get<ConversationMemberDTO[]>(url);
   }
 }

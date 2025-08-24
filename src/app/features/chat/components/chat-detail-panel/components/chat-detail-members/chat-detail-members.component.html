@@ -8,7 +8,25 @@
 
 
     <div class="p-2">
-      <p>Members List</p>
+      @let state = this.conversationMemberState$ | async;
+
+      @if (state?.isLoading) {
+        <div class="flex justify-center py-2">
+          <mat-progress-spinner mode="indeterminate" diameter="24" color="warn" strokeWidth="3"></mat-progress-spinner>
+        </div>
+      } @else if (state?.error) {
+        <div class="flex justify-center py-2">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ state?.error }}</span>
+        </div>
+      } @else if (state && state.data) {
+        @for (member of state.data; track $index) {
+          <div>
+            <span>{{ member.name }}</span>
+          </div>
+        }
+      }
+
     </div>
 
   </mat-expansion-panel>

@@ -10,3 +10,4 @@ export * from './message.model';
 export * from './send-message-request.model';
 export * from './send-message-response.model';
 export * from './mark-message-as-seen-request.model';
+export * from './conversation-member-dto.model';

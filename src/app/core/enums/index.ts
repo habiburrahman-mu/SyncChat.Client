@@ -3,3 +3,4 @@ export * from './conversation-type.enum';
 export * from './message-type.enum';
 export * from './chat-notification-type.enum';
 export * from './hub-methods.enum';
+export * from './member-role.enum';
