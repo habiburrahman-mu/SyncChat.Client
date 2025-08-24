@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AuthService } from '@core/services';
 import { ChatStateService, ConversationService } from '@features/chat/services';
 import { catchError, filter, map, of, startWith, switchMap } from 'rxjs';
 
@@ -26,9 +27,11 @@ import { catchError, filter, map, of, startWith, switchMap } from 'rxjs';
 export class ChatDetailMembersComponent {
   private readonly chatStateService = inject(ChatStateService);
   private readonly conversationService = inject(ConversationService);
+  private readonly authService = inject(AuthService);
 
   private conversation = this.chatStateService.selectedConversation;
   private conversation$ = toObservable(this.conversation);
+  currentUserId = this.authService.userId!;
 
   conversationMemberState$ = this.conversation$
     .pipe(
