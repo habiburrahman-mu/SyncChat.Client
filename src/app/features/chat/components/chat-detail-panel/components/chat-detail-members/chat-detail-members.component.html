@@ -1,14 +1,16 @@
+@let state = this.conversationMemberState$ | async;
+
 <mat-accordion>
   <mat-expansion-panel expanded>
 
     <mat-expansion-panel-header>
-      <mat-panel-title>Members</mat-panel-title>
+      <mat-panel-title>
+        Members {{ (state?.data?.length ?? 0) > 0 ? '(' + state?.data?.length + ')' : '' }}
+      </mat-panel-title>
     </mat-expansion-panel-header>
 
 
     <div class="overflow-auto max-h-100">
-      @let state = this.conversationMemberState$ | async;
-
       @if (state?.isLoading) {
       <div class="flex justify-center py-2">
         <mat-progress-spinner mode="indeterminate" diameter="24" color="warn" strokeWidth="3"></mat-progress-spinner>
