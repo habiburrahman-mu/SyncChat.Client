@@ -12,12 +12,14 @@
   <main class="flex-1">
     <mat-drawer-container>
       <mat-drawer-content>
-        <chat-chat-thread/>
+        <chat-chat-thread />
       </mat-drawer-content>
 
+      @if(selectedConversation()) {
       <mat-drawer mode="side" position="end" [opened]="isChatDetailPanelOpen()">
         <chat-detail-panel />
       </mat-drawer>
+      }
 
     </mat-drawer-container>
   </main>

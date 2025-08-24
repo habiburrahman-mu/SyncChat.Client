@@ -11,7 +11,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
     ChatSidebarComponent,
     ChatThreadComponent,
     ChatDetailPanelComponent,
-    MatSidenavModule
+    MatSidenavModule,
 ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
@@ -21,6 +21,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   private readonly chatStateService = inject(ChatStateService);
 
   readonly isChatDetailPanelOpen = this.chatStateService.chatDetailPanelOpen;
+
+  readonly selectedConversation = this.chatStateService.selectedConversation;
 
   ngOnInit(): void {
     this.chatStateService.onInitialize();

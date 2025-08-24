@@ -14,7 +14,7 @@
   </div>
 
   <div>
-    <button mat-icon-button (click)="onClickViewSidebar()">
+    <button mat-icon-button (click)="onClickViewSidebar()" *ngIf="selectedConversation()">
       <mat-icon>view_sidebar</mat-icon>
     </button>
   </div>
