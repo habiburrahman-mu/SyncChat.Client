@@ -3,6 +3,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChatStateService, ConversationService } from '@features/chat/services';
 import { catchError, filter, map, of, startWith, switchMap } from 'rxjs';
@@ -12,6 +14,8 @@ import { catchError, filter, map, of, startWith, switchMap } from 'rxjs';
   imports: [
     MatExpansionModule,
     MatProgressSpinnerModule,
+    MatListModule,
+    MatMenuModule,
     CommonModule,
     MatIconModule
 ],
