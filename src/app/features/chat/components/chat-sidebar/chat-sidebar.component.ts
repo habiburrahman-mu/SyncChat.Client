@@ -9,9 +9,10 @@ import { Conversation, NewConversation } from '@features/chat/models';
 import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services';
-import { ChatStateService, ConversationService } from '@features/chat/services';
+import { ChatStateService, ConversationService, UserService } from '@features/chat/services';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ConversationType } from '@core/enums';
+import { catchError, map, of, startWith } from 'rxjs';
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -31,12 +32,18 @@ export class ChatSidebarComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   private readonly chatStateService = inject(ChatStateService);
+  private readonly userService = inject(UserService);
 
   readonly conversationList = this.chatStateService.conversationList;
   readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
   readonly selectedConversation = this.chatStateService.selectedConversation;
 
-  currentUserId = this.authService.userId;
+  userDetailState$ = this.userService.getUserDetail()
+    .pipe(
+      map(response => ({ isLoading: false, data: response, error: null })),
+      startWith({ isLoading: true, data: null, error: null }),
+      catchError(error => of({ isLoading: false, data: null, error: 'An error occurred while loading user details.' }))
+    );
 
   ngOnInit(): void {
     this.chatStateService.loadConversations();

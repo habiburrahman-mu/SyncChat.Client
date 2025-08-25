@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GetUserByUserNameResponse } from '../models';
+import { GetUserByUserNameResponse, GetUserDetailResponse } from '../models';
 import { API_ROUTES } from '@core/constants';
 
 @Injectable({
@@ -13,5 +13,10 @@ export class UserService {
   getUserByUserName = (userName: string) => {
     const url = API_ROUTES.User.GetUserByUserName + '/' + userName;
     return this.http.get<GetUserByUserNameResponse>(url);
+  }
+
+  getUserDetail = () => {
+    const url = API_ROUTES.User.GetDetail;
+    return this.http.get<GetUserDetailResponse>(url);
   }
 }

@@ -8,7 +8,8 @@ export const API_ROUTES = {
     Token: `${BASE_URL}/auth/token` as const,
   },
   User: {
-    GetUserByUserName: `${BASE_URL}/user/GetByUserName` as const
+    GetUserByUserName: `${BASE_URL}/user/GetByUserName` as const,
+    GetDetail: `${BASE_URL}/user/getDetail` as const,
   },
   Conversation: {
     Create: `${BASE_URL}/conversation/create` as const,

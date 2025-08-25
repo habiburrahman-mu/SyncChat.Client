@@ -4,3 +4,4 @@ export * from './message-type.enum';
 export * from './chat-notification-type.enum';
 export * from './hub-methods.enum';
 export * from './member-role.enum';
+export * from './user-status.enum';
