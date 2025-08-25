@@ -49,15 +49,20 @@
 
   <!-- Logout -->
   <div class="px-5 py-4 flex flex-row justify-between">
-    @let state = (userDetailState$ | async)!;
+    <div>
 
-    @if(state.isLoading) {
-    <div>Loading user details...</div>
-    } @else if(state.error) {
-    <div>{{state.error }}</div>
-    } @else if(state.data) {
-    <div>Logged in as {{ state.data.userName }}</div>
-    }
+      @let state = (userDetailState$ | async)!;
+
+      @if(state.isLoading) {
+      <div>Loading user details...</div>
+      } @else if(state.error) {
+      <div>{{state.error }}</div>
+      } @else if(state.data) {
+      <div>Logged in as</div>
+      <div class="font-semibold">{{ state.data.name }}</div>
+      }
+
+    </div>
 
     <button mat-raised-button (click)="logout()"
       class="flex items-center gap-2 text-sm text-gray-500 hover:text-red-600 normal-case">
