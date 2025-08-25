@@ -36,6 +36,8 @@ export class ChatSidebarComponent implements OnInit {
   readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
   readonly selectedConversation = this.chatStateService.selectedConversation;
 
+  currentUserId = this.authService.userId;
+
   ngOnInit(): void {
     this.chatStateService.loadConversations();
   }

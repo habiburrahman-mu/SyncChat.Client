@@ -49,7 +49,9 @@
   </div>
 
   <!-- Logout -->
-  <div class="px-5 py-4">
+  <div class="px-5 py-4 flex flex-row justify-between">
+    <div>Logged in as {{ currentUserId }}</div>
+
     <button mat-raised-button (click)="logout()"
       class="flex items-center gap-2 text-sm text-gray-500 hover:text-red-600 normal-case">
       <mat-icon class="text-base">logout</mat-icon>
