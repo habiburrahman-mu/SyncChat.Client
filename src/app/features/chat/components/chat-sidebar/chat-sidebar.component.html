@@ -48,26 +48,78 @@
   </div>
 
   <!-- Logout -->
-  <div class="px-5 py-4 flex flex-row justify-between">
-    <div>
+  <ng-container *ngIf="userDetailState$ | async as state">
 
-      @let state = (userDetailState$ | async)!;
+    <!-- 1. Loading State -->
+    <ng-container *ngIf="state.isLoading; else loaded">
+      <div class="flex items-center gap-3 p-4 animate-pulse">
+        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+        <div class="flex-1 space-y-2">
+          <div class="h-3 bg-gray-300 rounded w-1/3"></div>
+          <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+        </div>
+      </div>
+    </ng-container>
 
-      @if(state.isLoading) {
-      <div>Loading user details...</div>
-      } @else if(state.error) {
-      <div>{{state.error }}</div>
-      } @else if(state.data) {
-      <div>Logged in as</div>
-      <div class="font-semibold">{{ state.data.name }}</div>
-      }
+    <!-- 2. Loaded: Error or User Panel -->
+    <ng-template #loaded>
+      <ng-container *ngIf="state.error; else userPanel">
+        <div class="p-4 text-sm text-red-600">
+          {{ state.error }}
+        </div>
+      </ng-container>
+    </ng-template>
 
-    </div>
+    <!-- 3. Logged-in User Panel -->
+    <ng-template #userPanel>
+      <div class="flex items-center justify-between bg-white p-4 shadow border-t-1 border-t-gray-50">
+        <!-- Avatar + Status + Name -->
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <mat-icon>accessibility</mat-icon>
+            <!-- <img [src]="state.data?.profileImageUrl || defaultAvatar" alt="Avatar"
+              class="w-10 h-10 rounded-full object-cover" /> -->
+            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full
+                       ring-2 ring-white" [ngClass]="{
+                  'bg-[#3d5afe]': state.data?.status === 'online',
+                  'bg-gray-400':   state.data?.status !== 'online'
+                }"></span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs text-gray-500">
+              Logged in as
+            </span>
+            <span class="text-sm font-semibold
+                       text-gray-900
+                       truncate">
+              {{ state.data?.name }}
+            </span>
+          </div>
+        </div>
 
-    <button mat-raised-button (click)="logout()"
-      class="flex items-center gap-2 text-sm text-gray-500 hover:text-red-600 normal-case">
-      <mat-icon class="text-base">logout</mat-icon>
-      Logout
-    </button>
-  </div>
+        <!-- Action Menu -->
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Open user menu" class="text-[#3d5afe] hover:text-[#3d5afe]/80">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            <span>Settings</span>
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon color="warn">logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+    </ng-template>
+
+  </ng-container>
+
+
 </div>

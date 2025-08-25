@@ -13,6 +13,7 @@ import { ChatStateService, ConversationService, UserService } from '@features/ch
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ConversationType } from '@core/enums';
 import { catchError, map, of, startWith } from 'rxjs';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -22,7 +23,8 @@ import { catchError, map, of, startWith } from 'rxjs';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinner
+    MatProgressSpinner,
+    MatMenuModule,
   ],
   templateUrl: './chat-sidebar.component.html',
   styleUrl: './chat-sidebar.component.scss'
