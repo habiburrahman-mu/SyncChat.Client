@@ -1,8 +1,57 @@
-<h2 mat-dialog-title>Profile</h2>
 <mat-dialog-content class="mat-typography">
-  <p>Profile details go here...</p>
+  <div class="w-full max-w-lg mx-auto">
+    <!-- Header -->
+    <div class="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm">
+      <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500" src="https://i.pravatar.cc/150?img=11"
+        alt="User avatar" />
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800">Habibur Rahman</h2>
+        <p class="text-sm text-gray-500">{{ '@habibur.dev' }}</p>
+      </div>
+    </div>
+
+    <!-- Info Fields -->
+    <!-- Info Section -->
+    <div class="mt-6 space-y-6">
+      <!-- Email Card -->
+      <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition mb-2">
+        <div class="flex items-center gap-3">
+          <mat-icon class="text-indigo-500">email</mat-icon>
+          <div>
+            <p class="text-sm text-gray-500">Email</p>
+            <p class="text-base font-medium text-gray-800">{{ 'habibur@example.com' }}</p>
+          </div>
+        </div>
+        <button mat-icon-button aria-label="Edit email">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+
+      <!-- Phone Card -->
+      <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition">
+        <div class="flex items-center gap-3">
+          <mat-icon class="text-indigo-500">phone</mat-icon>
+          <div>
+            <p class="text-sm text-gray-500">Phone</p>
+            <p class="text-base font-medium text-gray-800">+880 1234 567890</p>
+          </div>
+        </div>
+        <button mat-icon-button aria-label="Edit phone">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Save</button>
-</mat-dialog-actions>
+
+<!-- <mat-dialog-actions align="end" class="px-6 pb-4">
+  <button mat-button mat-dialog-close class="text-gray-700 hover:text-gray-900">
+    <mat-icon class="mr-1">close</mat-icon>
+    Cancel
+  </button>
+
+  <button mat-flat-button color="primary" class="flex items-center gap-1">
+    <mat-icon>edit</mat-icon>
+    Edit
+  </button>
+</mat-dialog-actions> -->
