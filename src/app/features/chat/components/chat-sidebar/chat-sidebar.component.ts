@@ -14,6 +14,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ConversationType } from '@core/enums';
 import { catchError, map, of, startWith } from 'rxjs';
 import { MatMenuModule } from '@angular/material/menu';
+import { ProfileComponent } from '../profile/profile.component';
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -35,7 +36,6 @@ export class ChatSidebarComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly chatStateService = inject(ChatStateService);
   private readonly userService = inject(UserService);
-
   readonly conversationList = this.chatStateService.conversationList;
   readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
   readonly selectedConversation = this.chatStateService.selectedConversation;
@@ -61,6 +61,12 @@ export class ChatSidebarComponent implements OnInit {
 
   selectChat(conversation: Conversation) {
     this.chatStateService.selectConversation(conversation.id);
+  }
+
+  onClickProfile() {
+    const dialogRef = this.dialog.open<ProfileComponent>(ProfileComponent, {
+      width: '400px',
+    });
   }
 
   logout() {
