@@ -5,3 +5,4 @@ export * from './chat-notification-type.enum';
 export * from './hub-methods.enum';
 export * from './member-role.enum';
 export * from './user-status.enum';
+export * from './json-patch-operation.enum';
