@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, resource } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, resource, signal } from '@angular/core';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { AuthService } from '@core/services';
+import { AuthService, ToasterService } from '@core/services';
 import { GetUserDetailResponse, UpdateUserRequest } from '@features/chat/models';
 import { UserService } from '@features/chat/services/user.service';
 import { Subject } from 'rxjs';
@@ -30,9 +30,12 @@ import { Subject } from 'rxjs';
 export class ProfileComponent {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly toasterService = inject(ToasterService);
 
   private readonly currentUserId = this.authService.userId;
   private readonly reload$ = new Subject<void>();
+  readonly saveInProgress = signal(false);
 
   editEnabledFor: keyof UpdateUserRequest | undefined = undefined;
   editData: string = '';
@@ -53,13 +56,30 @@ export class ProfileComponent {
   }
 
   onSaveEdit(user: GetUserDetailResponse) {
-    if(this.editEnabledFor && user[this.editEnabledFor]) {
-      user[this.editEnabledFor] = this.editData;
-      this.editEnabledFor = undefined;
-      this.editData = '';
+    if (this.editEnabledFor && user[this.editEnabledFor]) {
+      this.updateUser(user);
     }
+  }
 
-    console.log('Saving', this.editEnabledFor, this.editData);
+  updateUser(user: GetUserDetailResponse) {
+    this.saveInProgress.set(true);
+
+    this.userService.update(this.currentUserId!, this.editEnabledFor!, this.editData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.saveInProgress.set(false);
+          this.reload$.next();
+
+          user[this.editEnabledFor!] = this.editData;
+
+          this.editEnabledFor = undefined;
+          this.editData = '';
+        },
+        error: (err) => {
+          this.saveInProgress.set(false);
+        }
+      });
   }
 
   updateUserProfile() {

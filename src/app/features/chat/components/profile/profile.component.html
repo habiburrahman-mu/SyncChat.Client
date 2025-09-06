@@ -28,14 +28,22 @@
         } @else {
         <mat-form-field appearance="fill" class="w-full" floatLabel="always">
           <mat-label>Name</mat-label>
-          <input matInput placeholder="Name" [(ngModel)]="editData" [required]="true" />
-          <div matSuffix class="flex gap-1">
-            <button mat-icon-button aria-label="Cancel" class="text-indigo-500 hover:text-indigo-600" (click)="onCancelEdit()">
+          <input matInput placeholder="Name" [(ngModel)]="editData" [required]="true" [disabled]="saveInProgress()" />
+          <div matSuffix class="flex gap-1 items-center">
+            <button mat-icon-button aria-label="Cancel" class="text-indigo-500 hover:text-indigo-600"
+              (click)="onCancelEdit()" [disabled]="saveInProgress()">
               <mat-icon>close</mat-icon>
             </button>
-            <button mat-icon-button aria-label="Save name" class="text-indigo-500 hover:text-indigo-600" (click)="onSaveEdit(user)">
+
+            @if(saveInProgress()) {
+            <mat-progress-spinner mode="indeterminate" diameter="22" color="accent"></mat-progress-spinner>
+            } @else {
+            <button mat-icon-button aria-label="Save name" class="text-indigo-500 hover:text-indigo-600"
+              (click)="onSaveEdit(user)">
               <mat-icon>check</mat-icon>
             </button>
+            }
+
           </div>
         </mat-form-field>
         }
@@ -57,7 +65,8 @@
             <p class="text-base font-medium text-gray-800">{{ user.email }}</p>
           </div>
         </div>
-        <button mat-icon-button aria-label="Edit email" class="text-gray-500 hover:text-indigo-600" [disabled]="editEnabledFor">
+        <button mat-icon-button aria-label="Edit email" class="text-gray-500 hover:text-indigo-600"
+          [disabled]="editEnabledFor">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
@@ -73,7 +82,8 @@
             </p>
           </div>
         </div>
-        <button mat-icon-button aria-label="Edit phone" class="text-gray-500 hover:text-indigo-600" [disabled]="editEnabledFor">
+        <button mat-icon-button aria-label="Edit phone" class="text-gray-500 hover:text-indigo-600"
+          [disabled]="editEnabledFor">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
