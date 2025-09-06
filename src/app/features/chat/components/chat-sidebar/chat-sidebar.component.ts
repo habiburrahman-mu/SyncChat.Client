@@ -65,7 +65,7 @@ export class ChatSidebarComponent implements OnInit {
 
   onClickProfile() {
     const dialogRef = this.dialog.open<ProfileComponent>(ProfileComponent, {
-      width: '400px',
+      width: '450px',
     });
   }
 

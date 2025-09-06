@@ -10,6 +10,7 @@ export const API_ROUTES = {
   User: {
     GetUserByUserName: `${BASE_URL}/user/GetByUserName` as const,
     GetDetail: `${BASE_URL}/user/getDetail` as const,
+    Update: `${BASE_URL}/user/update` as const,
   },
   Conversation: {
     Create: `${BASE_URL}/conversation/create` as const,

@@ -12,3 +12,4 @@ export * from './send-message-response.model';
 export * from './mark-message-as-seen-request.model';
 export * from './conversation-member-dto.model';
 export * from './get-user-detail-response.model';
+export * from './update-user-request.model';

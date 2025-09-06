@@ -1,3 +1,15 @@
+@if(userResource.isLoading()) {
+<div class="flex justify-center items-center h-64">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>
+} @else if(userResource.error()) {
+<div class="text-center text-red-500">
+  <p>Error loading user data. Please try again later.</p>
+</div>
+} @else if(userResource.hasValue()) {
+
+@let user = userResource.value();
+
 <mat-dialog-content class="mat-typography">
   <div class="w-full max-w-lg mx-auto">
     <!-- Header -->
@@ -5,13 +17,30 @@
       <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500" src="https://i.pravatar.cc/150?img=11"
         alt="User avatar" />
       <div>
+        @if (editEnabledFor !== 'name') {
         <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-          {{ 'Habibur Rahman' }}
-          <button mat-icon-button aria-label="Edit name" class="text-gray-500 hover:text-indigo-600">
+          {{ user.name }}
+          <button mat-icon-button aria-label="Edit name" class="text-gray-500 hover:text-indigo-600"
+            (click)="onClickEdit('name', user.name)" [disabled]="editEnabledFor">
             <mat-icon>edit</mat-icon>
           </button>
         </h2>
-        <p class="text-sm text-gray-500">{{ '@habibur.dev' }}</p>
+        } @else {
+        <mat-form-field appearance="fill" class="w-full" floatLabel="always">
+          <mat-label>Name</mat-label>
+          <input matInput placeholder="Name" [(ngModel)]="editData" [required]="true" />
+          <div matSuffix class="flex gap-1">
+            <button mat-icon-button aria-label="Cancel" class="text-indigo-500 hover:text-indigo-600" (click)="onCancelEdit()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <button mat-icon-button aria-label="Save name" class="text-indigo-500 hover:text-indigo-600" (click)="onSaveEdit(user)">
+              <mat-icon>check</mat-icon>
+            </button>
+          </div>
+        </mat-form-field>
+        }
+
+        <p class="text-sm text-gray-500">{{ '@' + user.userName }}</p>
       </div>
     </div>
 
@@ -25,10 +54,10 @@
           <mat-icon class="text-indigo-500">email</mat-icon>
           <div>
             <p class="text-sm text-gray-500">Email</p>
-            <p class="text-base font-medium text-gray-800">{{ 'habibur@example.com' }}</p>
+            <p class="text-base font-medium text-gray-800">{{ user.email }}</p>
           </div>
         </div>
-        <button mat-icon-button aria-label="Edit email" class="text-gray-500 hover:text-indigo-600">
+        <button mat-icon-button aria-label="Edit email" class="text-gray-500 hover:text-indigo-600" [disabled]="editEnabledFor">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
@@ -39,13 +68,16 @@
           <mat-icon class="text-indigo-500">phone</mat-icon>
           <div>
             <p class="text-sm text-gray-500">Phone</p>
-            <p class="text-base font-medium text-gray-800">+880 1234 567890</p>
+            <p class="text-base" [class]="{'text-gray-800 font-medium': user.phone, 'text-gray-400': !user.phone}">
+              {{user.phone ?? 'No phone number yet' }}
+            </p>
           </div>
         </div>
-        <button mat-icon-button aria-label="Edit phone" class="text-gray-500 hover:text-indigo-600">
+        <button mat-icon-button aria-label="Edit phone" class="text-gray-500 hover:text-indigo-600" [disabled]="editEnabledFor">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
     </div>
   </div>
 </mat-dialog-content>
+}
