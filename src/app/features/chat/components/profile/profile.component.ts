@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, resource, signal } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +17,7 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'chat-profile',
   imports: [
+    CommonModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
@@ -39,11 +41,11 @@ export class ProfileComponent {
   readonly saveInProgress = signal(false);
 
   editEnabledFor: keyof UpdateUserRequest | undefined = undefined;
-  editData: string = '';
+  editData: string | undefined = '';
 
   userResource = this.userStateService.userResource;
 
-  onClickEdit(fieldName: keyof UpdateUserRequest, data: string) {
+  onClickEdit(fieldName: keyof UpdateUserRequest, data: string | undefined) {
     this.editData = data;
     this.editEnabledFor = fieldName;
   }
@@ -54,7 +56,7 @@ export class ProfileComponent {
   }
 
   onSaveEdit(user: GetUserDetailResponse) {
-    if (this.editEnabledFor && user[this.editEnabledFor]) {
+    if (this.editEnabledFor && user[this.editEnabledFor] !== undefined) {
       this.updateUser(user);
     }
   }
@@ -68,7 +70,7 @@ export class ProfileComponent {
       phone: user.phone,
     };
 
-    request[this.editEnabledFor!] = this.editData;
+    request[this.editEnabledFor!] = this.editData!;
 
     this.userService.update(this.currentUserId!, request)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -77,7 +79,7 @@ export class ProfileComponent {
           this.saveInProgress.set(false);
           this.userResource.reload();
 
-          user[this.editEnabledFor!] = this.editData;
+          user[this.editEnabledFor!] = this.editData!;
 
           this.editEnabledFor = undefined;
           this.editData = '';
