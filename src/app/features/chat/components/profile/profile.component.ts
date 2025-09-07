@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { AuthService, ToasterService } from '@core/services';
 import { GetUserDetailResponse, UpdateUserRequest } from '@features/chat/models';
+import { UserStateService } from '@features/chat/services';
 import { UserService } from '@features/chat/services/user.service';
 import { Subject } from 'rxjs';
 
@@ -30,20 +31,17 @@ import { Subject } from 'rxjs';
 export class ProfileComponent {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly userStateService = inject(UserStateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toasterService = inject(ToasterService);
 
   private readonly currentUserId = this.authService.userId;
-  private readonly reload$ = new Subject<void>();
   readonly saveInProgress = signal(false);
 
   editEnabledFor: keyof UpdateUserRequest | undefined = undefined;
   editData: string = '';
 
-  userResource = rxResource({
-    request: () => this.reload$,
-    loader: () => this.userService.getUserDetail(),
-  });
+  userResource = this.userStateService.userResource;
 
   onClickEdit(fieldName: keyof UpdateUserRequest, data: string) {
     this.editData = data;

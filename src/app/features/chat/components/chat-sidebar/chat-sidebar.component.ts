@@ -9,7 +9,7 @@ import { Conversation, NewConversation } from '@features/chat/models';
 import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services';
-import { ChatStateService, ConversationService, UserService } from '@features/chat/services';
+import { ChatStateService, ConversationService, UserService, UserStateService } from '@features/chat/services';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ConversationType } from '@core/enums';
 import { catchError, map, of, startWith } from 'rxjs';
@@ -36,16 +36,19 @@ export class ChatSidebarComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly chatStateService = inject(ChatStateService);
   private readonly userService = inject(UserService);
+  private readonly userStateService = inject(UserStateService);
   readonly conversationList = this.chatStateService.conversationList;
   readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
   readonly selectedConversation = this.chatStateService.selectedConversation;
 
-  userDetailState$ = this.userService.getUserDetail()
-    .pipe(
-      map(response => ({ isLoading: false, data: response, error: null })),
-      startWith({ isLoading: true, data: null, error: null }),
-      catchError(error => of({ isLoading: false, data: null, error: 'An error occurred while loading user details.' }))
-    );
+  // userDetailState$ = this.userService.getUserDetail()
+  //   .pipe(
+  //     map(response => ({ isLoading: false, data: response, error: null })),
+  //     startWith({ isLoading: true, data: null, error: null }),
+  //     catchError(error => of({ isLoading: false, data: null, error: 'An error occurred while loading user details.' }))
+  //   );
+
+  readonly userDetailResource = this.userStateService.userResource;
 
   ngOnInit(): void {
     this.chatStateService.loadConversations();
