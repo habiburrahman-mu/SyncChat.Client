@@ -64,12 +64,20 @@ export class ProfileComponent {
   updateUser(user: GetUserDetailResponse) {
     this.saveInProgress.set(true);
 
-    this.userService.update(this.currentUserId!, this.editEnabledFor!, this.editData)
+    const request: UpdateUserRequest = {
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+    };
+
+    request[this.editEnabledFor!] = this.editData;
+
+    this.userService.update(this.currentUserId!, request)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.saveInProgress.set(false);
-          this.reload$.next();
+          this.userResource.reload();
 
           user[this.editEnabledFor!] = this.editData;
 

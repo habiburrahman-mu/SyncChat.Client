@@ -23,21 +23,8 @@ export class UserService {
     return this.http.get<GetUserDetailResponse>(url);
   }
 
-  update = <K extends Extract<keyof UpdateUserRequest, string>>(
-    userId: number,
-    fieldName: K,
-    value: UpdateUserRequest[K]
-  ) => {
+  update = (userId: number, request: UpdateUserRequest) => {
     const url = API_ROUTES.User.Update + '/' + userId;
-
-    const jsonPatchDoc: JsonPatchForField<UpdateUserRequest, K>[] = [
-      {
-        op: JsonPatchOperation.Replace,
-        path: `/${fieldName}`,
-        value
-      } as JsonPatchForField<UpdateUserRequest, K>
-    ];
-
-    return this.http.patch(url, jsonPatchDoc);
+    return this.http.put(url, request);
   };
 }

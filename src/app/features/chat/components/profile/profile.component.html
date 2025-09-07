@@ -1,6 +1,6 @@
 @if(userResource.isLoading()) {
 <div class="flex justify-center items-center h-64">
-  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  <mat-progress-spinner mode="indeterminate" diameter="22" color="accent"></mat-progress-spinner>
 </div>
 } @else if(userResource.error()) {
 <div class="text-center text-red-500">
