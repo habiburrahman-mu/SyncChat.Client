@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, resource, signal } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgModel } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -55,8 +55,18 @@ export class ProfileComponent {
     this.editData = '';
   }
 
+  onEnter(input: NgModel, user: GetUserDetailResponse) {
+    if (input.valid) {
+      this.onSaveEdit(user);
+    }
+  }
+
   onSaveEdit(user: GetUserDetailResponse) {
     if (this.editEnabledFor && user[this.editEnabledFor] !== undefined) {
+      if (this.editData === '') {
+        this.editData = undefined;
+      }
+
       this.updateUser(user);
     }
   }
