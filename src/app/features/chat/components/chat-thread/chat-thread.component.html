@@ -29,6 +29,19 @@
   }
 
   @for (message of messages() ?? []; track message.messageId) {
+
+  @switch (message.type) {
+
+  @case (MessageType.System) {
+  <div class="flex justify-center">
+    <div class="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full select-none">
+      {{ message.metaData | json }}
+    </div>
+  </div>
+  }
+
+  @default {
+
   <div class="flex flex-col mb-2" [ngClass]="
           message.senderId === currentUserId
             ? 'self-end items-end text-white'
@@ -57,6 +70,10 @@
       {{ message.updatedAt | chatTimestamp }}
     </span>
   </div>
+
+  }
+  }
+
   }
 </div>
 

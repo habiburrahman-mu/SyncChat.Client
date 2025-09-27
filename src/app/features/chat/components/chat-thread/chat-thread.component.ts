@@ -64,6 +64,8 @@ export class ChatThreadComponent implements OnInit {
 
   private readonly typing$ = new Subject<void>();
 
+  readonly MessageType = MessageType;
+
   constructor() {
     effect(() => {
       const messageLoading = this.isSelectedConversationMessagesLoading();
@@ -190,7 +192,8 @@ export class ChatThreadComponent implements OnInit {
               senderUserName: response.senderUserName,
               senderName: response.senderName,
               updatedAt: response.updatedAt,
-              metaData: response.metaData
+              metaData: response.metaData,
+              type: response.type
             });
           },
           error: (err: HttpErrorResponse) => {
