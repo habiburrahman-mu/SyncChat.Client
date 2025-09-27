@@ -189,7 +189,8 @@ export class ChatThreadComponent implements OnInit {
               content: response.content ?? null,
               senderUserName: response.senderUserName,
               senderName: response.senderName,
-              updatedAt: response.updatedAt
+              updatedAt: response.updatedAt,
+              metaData: response.metaData
             });
           },
           error: (err: HttpErrorResponse) => {

@@ -16,7 +16,8 @@ export class MessageMapper {
       content: dto.content,
       senderUserName: dto.senderUserName,
       senderName: dto.senderName,
-      updatedAt: dto.updatedAt
+      updatedAt: dto.updatedAt,
+      metaData: dto.metaData
     };
 
     return message;
