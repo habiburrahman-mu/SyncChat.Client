@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '@core/services';
 import { ChatStateService, ConversationService } from '@features/chat/services';
-import { catchError, filter, map, of, startWith, switchMap } from 'rxjs';
+import { catchError, filter, map, of, startWith, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'chat-detail-members',
@@ -32,6 +32,7 @@ export class ChatDetailMembersComponent {
   private conversation = this.chatStateService.selectedConversation;
   private conversation$ = toObservable(this.conversation);
   currentUserId = this.authService.userId!;
+  readonly conversationMemberList = this.chatStateService.conversationMemberList;
 
   conversationMemberState$ = this.conversation$
     .pipe(
@@ -39,6 +40,7 @@ export class ChatDetailMembersComponent {
       switchMap(conversation =>
         this.conversationService.getMembers(conversation.id)
         .pipe(
+          tap(members => this.conversationMemberList.set(members)),
           map(members => ({isLoading: false, data: members, error: null})),
           startWith({isLoading: true, data: null, error: null}),
           catchError(error => of({isLoading: false, data: null, error: 'An error occurred while loading member list.'}))

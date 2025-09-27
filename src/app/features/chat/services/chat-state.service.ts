@@ -1,6 +1,6 @@
 import { computed, DestroyRef, Injectable, signal } from '@angular/core';
 import { ConversationService, MessageService } from '.';
-import { Conversation, ConversationDTO, Message, MessageDTO } from '../models';
+import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '@core/services';
 import { ChatNotificationType } from '@core/enums';
@@ -53,6 +53,8 @@ export class ChatStateService {
   private destroySubscriptionSubject = new Subject<void>();
 
   private readonly _pageSize = 20 as const;
+
+  conversationMemberList = signal<ConversationMemberDTO[]>([]);
 
   constructor(
     private readonly conversationService: ConversationService,
