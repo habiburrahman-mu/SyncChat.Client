@@ -16,6 +16,7 @@ import { ConversationService, MessageService, ChatStateService } from '@features
 import { ChatTimestampPipe } from '@shared/pipes';
 import { Subject, throttleTime } from 'rxjs';
 import { ChatTypingIndicatorComponent } from '../chat-typing-indicator/chat-typing-indicator.component';
+import { SystemMessagePipe } from '@features/chat/pipes';
 
 @Component({
   selector: 'chat-chat-thread',
@@ -29,7 +30,8 @@ import { ChatTypingIndicatorComponent } from '../chat-typing-indicator/chat-typi
     MatProgressSpinnerModule,
     MatTooltipModule,
     ChatTimestampPipe,
-    ChatTypingIndicatorComponent
+    ChatTypingIndicatorComponent,
+    SystemMessagePipe
   ],
   templateUrl: './chat-thread.component.html',
   styleUrl: './chat-thread.component.scss'
@@ -65,6 +67,8 @@ export class ChatThreadComponent implements OnInit {
   private readonly typing$ = new Subject<void>();
 
   readonly MessageType = MessageType;
+
+  readonly conversationMemberList = this.chatStateService.conversationMemberList;
 
   constructor() {
     effect(() => {
@@ -192,7 +196,7 @@ export class ChatThreadComponent implements OnInit {
               senderUserName: response.senderUserName,
               senderName: response.senderName,
               updatedAt: response.updatedAt,
-              metaData: response.metaData,
+              metaData: response.metaData ? JSON.parse(response.metaData) : undefined,
               type: response.type
             });
           },

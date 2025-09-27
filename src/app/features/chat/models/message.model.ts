@@ -10,5 +10,5 @@ export interface Message {
   senderUserName: string;
   senderName: string;
   updatedAt: string;
-  metaData?: string;
+  metaData?: Record<string, any>;
 }

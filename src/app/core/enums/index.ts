@@ -6,3 +6,4 @@ export * from './hub-methods.enum';
 export * from './member-role.enum';
 export * from './user-status.enum';
 export * from './json-patch-operation.enum';
+export * from './system-message-type.enum';
