@@ -16,6 +16,13 @@ export class SystemMessagePipe implements PipeTransform {
         if(createdBy !== undefined) {
           return `${this.getNameById(Number(createdBy), conversationMemberList) || 'Someone'} created the conversation.`;
         }
+      } else if(type === SystemMessageType.MemberAdded) {
+        const addedBy = metaData['AddedBy'] as string;
+        const memberId = metaData['UserId'] as string;
+
+        if(addedBy !== undefined && memberId !== undefined) {
+          return `${this.getNameById(Number(addedBy), conversationMemberList) || 'Someone'} added ${this.getNameById(Number(memberId), conversationMemberList) || 'a member'}.`;
+        }
       }
     }
 
