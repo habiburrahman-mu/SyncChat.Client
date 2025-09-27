@@ -6,4 +6,6 @@ export interface ConversationMemberDTO {
   name: string;
   role: MemberRole;        // Assuming MemberRole is defined as a TS enum or type
   joinedAt: string;        // DateTimeOffset serialized as ISO 8601 string
+  isActive: boolean;
+  leftAt: string | null;   // DateTimeOffset serialized as ISO 8601 string or null
 }
