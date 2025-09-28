@@ -9,12 +9,14 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
 
+    @if(conversation()?.conversationType === ConversationType.Group) {
     <div class="flex justify-end">
-      <button mat-raised-button aria-label="Add Member" matTooltip="Add Member" (click)="onClickAddMember()">
+      <button mat-raised-button aria-label="Add Member" (click)="onClickAddMember()">
         <mat-icon>group_add</mat-icon>
         Add Member
       </button>
     </div>
+    }
 
 
     <div class="overflow-auto max-h-100">
