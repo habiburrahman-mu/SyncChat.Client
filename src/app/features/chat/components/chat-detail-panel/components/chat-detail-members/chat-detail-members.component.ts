@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '@core/services';
 import { ChatStateService, ConversationService } from '@features/chat/services';
 import { catchError, filter, map, of, startWith, switchMap, tap } from 'rxjs';
@@ -18,7 +20,9 @@ import { catchError, filter, map, of, startWith, switchMap, tap } from 'rxjs';
     MatListModule,
     MatMenuModule,
     CommonModule,
-    MatIconModule
+    MatIconModule,
+    MatTooltipModule,
+    MatButtonModule
 ],
   templateUrl: './chat-detail-members.component.html',
   styleUrl: './chat-detail-members.component.scss',
@@ -47,4 +51,8 @@ export class ChatDetailMembersComponent {
         )
       ),
     );
+
+  onClickAddMember() {
+    console.log('Add Member clicked');
+  }
 }
