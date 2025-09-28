@@ -38,7 +38,7 @@ export class ConversationService {
   }
 
   getMembers = (conversationId: number) => {
-    const url = `${API_ROUTES.Conversation.GetMembers}/${conversationId}`;
+    const url = `${API_ROUTES.ConversationMember.GetList}/${conversationId}`;
     return this.http.get<ConversationMemberDTO[]>(url);
   }
 }
