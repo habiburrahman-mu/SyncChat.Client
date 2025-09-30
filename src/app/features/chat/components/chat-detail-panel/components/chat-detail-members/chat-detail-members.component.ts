@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConversationType } from '@core/enums';
 import { AuthService } from '@core/services';
-import { ChatStateService, ConversationService } from '@features/chat/services';
+import { ChatStateService, ConversationMemberService } from '@features/chat/services';
 import { catchError, filter, map, of, startWith, switchMap, tap } from 'rxjs';
 import { ChatAddMemberDialogComponent } from '../chat-add-member-dialog/chat-add-member-dialog.component';
 
@@ -33,7 +33,7 @@ import { ChatAddMemberDialogComponent } from '../chat-add-member-dialog/chat-add
 })
 export class ChatDetailMembersComponent {
   private readonly chatStateService = inject(ChatStateService);
-  private readonly conversationService = inject(ConversationService);
+  private readonly conversationMemberService = inject(ConversationMemberService);
   private readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
 
@@ -47,7 +47,7 @@ export class ChatDetailMembersComponent {
     .pipe(
       filter(conversation => !!conversation),
       switchMap(conversation =>
-        this.conversationService.getMembers(conversation.id)
+        this.conversationMemberService.getList(conversation.id)
           .pipe(
             tap(members => this.conversationMemberList.set(members)),
             map(members => ({ isLoading: false, data: members, error: null })),
