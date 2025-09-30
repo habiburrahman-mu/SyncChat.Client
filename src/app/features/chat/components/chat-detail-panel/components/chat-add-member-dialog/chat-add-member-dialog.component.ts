@@ -10,8 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { AuthService } from '@core/services';
-import { GetUserByUserNameResponse } from '@features/chat/models';
-import { ChatStateService, UserService } from '@features/chat/services';
+import { AddConversationMemberRequest, GetUserByUserNameResponse } from '@features/chat/models';
+import { ChatStateService, ConversationMemberService, UserService } from '@features/chat/services';
 
 @Component({
   selector: 'chat-add-member-dialog',
@@ -34,6 +34,7 @@ export class ChatAddMemberDialogComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
   private readonly chatStateService = inject(ChatStateService);
+  private readonly conversationMemberService = inject(ConversationMemberService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly dialogRef: MatDialogRef<ChatAddMemberDialogComponent, boolean> = inject(MatDialogRef<ChatAddMemberDialogComponent, boolean>);
 
@@ -57,6 +58,7 @@ export class ChatAddMemberDialogComponent implements OnInit {
   });
 
   selectedConversationMemberIds = this.chatStateService.conversationMemberList;
+  selectedConversation = this.chatStateService.selectedConversation;
 
   selectedUserAlreadyMember = computed(() => {
     return this.selectedConversationMemberIds().some(x => x.userID === this.userSearchResponse()?.userID);
@@ -104,6 +106,27 @@ export class ChatAddMemberDialogComponent implements OnInit {
   }
 
   onSave() {
-    this.dialogRef.close(true);
+    const selectedUsers = this.selectedUsers();
+
+    if (selectedUsers.length === 0) {
+      return;
+    }
+
+    const request: AddConversationMemberRequest = {
+      conversationId: this.selectedConversation()!.id,
+      memberIds: selectedUsers.map(x => x.userID)
+    };
+
+    this.saveInProgress.set(true);
+    this.conversationMemberService.add(request)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.saveInProgress.set(false);
+        }
+      });
   }
 }

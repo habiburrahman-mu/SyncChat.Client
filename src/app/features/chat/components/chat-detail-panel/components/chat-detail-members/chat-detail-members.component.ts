@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -12,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConversationType } from '@core/enums';
 import { AuthService } from '@core/services';
 import { ChatStateService, ConversationMemberService } from '@features/chat/services';
-import { catchError, filter, map, of, startWith, switchMap, tap } from 'rxjs';
+import { catchError, combineLatest, filter, map, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { ChatAddMemberDialogComponent } from '../chat-add-member-dialog/chat-add-member-dialog.component';
 
 @Component({
@@ -36,6 +36,7 @@ export class ChatDetailMembersComponent {
   private readonly conversationMemberService = inject(ConversationMemberService);
   private readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
+  private readonly destroyRef = inject(DestroyRef);
 
   conversation = this.chatStateService.selectedConversation;
   private conversation$ = toObservable(this.conversation);
@@ -43,19 +44,28 @@ export class ChatDetailMembersComponent {
   readonly conversationMemberList = this.chatStateService.conversationMemberList;
   readonly ConversationType = ConversationType;
 
-  conversationMemberState$ = this.conversation$
-    .pipe(
-      filter(conversation => !!conversation),
-      switchMap(conversation =>
-        this.conversationMemberService.getList(conversation.id)
-          .pipe(
-            tap(members => this.conversationMemberList.set(members)),
-            map(members => ({ isLoading: false, data: members, error: null })),
-            startWith({ isLoading: true, data: null, error: null }),
-            catchError(error => of({ isLoading: false, data: null, error: 'An error occurred while loading member list.' }))
-          )
-      ),
-    );
+  private readonly refreshConversationMembers$ = new Subject<void>();
+
+  conversationMemberState$ = combineLatest([
+    this.conversation$.pipe(filter(conversation => !!conversation)),
+    this.refreshConversationMembers$.pipe(startWith(void 0)),
+    this.chatStateService.memberAddedToSelectedConversation$.pipe(startWith(void 0))
+  ]).pipe(
+    switchMap(([conversation]) =>
+      this.conversationMemberService.getList(conversation.id).pipe(
+        tap(members => this.conversationMemberList.set(members)),
+        map(members => ({ isLoading: false, data: members, error: null })),
+        startWith({ isLoading: true, data: null, error: null }),
+        catchError(() =>
+          of({
+            isLoading: false,
+            data: null,
+            error: 'An error occurred while loading member list.'
+          })
+        )
+      )
+    )
+  );
 
   onClickAddMember() {
     const dialogRef = this.dialog.open<ChatAddMemberDialogComponent, undefined, boolean>(ChatAddMemberDialogComponent, {
@@ -63,8 +73,11 @@ export class ChatDetailMembersComponent {
     });
 
     dialogRef.afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(needRefresh => {
-
+        if (needRefresh) {
+          this.refreshConversationMembers$.next();
+        }
       });
   }
 }

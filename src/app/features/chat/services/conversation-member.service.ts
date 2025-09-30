@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { API_ROUTES } from '@core/constants';
-import { ConversationMemberDTO } from '../models';
+import { AddConversationMemberRequest, ConversationMemberDTO } from '../models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -13,5 +13,10 @@ export class ConversationMemberService {
   getList = (conversationId: number) => {
     const url = `${API_ROUTES.ConversationMember.GetList}/${conversationId}`;
     return this.http.get<ConversationMemberDTO[]>(url);
+  }
+
+  add = (request: AddConversationMemberRequest) => {
+    const url = API_ROUTES.ConversationMember.Add;
+    return this.http.post<void>(url, request);
   }
 }

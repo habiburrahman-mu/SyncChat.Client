@@ -52,6 +52,9 @@ export class ChatStateService {
   private conversationChangeSubject = new Subject<void>();
   private destroySubscriptionSubject = new Subject<void>();
 
+  private readonly memberAddedToSelectedConversation = new Subject<void>();
+  readonly memberAddedToSelectedConversation$ = this.memberAddedToSelectedConversation.asObservable();
+
   private readonly _pageSize = 20 as const;
 
   conversationMemberList = signal<ConversationMemberDTO[]>([]);
@@ -85,26 +88,29 @@ export class ChatStateService {
       .subscribe({
         next: (notification) => {
           const newConversation = notification.data;
+          this.handleNewConversationNotification(newConversation);
+        }
+      });
 
-          this.conversations.update(conversations => {
-            const conversation: Conversation = {
-              id: newConversation.conversationId,
-              name: newConversation.name,
-              lastMessage: newConversation.lastMessage,
-              conversationType: newConversation.type,
-              otherUserId: newConversation.otherUserId,
-              members: [], // TODO
-              messages: signal(undefined),
-              hasMoreMessages: true,
-              olderMessageLoading: signal(false),
-              hasUnreadMessages: true, // New conversation is unread
-              lastSeenMessageId: null // Initialize as null
-            };
+    this.notificationService.listen<number>(ChatNotificationType.NewMemberAdded)
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe({
+        next: (notification) => {
+          const conversationId = notification.data;
 
-            conversations.unshift(conversation);
+          if (conversationId === this.selectedConversationId()) {
+            this.memberAddedToSelectedConversation.next();
+          }
+        }
+      });
 
-            return conversations;
-          });
+    this.notificationService.listen<ConversationDTO>(ChatNotificationType.AddedToConversation)
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe({
+        next: (notification) => {
+          const newConversation = notification.data;
+
+          this.handleNewConversationNotification(newConversation);
         }
       });
 
@@ -117,6 +123,28 @@ export class ChatStateService {
           }
         }
       });
+  }
+
+  private handleNewConversationNotification(newConversation: ConversationDTO) {
+    const conversation = this.conversations().find(c => c.id === newConversation.conversationId);
+
+    if (!conversation) {
+      const conversation: Conversation = {
+        id: newConversation.conversationId,
+        name: newConversation.name,
+        lastMessage: newConversation.lastMessage,
+        conversationType: newConversation.type,
+        otherUserId: newConversation.otherUserId,
+        members: [], // TODO
+        messages: signal(undefined),
+        hasMoreMessages: true,
+        olderMessageLoading: signal(false),
+        hasUnreadMessages: true,
+        lastSeenMessageId: null
+      };
+
+      this.addConversation(conversation);
+    }
   }
 
   toggleChatDetailPanel() {

@@ -5,5 +5,7 @@ export enum ChatNotificationType {
   ConversationUpdated = 'ConversationUpdated',
   NewConversationCreated = 'NewConversationCreated',
   TypingStarted = 'TypingStarted',
-  TypingStopped = 'TypingStopped'
+  TypingStopped = 'TypingStopped',
+  NewMemberAdded = 'NewMemberAdded',
+  AddedToConversation = 'AddedToConversation',
 }
