@@ -22,7 +22,7 @@
         (keydown.enter)="searchUser()" />
     </mat-form-field>
 
-    <button mat-raised-button color="outline" (click)="searchUser()" [disabled]="searchText.length === 0">
+    <button mat-raised-button color="outline" (click)="searchUser()" [disabled]="searchText().length === 0">
       @if(isLoading()) {<mat-icon><mat-spinner diameter="18" color="accent"></mat-spinner></mat-icon>}
       @else {<mat-icon aria-hidden="false" aria-label="Search by username" fontIcon="search"></mat-icon>}
       Search
@@ -46,6 +46,7 @@
 
       <span *ngIf="user.userID === currentUserId" class="text-xs text-gray-500 ml-1">(You)</span>
       <span *ngIf="isUserSelected()" class="text-xs text-gray-500 ml-1">(Already added)</span>
+      <span *ngIf="selectedUserAlreadyMember()" class="text-xs text-gray-500 ml-1">(Already member)</span>
     </div>
 
     <div *ngIf="userSearchResponse() === null" class="text-sm text-gray-500 p-3">

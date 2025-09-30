@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, model, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -10,11 +11,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { AuthService } from '@core/services';
 import { GetUserByUserNameResponse } from '@features/chat/models';
-import { UserService } from '@features/chat/services';
+import { ChatStateService, UserService } from '@features/chat/services';
 
 @Component({
   selector: 'chat-add-member-dialog',
   imports: [
+    CommonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -29,6 +31,12 @@ import { UserService } from '@features/chat/services';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatAddMemberDialogComponent implements OnInit {
+  private readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
+  private readonly chatStateService = inject(ChatStateService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly dialogRef: MatDialogRef<ChatAddMemberDialogComponent, boolean> = inject(MatDialogRef<ChatAddMemberDialogComponent, boolean>);
+
   selectedUsers = signal<GetUserByUserNameResponse[]>([]);
   currentUserId: number = 0;
   searchText = model<string>('');
@@ -48,10 +56,11 @@ export class ChatAddMemberDialogComponent implements OnInit {
     return false;
   });
 
-  private readonly authService = inject(AuthService);
-  private readonly userService = inject(UserService);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly dialogRef: MatDialogRef<ChatAddMemberDialogComponent, boolean> = inject(MatDialogRef<ChatAddMemberDialogComponent, boolean>);
+  selectedConversationMemberIds = this.chatStateService.conversationMemberList;
+
+  selectedUserAlreadyMember = computed(() => {
+    return this.selectedConversationMemberIds().some(x => x.userID === this.userSearchResponse()?.userID);
+  });
 
   ngOnInit() {
     this.currentUserId = this.authService.userId!;
@@ -79,7 +88,7 @@ export class ChatAddMemberDialogComponent implements OnInit {
   }
 
   selectUser(user: GetUserByUserNameResponse) {
-    if (!this.isUserSelected()) {
+    if (!this.isUserSelected() && !this.selectedUserAlreadyMember()) {
       this.selectedUsers.update(users => [...users, user]);
       this.searchText.set('');
       this.userSearchResponse.set(undefined);
