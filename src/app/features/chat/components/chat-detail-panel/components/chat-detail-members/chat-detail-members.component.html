@@ -9,7 +9,7 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
 
-    @if(conversation()?.conversationType === ConversationType.Group) {
+    @if(state && !state.isLoading && conversation()?.conversationType === ConversationType.Group && (isCurrentUserAdmin() || isCurrentUserOwner())) {
     <div class="flex justify-end">
       <button mat-raised-button aria-label="Add Member" (click)="onClickAddMember()">
         <mat-icon>group_add</mat-icon>

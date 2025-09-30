@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,7 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ConversationType } from '@core/enums';
+import { ConversationType, MemberRole } from '@core/enums';
 import { AuthService } from '@core/services';
 import { ChatStateService, ConversationMemberService } from '@features/chat/services';
 import { catchError, combineLatest, filter, map, of, startWith, Subject, switchMap, tap } from 'rxjs';
@@ -66,6 +66,18 @@ export class ChatDetailMembersComponent {
       )
     )
   );
+
+  isCurrentUserAdmin = computed(() => {
+    const members = this.conversationMemberList();
+    const currentUser = members.find(x => x.userID === this.currentUserId);
+    return currentUser!.role === MemberRole.Admin;
+  });
+
+  isCurrentUserOwner = computed(() => {
+    const members = this.conversationMemberList();
+    const currentUser = members.find(x => x.userID === this.currentUserId);
+    return currentUser!.role === MemberRole.Owner;
+  });
 
   onClickAddMember() {
     const dialogRef = this.dialog.open<ChatAddMemberDialogComponent, undefined, boolean>(ChatAddMemberDialogComponent, {
