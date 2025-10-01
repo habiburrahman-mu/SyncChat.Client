@@ -52,6 +52,7 @@ export class ChatSidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatStateService.loadConversations();
+    this.userDetailResource.reload();
   }
 
   createNewChat() {
