@@ -6,6 +6,7 @@ export interface Conversation {
   id: number;
   name: string;
   lastMessage: string | null;
+  lastMessageMetaData: Record<string, any> | null;
   conversationType: ConversationType;
   members: number[];
   otherUserId: number | null;

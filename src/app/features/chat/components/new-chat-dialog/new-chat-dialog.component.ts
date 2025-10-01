@@ -139,6 +139,7 @@ export class NewChatDialogComponent implements OnInit {
           const conversation: Conversation = {
             id: conversationId,
             lastMessage: null,
+            lastMessageMetaData: null,
             members: selectedUsers.map(x => x.userID),
             name: isGroup ? this.groupName : selectedUsers[0].name,
             conversationType: isGroup ? ConversationType.Group : ConversationType.Direct,

@@ -53,7 +53,10 @@ export class ChatDetailMembersComponent {
   ]).pipe(
     switchMap(([conversation]) =>
       this.conversationMemberService.getList(conversation.id).pipe(
-        tap(members => this.conversationMemberList.set(members)),
+        tap(members => {
+          this.conversationMemberList.set(members);
+          this.chatStateService.updateConversationMemberStore(conversation.id, members);
+        }),
         map(members => ({ isLoading: false, data: members, error: null })),
         startWith({ isLoading: true, data: null, error: null }),
         catchError(() =>

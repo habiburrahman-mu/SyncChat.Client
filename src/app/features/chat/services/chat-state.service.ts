@@ -1,11 +1,11 @@
 import { computed, DestroyRef, Injectable, signal } from '@angular/core';
-import { ConversationService, MessageService } from '.';
+import { ConversationMemberService, ConversationService, MessageService } from '.';
 import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NotificationService } from '@core/services';
+import { AuthService, NotificationService } from '@core/services';
 import { ChatNotificationType } from '@core/enums';
-import { MessageMapper } from '../utils';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { MessageMapper, SystemMessageUtil } from '../utils';
+import { BehaviorSubject, forkJoin, of, Subject, takeUntil, tap } from 'rxjs';
 import { TypingEvent } from '@core/models';
 import { UI_CONSTANTS } from '@core/constants';
 
@@ -59,11 +59,15 @@ export class ChatStateService {
 
   conversationMemberList = signal<ConversationMemberDTO[]>([]);
 
+  conversationMemberListStore = new Map<number, ConversationMemberDTO[]>();
+
   constructor(
     private readonly conversationService: ConversationService,
+    private readonly conversationMemberService: ConversationMemberService,
     private readonly destroyRef: DestroyRef,
     private messageService: MessageService,
     private notificationService: NotificationService,
+    private authService: AuthService,
   ) { }
 
   onInitialize() {
@@ -133,6 +137,7 @@ export class ChatStateService {
         id: newConversation.conversationId,
         name: newConversation.name,
         lastMessage: newConversation.lastMessage,
+        lastMessageMetaData: newConversation.lastMessageMetaData ? JSON.parse(newConversation.lastMessageMetaData) : null,
         conversationType: newConversation.type,
         otherUserId: newConversation.otherUserId,
         members: [], // TODO
@@ -166,14 +171,18 @@ export class ChatStateService {
 
 
   private refreshLastMessage(conversationId: number) {
-    this.conversationService.getLastMessage(conversationId)
+    forkJoin([
+      this.conversationService.getLastMessage(conversationId),
+      this.getConversationMemberList(conversationId)
+    ])
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: (lastMessage) => {
+        next: ([response, members]) => {
           this.conversations.update(conversations => {
             const conversation = conversations.find(c => c.id === conversationId);
             if (conversation) {
-              conversation.lastMessage = lastMessage;
+              conversation.lastMessage = response.content ?? (response.metaData ? this.getLastMessageFromMetaData(response.metaData, members) : null);
+              conversation.lastMessageMetaData = response.metaData ? JSON.parse(response.metaData) : null;
               conversation.hasUnreadMessages = true;
               conversation.messages.update(messages => {
                 messages = undefined; // Reset messages to trigger reloading
@@ -188,6 +197,27 @@ export class ChatStateService {
       });
   }
 
+  getLastMessageFromMetaData(metaData: string | null, members: ConversationMemberDTO[]): string | null {
+    if (!metaData) return null;
+
+    const parsedMetaData = JSON.parse(metaData);
+    return SystemMessageUtil.getSystemMessage(parsedMetaData, members, this.authService.userId!);
+  }
+
+  getConversationMemberList(conversationId: number) {
+    const memberListFromStore = this.conversationMemberListStore.get(conversationId);
+    if (memberListFromStore) {
+      return of(memberListFromStore);
+    } else {
+      return this.conversationMemberService.getList(conversationId).pipe(
+        takeUntil(this.destroySubscriptionSubject),
+        tap(members => {
+          this.conversationMemberListStore.set(conversationId, members);
+        })
+      );
+    }
+  }
+
   loadConversations() {
     this.conversationsLoading.set(true);
     this.conversationService.getList()
@@ -198,6 +228,7 @@ export class ChatStateService {
             id: c.conversationId,
             name: c.name,
             lastMessage: c.lastMessage,
+            lastMessageMetaData: c.lastMessageMetaData ? JSON.parse(c.lastMessageMetaData) : null,
             conversationType: c.type,
             otherUserId: c.otherUserId,
             members: [], // TODO
@@ -389,7 +420,10 @@ export class ChatStateService {
           return messages;
         });
 
-        conversation.lastMessage = message.content;
+        const members = this.conversationMemberListStore.get(conversationId);
+
+        conversation.lastMessage = message.content ?? (message.metaData && members ? SystemMessageUtil.getSystemMessage(message.metaData, members, this.authService.userId!) : null);
+        conversation.lastMessageMetaData = message.metaData ? message.metaData : null;
       }
 
       return conversations;
@@ -444,6 +478,26 @@ export class ChatStateService {
 
   typingIndicator(conversationId: number, isTyping: boolean) {
     this.notificationService.typing(conversationId, isTyping);
+  }
+
+  updateConversationMemberStore(conversationId: number, members: ConversationMemberDTO[]) {
+    this.conversationMemberListStore.set(conversationId, members);
+    this.updateLastMessage(conversationId);
+  }
+
+  private updateLastMessage(conversationId: number) {
+    this.conversations.update(conversations => {
+      const conversation = conversations.find(c => c.id === conversationId);
+      if (conversation) {
+        if (conversation.lastMessageMetaData !== null) {
+          const memberList = this.conversationMemberListStore.get(conversationId);
+          if (conversation.lastMessageMetaData && memberList) {
+            conversation.lastMessage = SystemMessageUtil.getSystemMessage(conversation.lastMessageMetaData, memberList, this.authService.userId!);
+          }
+        }
+      }
+      return conversations;
+    });
   }
 
   onDestroy() {
