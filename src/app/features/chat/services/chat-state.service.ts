@@ -104,6 +104,9 @@ export class ChatStateService {
 
           if (conversationId === this.selectedConversationId()) {
             this.memberAddedToSelectedConversation.next();
+          } else {
+            this.conversationMemberListStore.delete(conversationId);
+            this.refreshLastMessage(conversationId);
           }
         }
       });
