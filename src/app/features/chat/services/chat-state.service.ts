@@ -200,7 +200,7 @@ export class ChatStateService {
   }
 
   getLastMessageFromMetaData(metaData: string | null, members: ConversationMemberDTO[]): string | null {
-    if (!metaData) return null;
+    if (!metaData || metaData === "{}") return null;
 
     const parsedMetaData = JSON.parse(metaData);
     return SystemMessageUtil.getSystemMessage(parsedMetaData, members, this.authService.userId!);
@@ -229,7 +229,7 @@ export class ChatStateService {
           const conversations = response.conversations.map((c) => ({
             id: c.conversationId,
             name: c.name,
-            lastMessage: c.lastMessage,
+            lastMessage: c.lastMessage ?? this.getLastMessageFromMetaData(c.lastMessageMetaData, []),
             lastMessageMetaData: c.lastMessageMetaData && c.lastMessageMetaData !== "{}" ? JSON.parse(c.lastMessageMetaData) : null,
             conversationType: c.type,
             otherUserId: c.otherUserId,
