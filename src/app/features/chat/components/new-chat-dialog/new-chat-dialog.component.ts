@@ -148,11 +148,11 @@ export class NewChatDialogComponent implements OnInit {
             olderMessageLoading: signal(false),
             messages: signal(undefined),
             hasUnreadMessages: false,
-            lastSeenMessageId: null
+            lastSeenMessageId: null,
           };
 
           this.chatStateService.addConversation(conversation);
-          this.chatStateService.selectConversation(conversation.id);
+          this.chatStateService.selectConversation(conversation.id, true);
           this.dialogRef.close();
         },
         error: err => {

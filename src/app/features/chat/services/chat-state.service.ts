@@ -170,7 +170,7 @@ export class ChatStateService {
 
 
 
-  private refreshLastMessage(conversationId: number) {
+  private refreshLastMessage(conversationId: number, fromNotification: boolean = false) {
     forkJoin([
       this.conversationService.getLastMessage(conversationId),
       this.getConversationMemberList(conversationId)
@@ -183,11 +183,13 @@ export class ChatStateService {
             if (conversation) {
               conversation.lastMessage = response.content ?? (response.metaData ? this.getLastMessageFromMetaData(response.metaData, members) : null);
               conversation.lastMessageMetaData = response.metaData ? JSON.parse(response.metaData) : null;
-              conversation.hasUnreadMessages = true;
-              conversation.messages.update(messages => {
-                messages = undefined; // Reset messages to trigger reloading
-                return messages;
-              });
+              if (fromNotification) {
+                conversation.hasUnreadMessages = true;
+                conversation.messages.update(messages => {
+                  messages = undefined; // Reset messages to trigger reloading
+                  return messages;
+                });
+              }
             }
             return conversations;
           });
@@ -245,7 +247,7 @@ export class ChatStateService {
       });
   }
 
-  selectConversation(conversationId: number) {
+  selectConversation(conversationId: number, newConversation: boolean = false) {
     const conversation = this.conversations().find(c => c.id === conversationId);
     if (!conversation) return;
 
@@ -283,6 +285,12 @@ export class ChatStateService {
 
             return conversations;
           });
+
+          if (newConversation) {
+            this.refreshLastMessage(conversationId);
+          }
+
+          this.updateLastMessage(conversationId);
         },
         complete: () => this.setMessageLoading(conversationId, false)
       });
