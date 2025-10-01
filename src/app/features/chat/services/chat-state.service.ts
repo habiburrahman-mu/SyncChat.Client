@@ -82,7 +82,7 @@ export class ChatStateService {
           const conversationId = notification.data;
 
           if (conversationId !== this.selectedConversationId()) {
-            this.refreshLastMessage(conversationId);
+            this.refreshLastMessage(conversationId, true);
           }
         }
       });
@@ -137,7 +137,7 @@ export class ChatStateService {
         id: newConversation.conversationId,
         name: newConversation.name,
         lastMessage: newConversation.lastMessage,
-        lastMessageMetaData: newConversation.lastMessageMetaData ? JSON.parse(newConversation.lastMessageMetaData) : null,
+        lastMessageMetaData: newConversation.lastMessageMetaData && newConversation.lastMessageMetaData !== "{}" ? JSON.parse(newConversation.lastMessageMetaData) : null,
         conversationType: newConversation.type,
         otherUserId: newConversation.otherUserId,
         members: [], // TODO
@@ -182,7 +182,7 @@ export class ChatStateService {
             const conversation = conversations.find(c => c.id === conversationId);
             if (conversation) {
               conversation.lastMessage = response.content ?? (response.metaData ? this.getLastMessageFromMetaData(response.metaData, members) : null);
-              conversation.lastMessageMetaData = response.metaData ? JSON.parse(response.metaData) : null;
+              conversation.lastMessageMetaData = response.metaData && response.metaData !== "{}" ? JSON.parse(response.metaData) : null;
               if (fromNotification) {
                 conversation.hasUnreadMessages = true;
                 conversation.messages.update(messages => {
@@ -230,7 +230,7 @@ export class ChatStateService {
             id: c.conversationId,
             name: c.name,
             lastMessage: c.lastMessage,
-            lastMessageMetaData: c.lastMessageMetaData ? JSON.parse(c.lastMessageMetaData) : null,
+            lastMessageMetaData: c.lastMessageMetaData && c.lastMessageMetaData !== "{}" ? JSON.parse(c.lastMessageMetaData) : null,
             conversationType: c.type,
             otherUserId: c.otherUserId,
             members: [], // TODO
