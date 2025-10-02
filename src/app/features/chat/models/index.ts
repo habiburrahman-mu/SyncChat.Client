@@ -15,3 +15,4 @@ export * from './get-user-detail-response.model';
 export * from './update-user-request.model';
 export * from './add-conversation-member-request.model';
 export * from './get-last-message-response.model';
+export * from './get-user-meta-data-response.model';

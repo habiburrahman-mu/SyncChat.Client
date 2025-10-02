@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GetUserByUserNameResponse, GetUserDetailResponse } from '../models';
+import { GetUserByUserNameResponse, GetUserDetailResponse, GetUserMetaDataResponse } from '../models';
 import { API_ROUTES } from '@core/constants';
 import { UpdateUserRequest } from '../models';
 import { JsonPatchDocument, JsonPatchForField } from '@core/types';
@@ -27,4 +27,9 @@ export class UserService {
     const url = API_ROUTES.User.Update + '/' + userId;
     return this.http.put(url, request);
   };
+
+  getUserMetaData = (userId: number) => {
+    const url = API_ROUTES.User.GetMetaData + '/' + userId;
+    return this.http.get<GetUserMetaDataResponse>(url);
+  }
 }
