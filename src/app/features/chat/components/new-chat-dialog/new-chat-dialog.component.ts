@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, Inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, HostListener, inject, Inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -68,6 +68,14 @@ export class NewChatDialogComponent implements OnInit {
     this.currentUserId = this.authService.userId!;
   }
 
+  @HostListener('keydown.tab', ['$event'])
+  onTab(event: KeyboardEvent) {
+    if(this.userSearchResponse()) {
+      event.preventDefault();
+      this.selectUser(this.userSearchResponse()!);
+    }
+  }
+
   searchUser() {
     const query = this.searchText.toLowerCase().trim();
 
@@ -90,7 +98,7 @@ export class NewChatDialogComponent implements OnInit {
   }
 
   selectUser(user: GetUserByUserNameResponse) {
-    if (!this.isUserSelected()) {
+    if (!this.isUserSelected() && user.userID !== this.currentUserId) {
       this.selectedUsers.update(users => [...users, user]);
       this.searchText = '';
       this.userSearchResponse.set(undefined);
@@ -153,7 +161,8 @@ export class NewChatDialogComponent implements OnInit {
           };
 
           this.chatStateService.addConversation(conversation);
-          this.chatStateService.selectConversation(conversation.id, true);
+          this.chatStateService.selectConversation(conversation.id);
+          this.chatStateService.refreshLastMessage(conversation.id);
           this.dialogRef.close();
         },
         error: err => {

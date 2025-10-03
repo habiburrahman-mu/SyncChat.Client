@@ -59,6 +59,8 @@ export class ChatStateService {
 
   conversationMemberList = signal<ConversationMemberDTO[]>([]);
 
+  readonly notificationAudio = new Audio('assets/audio/notification-tone.mp3');
+
   // conversationMemberListStore = new Map<number, ConversationMemberDTO[]>();
 
   constructor(
@@ -83,6 +85,20 @@ export class ChatStateService {
 
           if (conversationId !== this.selectedConversationId()) {
             this.refreshLastMessage(conversationId);
+            this.conversations.update(conversations => {
+              const conversation = conversations.find(c => c.id === conversationId);
+              if (conversation) {
+                conversation.hasUnreadMessages = true;
+                conversation.messages.update(messages => {
+                  messages = undefined; // Reset messages to trigger reloading
+                  return messages;
+                });
+              }
+              return conversations;
+            });
+
+            this.sortConversationSubject.next(conversationId);
+            this.playNotification();
           }
         }
       });
@@ -171,7 +187,7 @@ export class ChatStateService {
 
 
 
-  private refreshLastMessage(conversationId: number) {
+  refreshLastMessage(conversationId: number) {
     this.conversationService.getLastMessage(conversationId)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
@@ -181,16 +197,10 @@ export class ChatStateService {
             if (conversation) {
               conversation.lastMessage = response.content;
               conversation.lastMessageMetaData = response.metaData && response.metaData !== "{}" ? JSON.parse(response.metaData) : null;
-              conversation.hasUnreadMessages = true;
-              conversation.messages.update(messages => {
-                messages = undefined; // Reset messages to trigger reloading
-                return messages;
-              });
+              conversation.lastMessageType = response.messageType;
             }
             return conversations;
           });
-
-          this.sortConversationSubject.next(conversationId);
         }
       });
   }
@@ -244,7 +254,7 @@ export class ChatStateService {
       });
   }
 
-  selectConversation(conversationId: number, newConversation: boolean = false) {
+  selectConversation(conversationId: number) {
     const conversation = this.conversations().find(c => c.id === conversationId);
     if (!conversation) return;
 
@@ -337,6 +347,7 @@ export class ChatStateService {
         next: (chatNotification) => {
           this.addMessage(conversationId, MessageMapper.fromDTO(chatNotification.data));
           this.sortConversationSubject.next(conversationId);
+          this.playNotification();
         }
       });
 
@@ -500,6 +511,12 @@ export class ChatStateService {
   //     return conversations;
   //   });
   // }
+
+  playNotification() {
+    this.notificationAudio.play().catch(error => {
+      console.error('Error playing notification sound:', error);
+    });
+  }
 
   onDestroy() {
     this.destroySubscriptionSubject.next();
