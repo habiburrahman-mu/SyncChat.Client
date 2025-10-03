@@ -11,10 +11,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services';
 import { ChatStateService, ConversationService, UserService, UserStateService } from '@features/chat/services';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { ConversationType } from '@core/enums';
+import { ConversationType, MessageType } from '@core/enums';
 import { catchError, map, of, startWith } from 'rxjs';
 import { MatMenuModule } from '@angular/material/menu';
 import { ProfileComponent } from '../profile/profile.component';
+import { SystemMessageAsyncPipe } from '@features/chat/pipes';
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -26,6 +27,7 @@ import { ProfileComponent } from '../profile/profile.component';
     MatIconModule,
     MatProgressSpinner,
     MatMenuModule,
+    SystemMessageAsyncPipe
   ],
   templateUrl: './chat-sidebar.component.html',
   styleUrl: './chat-sidebar.component.scss'
@@ -49,6 +51,7 @@ export class ChatSidebarComponent implements OnInit {
   //   );
 
   readonly userDetailResource = this.userStateService.userResource;
+  readonly MessageType = MessageType;
 
   ngOnInit(): void {
     this.chatStateService.loadConversations();

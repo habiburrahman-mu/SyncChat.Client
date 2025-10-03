@@ -1,4 +1,4 @@
-import { ConversationType } from "@core/enums";
+import { ConversationType, MessageType } from "@core/enums";
 import { Message } from ".";
 import { Signal, WritableSignal } from "@angular/core";
 
@@ -7,6 +7,7 @@ export interface Conversation {
   name: string;
   lastMessage: string | null;
   lastMessageMetaData: Record<string, any> | null;
+  lastMessageType: MessageType | null;
   conversationType: ConversationType;
   members: number[];
   otherUserId: number | null;

@@ -4,7 +4,7 @@ import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageD
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService, NotificationService } from '@core/services';
 import { ChatNotificationType } from '@core/enums';
-import { MessageMapper, SystemMessageUtil } from '../utils';
+import { MessageMapper } from '../utils';
 import { BehaviorSubject, forkJoin, of, Subject, takeUntil, tap } from 'rxjs';
 import { TypingEvent } from '@core/models';
 import { UI_CONSTANTS } from '@core/constants';
@@ -59,7 +59,7 @@ export class ChatStateService {
 
   conversationMemberList = signal<ConversationMemberDTO[]>([]);
 
-  conversationMemberListStore = new Map<number, ConversationMemberDTO[]>();
+  // conversationMemberListStore = new Map<number, ConversationMemberDTO[]>();
 
   constructor(
     private readonly conversationService: ConversationService,
@@ -82,7 +82,7 @@ export class ChatStateService {
           const conversationId = notification.data;
 
           if (conversationId !== this.selectedConversationId()) {
-            this.refreshLastMessage(conversationId, true);
+            this.refreshLastMessage(conversationId);
           }
         }
       });
@@ -104,9 +104,6 @@ export class ChatStateService {
 
           if (conversationId === this.selectedConversationId()) {
             this.memberAddedToSelectedConversation.next();
-          } else {
-            this.conversationMemberListStore.delete(conversationId);
-            this.refreshLastMessage(conversationId);
           }
         }
       });
@@ -141,6 +138,7 @@ export class ChatStateService {
         name: newConversation.name,
         lastMessage: newConversation.lastMessage,
         lastMessageMetaData: newConversation.lastMessageMetaData && newConversation.lastMessageMetaData !== "{}" ? JSON.parse(newConversation.lastMessageMetaData) : null,
+        lastMessageType: newConversation.lastMessageType,
         conversationType: newConversation.type,
         otherUserId: newConversation.otherUserId,
         members: [], // TODO
@@ -173,26 +171,21 @@ export class ChatStateService {
 
 
 
-  private refreshLastMessage(conversationId: number, fromNotification: boolean = false) {
-    forkJoin([
-      this.conversationService.getLastMessage(conversationId),
-      this.getConversationMemberList(conversationId)
-    ])
+  private refreshLastMessage(conversationId: number) {
+    this.conversationService.getLastMessage(conversationId)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: ([response, members]) => {
+        next: (response) => {
           this.conversations.update(conversations => {
             const conversation = conversations.find(c => c.id === conversationId);
             if (conversation) {
-              conversation.lastMessage = response.content ?? (response.metaData ? this.getLastMessageFromMetaData(response.metaData, members) : null);
+              conversation.lastMessage = response.content;
               conversation.lastMessageMetaData = response.metaData && response.metaData !== "{}" ? JSON.parse(response.metaData) : null;
-              if (fromNotification) {
-                conversation.hasUnreadMessages = true;
-                conversation.messages.update(messages => {
-                  messages = undefined; // Reset messages to trigger reloading
-                  return messages;
-                });
-              }
+              conversation.hasUnreadMessages = true;
+              conversation.messages.update(messages => {
+                messages = undefined; // Reset messages to trigger reloading
+                return messages;
+              });
             }
             return conversations;
           });
@@ -202,26 +195,26 @@ export class ChatStateService {
       });
   }
 
-  getLastMessageFromMetaData(metaData: string | null, members: ConversationMemberDTO[]): string | null {
-    if (!metaData || metaData === "{}") return null;
+  // getLastMessageFromMetaData(metaData: string | null, members: ConversationMemberDTO[]): string | null {
+  //   if (!metaData || metaData === "{}") return null;
 
-    const parsedMetaData = JSON.parse(metaData);
-    return SystemMessageUtil.getSystemMessage(parsedMetaData, members, this.authService.userId!);
-  }
+  //   const parsedMetaData = JSON.parse(metaData);
+  //   return SystemMessageUtil.getSystemMessage(parsedMetaData, members, this.authService.userId!);
+  // }
 
-  getConversationMemberList(conversationId: number) {
-    const memberListFromStore = this.conversationMemberListStore.get(conversationId);
-    if (memberListFromStore) {
-      return of(memberListFromStore);
-    } else {
-      return this.conversationMemberService.getList(conversationId).pipe(
-        takeUntil(this.destroySubscriptionSubject),
-        tap(members => {
-          this.conversationMemberListStore.set(conversationId, members);
-        })
-      );
-    }
-  }
+  // getConversationMemberList(conversationId: number) {
+  //   const memberListFromStore = this.conversationMemberListStore.get(conversationId);
+  //   if (memberListFromStore) {
+  //     return of(memberListFromStore);
+  //   } else {
+  //     return this.conversationMemberService.getList(conversationId).pipe(
+  //       takeUntil(this.destroySubscriptionSubject),
+  //       tap(members => {
+  //         // this.conversationMemberListStore.set(conversationId, members);
+  //       })
+  //     );
+  //   }
+  // }
 
   loadConversations() {
     this.conversationsLoading.set(true);
@@ -232,8 +225,9 @@ export class ChatStateService {
           const conversations = response.conversations.map((c) => ({
             id: c.conversationId,
             name: c.name,
-            lastMessage: c.lastMessage ?? this.getLastMessageFromMetaData(c.lastMessageMetaData, []),
+            lastMessage: c.lastMessage,
             lastMessageMetaData: c.lastMessageMetaData && c.lastMessageMetaData !== "{}" ? JSON.parse(c.lastMessageMetaData) : null,
+            lastMessageType: c.lastMessageType,
             conversationType: c.type,
             otherUserId: c.otherUserId,
             members: [], // TODO
@@ -289,11 +283,7 @@ export class ChatStateService {
             return conversations;
           });
 
-          if (newConversation) {
-            this.refreshLastMessage(conversationId);
-          }
-
-          this.updateLastMessage(conversationId);
+          // this.updateLastMessage(conversationId);
         },
         complete: () => this.setMessageLoading(conversationId, false)
       });
@@ -431,9 +421,9 @@ export class ChatStateService {
           return messages;
         });
 
-        const members = this.conversationMemberListStore.get(conversationId);
+        // const members = this.conversationMemberListStore.get(conversationId);
 
-        conversation.lastMessage = message.content ?? (message.metaData && members ? SystemMessageUtil.getSystemMessage(message.metaData, members, this.authService.userId!) : null);
+        conversation.lastMessage = message.content;
         conversation.lastMessageMetaData = message.metaData ? message.metaData : null;
       }
 
@@ -491,25 +481,25 @@ export class ChatStateService {
     this.notificationService.typing(conversationId, isTyping);
   }
 
-  updateConversationMemberStore(conversationId: number, members: ConversationMemberDTO[]) {
-    this.conversationMemberListStore.set(conversationId, members);
-    this.updateLastMessage(conversationId);
-  }
+  // updateConversationMemberStore(conversationId: number, members: ConversationMemberDTO[]) {
+  //   this.conversationMemberListStore.set(conversationId, members);
+  //   this.updateLastMessage(conversationId);
+  // }
 
-  private updateLastMessage(conversationId: number) {
-    this.conversations.update(conversations => {
-      const conversation = conversations.find(c => c.id === conversationId);
-      if (conversation) {
-        if (conversation.lastMessageMetaData !== null) {
-          const memberList = this.conversationMemberListStore.get(conversationId);
-          if (conversation.lastMessageMetaData && memberList) {
-            conversation.lastMessage = SystemMessageUtil.getSystemMessage(conversation.lastMessageMetaData, memberList, this.authService.userId!);
-          }
-        }
-      }
-      return conversations;
-    });
-  }
+  // private updateLastMessage(conversationId: number) {
+  //   this.conversations.update(conversations => {
+  //     const conversation = conversations.find(c => c.id === conversationId);
+  //     if (conversation) {
+  //       if (conversation.lastMessageMetaData !== null) {
+  //         const memberList = this.conversationMemberListStore.get(conversationId);
+  //         if (conversation.lastMessageMetaData && memberList) {
+  //           conversation.lastMessage = SystemMessageUtil.getSystemMessage(conversation.lastMessageMetaData, memberList, this.authService.userId!);
+  //         }
+  //       }
+  //     }
+  //     return conversations;
+  //   });
+  // }
 
   onDestroy() {
     this.destroySubscriptionSubject.next();

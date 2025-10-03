@@ -1,4 +1,4 @@
-import { ConversationType } from "@core/enums";
+import { ConversationType, MessageType } from "@core/enums";
 
 export interface ConversationDTO {
   conversationId: number;
@@ -13,6 +13,7 @@ export interface ConversationDTO {
   settings: string;        // JSON string
   lastMessage: string | null;
   lastMessageMetaData: string | null; // JSON string
+  lastMessageType: MessageType | null;
   otherUserId: number | null; // for direct chats, pick the OTHER member's id;
   lastSeenMessageId: number | null;
   haveUnreadMessages: boolean; // for direct chats, pick the OTHER member's id;

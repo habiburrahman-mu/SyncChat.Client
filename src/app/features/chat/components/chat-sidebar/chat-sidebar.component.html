@@ -36,8 +36,20 @@
         </div>
 
         <div class="text-sm text-gray-600 truncate max-w-xs flex items-center gap-1"
-          [ngClass]="chat.hasUnreadMessages ? 'text-blue-600 font-bold' : 'text-gray-500'" [title]="chat.lastMessage">
-          {{ chat.lastMessage }}
+          [ngClass]="chat.hasUnreadMessages ? 'text-blue-600 font-bold' : 'text-gray-500'">
+          @switch (chat.lastMessageType) {
+
+          @case (MessageType.System) {
+          <span title="{{ chat.lastMessageMetaData | systemMessageAsync | async }}">
+            {{ chat.lastMessageMetaData |systemMessageAsync | async }}
+          </span>
+          }
+
+          @default {
+          <span [title]="chat.lastMessage">{{ chat.lastMessage }}</span>
+          }
+
+          }
         </div>
       </div>
 

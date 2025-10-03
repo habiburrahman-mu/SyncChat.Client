@@ -1,7 +1,6 @@
 import { inject, Pipe, PipeTransform } from '@angular/core';
 import { UserStoreService } from '@core/services';
 import { SYSTEM_MESSAGE_CONFIGS } from '@features/chat/configs/system-message.config';
-import { SystemMessageUtil } from '@features/chat/utils';
 import { combineLatest, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
 
 @Pipe({
@@ -11,7 +10,7 @@ import { combineLatest, map, Observable, of, startWith, switchMap, tap } from 'r
 export class SystemMessageAsyncPipe implements PipeTransform {
   private userStoreService = inject(UserStoreService);
 
-  transform(metaData: Record<string, any> | undefined): Observable<string> {
+  transform(metaData: Record<string, any> | undefined | null): Observable<string> {
     if (!metaData || !metaData['Type']) return of('');
 
     const config = SYSTEM_MESSAGE_CONFIGS.find(c => c.type === metaData['Type']);

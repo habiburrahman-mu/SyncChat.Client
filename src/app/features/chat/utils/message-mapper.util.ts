@@ -17,7 +17,7 @@ export class MessageMapper {
       senderUserName: dto.senderUserName,
       senderName: dto.senderName,
       updatedAt: dto.updatedAt,
-      metaData: dto.metaData ? JSON.parse(dto.metaData) : undefined,
+      metaData: dto.metaData && dto.metaData !== '{}' ? JSON.parse(dto.metaData) : undefined,
       type: dto.type
     };
 
