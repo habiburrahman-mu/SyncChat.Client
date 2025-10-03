@@ -1,1 +1,1 @@
-export * from './system-message/system-message.pipe';
+export * from './system-message-async/system-message-async.pipe';

@@ -13,7 +13,7 @@ export class UserNameAsyncPipe implements PipeTransform {
   ) { }
 
   transform(userId: number): Observable<string | undefined> {
-    return this.userStoreService.getUser$(userId).pipe(
+    return this.userStoreService.getUserName$(userId).pipe(
       switchMap(name => {
         if (name) {
           return of(name);

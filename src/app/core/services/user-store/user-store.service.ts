@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { UserService } from '@features/chat/services';
+import { BehaviorSubject, map, Observable, of, shareReplay, tap } from 'rxjs';
+import { AuthService } from '..';
 
 @Injectable({
   providedIn: 'root'
@@ -7,14 +9,38 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
 export class UserStoreService {
 
   private userStore = new Map<number, string>();
+  private userRequests = new Map<number, Observable<string>>();
   private userStore$ = new BehaviorSubject(this.userStore);
 
-  constructor() { }
+  constructor(private readonly userService: UserService, private readonly authService: AuthService) { }
 
-  getUser$(userId: number): Observable<string | undefined> {
-    return this.userStore$.pipe(
-      map(store => store.get(userId))
+  getUserName$(userId: number, currentUserAsYou = false): Observable<string> {
+    if(currentUserAsYou && userId === this.authService.userId) {
+      return of('You');
+    }
+
+    // Return from cache if available
+    if (this.userStore.has(userId)) {
+      return of(this.userStore.get(userId)!);
+    }
+
+    // Return ongoing request if already fetching
+    if (this.userRequests.has(userId)) {
+      return this.userRequests.get(userId)!;
+    }
+
+    // Fetch from API, store in cache, and share result
+    const request$ = this.userService.getUserMetaData(userId).pipe(
+      tap(user => {
+        this.setUsers([{ id: user.userId, name: user.name }]);
+        this.userRequests.delete(userId);
+      }),
+      map(user => user.name),
+      shareReplay(1)
     );
+
+    this.userRequests.set(userId, request$);
+    return request$;
   }
 
   setUsers(users: { id: number; name: string }[]): void {
