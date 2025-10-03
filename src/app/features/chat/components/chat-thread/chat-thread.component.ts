@@ -174,6 +174,7 @@ export class ChatThreadComponent implements OnInit {
     const conversation = this.selectedConversation();
 
     if (conversation) {
+      const messageBackup = this.messageText;
       this.messageService.sendMessage({
         conversationId: conversation.id,
         senderId: this.currentUserId!,
@@ -201,7 +202,7 @@ export class ChatThreadComponent implements OnInit {
             });
           },
           error: (err: HttpErrorResponse) => {
-
+            this.messageText = messageBackup;
           }
         });
     }
