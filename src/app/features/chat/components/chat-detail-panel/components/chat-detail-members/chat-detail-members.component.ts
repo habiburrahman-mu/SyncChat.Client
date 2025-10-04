@@ -14,6 +14,8 @@ import { AuthService } from '@core/services';
 import { ChatStateService, ConversationMemberService } from '@features/chat/services';
 import { catchError, combineLatest, filter, map, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { ChatAddMemberDialogComponent } from '../chat-add-member-dialog/chat-add-member-dialog.component';
+import { ConversationMemberDTO } from '@features/chat/models';
+import { MemberActionDialogComponent } from '../member-action-dialog/member-action-dialog.component';
 
 @Component({
   selector: 'chat-detail-members',
@@ -93,5 +95,13 @@ export class ChatDetailMembersComponent {
           this.refreshConversationMembers$.next();
         }
       });
+  }
+
+  onClickMemberCard(member: ConversationMemberDTO) {
+    if(this.isCurrentUserAdmin() || this.isCurrentUserOwner()) {
+      const dialogRef = this.dialog.open<MemberActionDialogComponent>(MemberActionDialogComponent, {
+      width: '400px',
+    });
+    }
   }
 }
