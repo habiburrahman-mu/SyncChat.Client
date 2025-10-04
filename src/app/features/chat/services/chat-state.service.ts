@@ -52,8 +52,8 @@ export class ChatStateService {
   private conversationChangeSubject = new Subject<void>();
   private destroySubscriptionSubject = new Subject<void>();
 
-  private readonly memberAddedToSelectedConversation = new Subject<void>();
-  readonly memberAddedToSelectedConversation$ = this.memberAddedToSelectedConversation.asObservable();
+  private readonly currentConversationMemberListUpdate = new Subject<void>();
+  readonly currentConversationMemberListUpdate$ = this.currentConversationMemberListUpdate.asObservable();
 
   private readonly _pageSize = 20 as const;
 
@@ -119,7 +119,7 @@ export class ChatStateService {
           const conversationId = notification.data;
 
           if (conversationId === this.selectedConversationId()) {
-            this.memberAddedToSelectedConversation.next();
+            this.currentConversationMemberListUpdate.next();
           }
         }
       });

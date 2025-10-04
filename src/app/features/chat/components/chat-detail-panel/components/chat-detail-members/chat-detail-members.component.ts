@@ -51,7 +51,7 @@ export class ChatDetailMembersComponent {
   conversationMemberState$ = combineLatest([
     this.conversation$.pipe(filter(conversation => !!conversation)),
     this.refreshConversationMembers$.pipe(startWith(void 0)),
-    this.chatStateService.memberAddedToSelectedConversation$.pipe(startWith(void 0))
+    this.chatStateService.currentConversationMemberListUpdate$.pipe(startWith(void 0))
   ]).pipe(
     switchMap(([conversation]) =>
       this.conversationMemberService.getList(conversation.id).pipe(
@@ -99,8 +99,9 @@ export class ChatDetailMembersComponent {
 
   onClickMemberCard(member: ConversationMemberDTO) {
     if(this.isCurrentUserAdmin() || this.isCurrentUserOwner()) {
-      const dialogRef = this.dialog.open<MemberActionDialogComponent>(MemberActionDialogComponent, {
+      const dialogRef = this.dialog.open<MemberActionDialogComponent, ConversationMemberDTO>(MemberActionDialogComponent, {
       width: '400px',
+      data: member
     });
     }
   }

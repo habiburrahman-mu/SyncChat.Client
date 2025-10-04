@@ -1,1 +1,78 @@
-<p>member-action-dialog works!</p>
+<!-- Profile Card -->
+<div class="w-full bg-gray-50 rounded-lg shadow-sm p-4 mb-4 border border-gray-200">
+  <div class="flex items-center gap-4">
+    <img src="https://i.pravatar.cc/150?img=12" alt="Habib" class="w-16 h-16 rounded-full border border-gray-300">
+    <div>
+      <div class="text-lg font-semibold text-gray-800">{{member.name}}</div>
+      <div class="text-sm text-gray-500">{{'@' + member.userName}}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Card -->
+<!-- Action Card -->
+<div class="w-full bg-white rounded-lg shadow-md p-4 space-y-2">
+  @if(member.role !== MemberRole.Admin) {
+  <!-- Make Admin -->
+  <div class="w-full flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150"
+    [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
+    [class.text-indigo-700]="!disableAction()" [class.text-gray-400]="disableAction()"
+    [class.hover:bg-indigo-50]="!disableAction()" (click)="!disableAction() && makeAdmin()">
+    <div class="flex items-center gap-2">
+      <mat-icon [class.text-indigo-600]="!disableAction()" [class.text-gray-400]="disableAction()">security</mat-icon>
+      <span>Make Admin</span>
+    </div>
+    @if (loadingAdmin()) {
+    <mat-progress-spinner diameter="20" mode="indeterminate" color="accent"></mat-progress-spinner>
+    }
+  </div>
+  }
+
+  @if(member.role !== MemberRole.Owner) {
+  <!-- Make Owner -->
+  <div class="w-full flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150"
+    [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
+    [class.text-teal-700]="!disableAction()" [class.text-gray-400]="disableAction()"
+    [class.hover:bg-teal-50]="!disableAction()" (click)="!disableAction() && makeOwner()">
+    <div class="flex items-center gap-2">
+      <mat-icon [class.text-teal-600]="!disableAction()" [class.text-gray-400]="disableAction()">stars</mat-icon>
+      <span>Make Owner</span>
+    </div>
+    @if (loadingOwner()) {
+    <mat-progress-spinner diameter="20" mode="indeterminate" color="accent"></mat-progress-spinner>
+    }
+  </div>
+  }
+
+  @if(member.role === MemberRole.Admin) {
+  <!-- Dismiss as Admin -->
+  <div class="w-full flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150"
+    [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
+    [class.text-amber-700]="!disableAction()" [class.text-gray-400]="disableAction()"
+    [class.hover:bg-amber-50]="!disableAction()" (click)="!disableAction() && dismissAdmin()">
+    <div class="flex items-center gap-2">
+      <mat-icon [class.text-amber-600]="!disableAction()"
+        [class.text-gray-400]="disableAction()">person_remove</mat-icon>
+      <span>Dismiss as admin</span>
+    </div>
+    @if (loadingDismiss()) {
+    <mat-progress-spinner diameter="20" mode="indeterminate" color="warn"></mat-progress-spinner>
+    }
+  </div>
+  }
+
+  <!-- Remove Member -->
+  <div class="w-full flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150"
+    [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
+    [class.text-rose-700]="!disableAction()" [class.text-gray-400]="disableAction()"
+    [class.hover:bg-rose-50]="!disableAction()" (click)="!disableAction() && removeMember()">
+    <div class="flex items-center gap-2">
+      <mat-icon [class.text-rose-600]="!disableAction()" [class.text-gray-400]="disableAction()">delete</mat-icon>
+      <span>Remove Habib</span>
+    </div>
+    @if (loadingRemove()) {
+    <mat-progress-spinner diameter="20" mode="indeterminate" color="warn"></mat-progress-spinner>
+    }
+  </div>
+
+</div>
