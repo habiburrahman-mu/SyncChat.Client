@@ -134,6 +134,15 @@ export class ChatStateService {
         }
       });
 
+    this.notificationService.listen<number>(ChatNotificationType.RemovedFromConversation)
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe({
+        next: (notification) => {
+          const conversationId = notification.data;
+          this.handleRemovedFromConversationNotification(conversationId);
+        }
+      });
+
     this.sortConversationSubject.asObservable()
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
@@ -166,6 +175,12 @@ export class ChatStateService {
       };
 
       this.addConversation(conversation);
+    }
+  }
+
+  private handleRemovedFromConversationNotification(conversationId: number) {
+    if(conversationId === this.selectedConversationId()) {
+      this.currentConversationMemberListUpdate.next();
     }
   }
 

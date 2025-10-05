@@ -62,17 +62,19 @@
   }
 
   <!-- Remove Member -->
+  @if(!isCurrentUser) {
   <div class="w-full flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150"
     [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
     [class.text-rose-700]="!disableAction()" [class.text-gray-400]="disableAction()"
     [class.hover:bg-rose-50]="!disableAction()" (click)="!disableAction() && removeMember()">
     <div class="flex items-center gap-2">
       <mat-icon [class.text-rose-600]="!disableAction()" [class.text-gray-400]="disableAction()">delete</mat-icon>
-      <span>Remove Habib</span>
+      <span>Remove {{member.name}}</span>
     </div>
     @if (loadingRemove()) {
     <mat-progress-spinner diameter="20" mode="indeterminate" color="warn"></mat-progress-spinner>
     }
   </div>
+  }
 
 </div>

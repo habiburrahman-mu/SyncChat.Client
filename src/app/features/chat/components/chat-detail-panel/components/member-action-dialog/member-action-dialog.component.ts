@@ -1,25 +1,30 @@
-import { ChangeDetectionStrategy, Component, computed, Inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ConversationMemberDTO } from '@features/chat/models';
 import { ChatStateService } from '@features/chat/services';
-import { NgIf } from "../../../../../../../../node_modules/@angular/common/common_module.d-C8_X2MOZ";
 import { MemberRole } from '@core/enums';
+import { AuthService } from '@core/services';
 
 @Component({
   selector: 'chat-member-action-dialog',
   imports: [
     MatIconModule,
     MatProgressSpinnerModule,
-    MatButtonModule,
+    MatButtonModule
 ],
   templateUrl: './member-action-dialog.component.html',
   styleUrl: './member-action-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberActionDialogComponent implements OnInit {
+  private readonly chatStateService = inject(ChatStateService);
+  private readonly dialogRef = inject(MatDialogRef<MemberActionDialogComponent, ConversationMemberDTO>);
+  public readonly member = inject(MAT_DIALOG_DATA) as ConversationMemberDTO;
+  private readonly authService = inject(AuthService);
+
   readonly MemberRole = MemberRole;
 
   loadingAdmin = signal<boolean>(false);
@@ -27,10 +32,9 @@ export class MemberActionDialogComponent implements OnInit {
   loadingDismiss = signal<boolean>(false);
   loadingRemove = signal<boolean>(false);
 
-  constructor(
-    private readonly chatStateService: ChatStateService,
-    private readonly dialogRef: MatDialogRef<MemberActionDialogComponent, ConversationMemberDTO>,
-    @Inject(MAT_DIALOG_DATA) public member: ConversationMemberDTO) { }
+  readonly currentUserId = this.authService.userId;
+  readonly isCurrentUser = this.currentUserId === this.member.userID;
+
 
   ngOnInit(): void {
     const conversationMemberList = this.chatStateService.conversationMemberList();

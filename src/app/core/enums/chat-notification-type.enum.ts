@@ -8,4 +8,5 @@ export enum ChatNotificationType {
   TypingStopped = 'TypingStopped',
   NewMemberAdded = 'NewMemberAdded',
   AddedToConversation = 'AddedToConversation',
+  RemovedFromConversation = 'RemovedFromConversation',
 }
