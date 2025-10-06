@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { API_ROUTES } from '@core/constants';
-import { AddConversationMemberRequest, ConversationMemberDTO } from '../models';
+import { AddConversationMemberRequest, ConversationMemberDTO, RemoveMemberFromConversationRequest } from '../models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -18,5 +18,10 @@ export class ConversationMemberService {
   add = (request: AddConversationMemberRequest) => {
     const url = API_ROUTES.ConversationMember.Add;
     return this.http.post<void>(url, request);
+  }
+
+  remove = (conversationMemberId: number) => {
+    const url = `${API_ROUTES.ConversationMember.Remove}/${conversationMemberId}`;
+    return this.http.delete<void>(url);
   }
 }
