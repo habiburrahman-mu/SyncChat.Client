@@ -63,6 +63,8 @@ export class ChatStateService {
 
   // conversationMemberListStore = new Map<number, ConversationMemberDTO[]>();
 
+  removedFromConversation: number | undefined = undefined;
+
   constructor(
     private readonly conversationService: ConversationService,
     private readonly conversationMemberService: ConversationMemberService,
@@ -175,13 +177,27 @@ export class ChatStateService {
       };
 
       this.addConversation(conversation);
+    } else {
+      if(this.removedFromConversation === newConversation.conversationId) {
+        this.removedFromConversation = undefined;
+      }
     }
   }
 
   private handleRemovedFromConversationNotification(conversationId: number) {
-    if(conversationId === this.selectedConversationId()) {
+    if (conversationId === this.selectedConversationId()) {
       this.currentConversationMemberListUpdate.next();
+      this.removedFromConversation = conversationId;
+      this._leftConversationNotificationSubscription();
+    } else {
+      this.removeConversation(conversationId);
     }
+  }
+
+  private removeConversation(conversationId: number) {
+    this.conversations.update(conversations => {
+      return conversations.filter(x => x.id !== conversationId);
+    });
   }
 
   toggleChatDetailPanel() {
@@ -273,6 +289,8 @@ export class ChatStateService {
     const conversation = this.conversations().find(c => c.id === conversationId);
     if (!conversation) return;
 
+    this.removeConversationIfUserNoLongerMember();
+
     this.chatDetailPanelOpen.set(true); // TODO: change to false
 
     this._leftConversationNotificationSubscription();
@@ -312,6 +330,13 @@ export class ChatStateService {
         },
         complete: () => this.setMessageLoading(conversationId, false)
       });
+  }
+
+  private removeConversationIfUserNoLongerMember() {
+    if(this.removedFromConversation !== undefined) {
+      this.removeConversation(this.removedFromConversation);
+      this.removedFromConversation = undefined;
+    }
   }
 
   loadOlderMessages(conversationId: number) {
