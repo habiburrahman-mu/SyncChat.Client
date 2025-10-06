@@ -17,4 +17,3 @@ export * from './add-conversation-member-request.model';
 export * from './get-last-message-response.model';
 export * from './get-user-meta-data-response.model';
 export * from './system-message-config.model';
-export * from './remove-member-from-conversation-request.model';

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { API_ROUTES } from '@core/constants';
-import { AddConversationMemberRequest, ConversationMemberDTO, RemoveMemberFromConversationRequest } from '../models';
+import { AddConversationMemberRequest, ConversationMemberDTO } from '../models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
