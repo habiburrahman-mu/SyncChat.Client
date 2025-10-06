@@ -1,6 +1,7 @@
 import { MemberRole } from "@core/enums";
 
 export interface ConversationMemberDTO {
+  conversationMemberId: number;
   userID: number;          // long -> number
   userName: string;
   name: string;

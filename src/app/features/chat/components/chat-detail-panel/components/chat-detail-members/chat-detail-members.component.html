@@ -56,6 +56,9 @@
                 <mat-icon *ngIf="member.role === 'owner'" class="text-blue-500 text-sm" matTooltip="Owner">
                   verified
                 </mat-icon>
+                @if(!member.isActive) {
+                  <div class="text-sm">(Left/Removed)</div>
+                }
               </div>
 
               <!-- @username -->

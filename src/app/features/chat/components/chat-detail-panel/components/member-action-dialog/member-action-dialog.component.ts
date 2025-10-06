@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ConversationMemberDTO } from '@features/chat/models';
-import { ChatStateService } from '@features/chat/services';
+import { ChatStateService, ConversationMemberService } from '@features/chat/services';
 import { MemberRole } from '@core/enums';
 import { AuthService } from '@core/services';
 
@@ -24,6 +24,7 @@ export class MemberActionDialogComponent implements OnInit {
   private readonly dialogRef = inject(MatDialogRef<MemberActionDialogComponent, ConversationMemberDTO>);
   public readonly member = inject(MAT_DIALOG_DATA) as ConversationMemberDTO;
   private readonly authService = inject(AuthService);
+  private readonly conversationMemberService = inject(ConversationMemberService);
 
   readonly MemberRole = MemberRole;
 
@@ -61,7 +62,16 @@ export class MemberActionDialogComponent implements OnInit {
 
   removeMember() {
     this.loadingRemove.set(true);
-    setTimeout(() => this.loadingRemove.set(false), 1500);
+    // todo: add confirmation
+    this.conversationMemberService.remove(this.member.conversationMemberId).subscribe({
+      next: _ => {
+        this.loadingRemove.set(false);
+        this.dialogRef.close();
+      },
+      error: err => {
+        this.loadingRemove.set(false);
+      }
+    });
   }
 
 
