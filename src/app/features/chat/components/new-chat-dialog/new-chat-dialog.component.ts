@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, HostListener, inject, Inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,14 +23,13 @@ import { ConversationType } from '@core/enums';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    CommonModule,
     FormsModule,
     MatListModule,
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
     MatProgressSpinner
-  ],
+],
   templateUrl: './new-chat-dialog.component.html',
   styleUrl: './new-chat-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

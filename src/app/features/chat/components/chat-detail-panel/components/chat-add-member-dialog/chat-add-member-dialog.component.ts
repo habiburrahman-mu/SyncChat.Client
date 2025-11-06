@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, model, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +16,6 @@ import { ChatStateService, ConversationMemberService, UserService } from '@featu
 @Component({
   selector: 'chat-add-member-dialog',
   imports: [
-    CommonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -25,7 +24,7 @@ import { ChatStateService, ConversationMemberService, UserService } from '@featu
     MatIconModule,
     MatChipsModule,
     MatProgressSpinner
-  ],
+],
   templateUrl: './chat-add-member-dialog.component.html',
   styleUrl: './chat-add-member-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

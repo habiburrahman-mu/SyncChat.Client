@@ -17,39 +17,53 @@
       <mat-form-field class="w-full mb-1">
         <mat-label>Full Name</mat-label>
         <input matInput formControlName="fullName" type="text">
-        <mat-error *ngIf="form.controls.fullName.hasError('required')">
-          {{ errorMessages.fullName.required }}
-        </mat-error>
-        <mat-error *ngIf="form.controls.fullName.hasError('minlength')">
-          {{ errorMessages.fullName.minlength }}
-        </mat-error>
+        @if (form.controls.fullName.hasError('required')) {
+          <mat-error>
+            {{ errorMessages.fullName.required }}
+          </mat-error>
+        }
+        @if (form.controls.fullName.hasError('minlength')) {
+          <mat-error>
+            {{ errorMessages.fullName.minlength }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <!-- Username -->
       <mat-form-field class="w-full mb-1">
         <mat-label>Username</mat-label>
         <input matInput formControlName="userName" type="text">
-        <mat-error *ngIf="form.controls.userName.hasError('required')">
-          {{ errorMessages.userName.required }}
-        </mat-error>
-        <mat-error *ngIf="form.controls.userName.hasError('minlength')">
-          {{ errorMessages.userName.minlength }}
-        </mat-error>
-        <mat-error *ngIf="form.controls.userName.hasError('pattern')">
-          {{ errorMessages.userName.pattern }}
-        </mat-error>
+        @if (form.controls.userName.hasError('required')) {
+          <mat-error>
+            {{ errorMessages.userName.required }}
+          </mat-error>
+        }
+        @if (form.controls.userName.hasError('minlength')) {
+          <mat-error>
+            {{ errorMessages.userName.minlength }}
+          </mat-error>
+        }
+        @if (form.controls.userName.hasError('pattern')) {
+          <mat-error>
+            {{ errorMessages.userName.pattern }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <!-- Email -->
       <mat-form-field class="w-full mb-1">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email">
-        <mat-error *ngIf="form.controls.email.hasError('required')">
-          {{ errorMessages.email.required }}
-        </mat-error>
-        <mat-error *ngIf="form.controls.email.hasError('email')">
-          {{ errorMessages.email.email }}
-        </mat-error>
+        @if (form.controls.email.hasError('required')) {
+          <mat-error>
+            {{ errorMessages.email.required }}
+          </mat-error>
+        }
+        @if (form.controls.email.hasError('email')) {
+          <mat-error>
+            {{ errorMessages.email.email }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <!-- Password -->
@@ -59,12 +73,16 @@
         <button mat-icon-button matSuffix (click)="showPassword = !showPassword" type="button">
           <mat-icon>{{ showPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
-        <mat-error *ngIf="form.controls.password.hasError('required')">
-          {{ errorMessages.password.required }}
-        </mat-error>
-        <mat-error *ngIf="form.controls.password.hasError('minlength')">
-          {{ errorMessages.password.minlength }}
-        </mat-error>
+        @if (form.controls.password.hasError('required')) {
+          <mat-error>
+            {{ errorMessages.password.required }}
+          </mat-error>
+        }
+        @if (form.controls.password.hasError('minlength')) {
+          <mat-error>
+            {{ errorMessages.password.minlength }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <!-- Confirm Password -->
@@ -74,16 +92,22 @@
         <button mat-icon-button matSuffix (click)="showPassword = !showPassword" type="button">
           <mat-icon>{{ showPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
-        <mat-error *ngIf="form.controls.confirmPassword.hasError('required')">
-          {{ errorMessages.confirmPassword.required }}
-        </mat-error>
-        <mat-error *ngIf="form.controls.confirmPassword.hasError('passwordMismatch')">
-          {{ errorMessages.confirmPassword.passwordMismatch }}
-        </mat-error>
+        @if (form.controls.confirmPassword.hasError('required')) {
+          <mat-error>
+            {{ errorMessages.confirmPassword.required }}
+          </mat-error>
+        }
+        @if (form.controls.confirmPassword.hasError('passwordMismatch')) {
+          <mat-error>
+            {{ errorMessages.confirmPassword.passwordMismatch }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="isRegistering()">
-        <mat-icon *ngIf="isRegistering()"><mat-spinner diameter="18"></mat-spinner></mat-icon>
+        @if (isRegistering()) {
+          <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
+        }
         <span>Register</span>
       </button>
     </form>

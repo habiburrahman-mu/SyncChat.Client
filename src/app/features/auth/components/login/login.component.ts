@@ -7,7 +7,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { AuthHttpService } from '@features/auth/services';
-import { CommonModule } from '@angular/common';
+
 import { TokenRequest, TokenResponse } from '@features/auth/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,15 +25,13 @@ import { LocalStorageKey } from '@core/enums';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    CommonModule,
     ReactiveFormsModule,
     RouterModule,
     MatIconModule,
     MatProgressSpinnerModule,
-
     LottieComponent,
     GoogleIconComponent
-  ],
+],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,115 +1,119 @@
 @if(userResource.isLoading()) {
-<div class="flex justify-center items-center h-64">
-  <mat-progress-spinner mode="indeterminate" diameter="22" color="accent"></mat-progress-spinner>
-</div>
+  <div class="flex justify-center items-center h-64">
+    <mat-progress-spinner mode="indeterminate" diameter="22" color="accent"></mat-progress-spinner>
+  </div>
 } @else if(userResource.error()) {
-<div class="text-center text-red-500">
-  <p>Error loading user data. Please try again later.</p>
-</div>
+  <div class="text-center text-red-500">
+    <p>Error loading user data. Please try again later.</p>
+  </div>
 } @else if(userResource.hasValue()) {
 
-@let user = userResource.value();
+  @let user = userResource.value();
 
-<mat-dialog-content class="mat-typography">
-  <div class="w-full max-w-lg mx-auto">
-    <!-- Header -->
-    <div class="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm relative">
-      <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500" src="https://i.pravatar.cc/150?img=11"
-        alt="User avatar" />
-      <div>
-        @if (editEnabledFor !== 'name') {
-        <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-          {{ user.name }}
-          <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('name', user.name)"
-            [disabled]="editEnabledFor">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </h2>
-        } @else {
-        <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Name', required: true}"></ng-container>
-        }
-
-        <p class="text-sm text-gray-500">{{ '@' + user.userName }}</p>
-      </div>
-    </div>
-
-    <!-- Info Section -->
-    <div class="mt-6 space-y-6">
-      <!-- Email Card -->
-      <div
-        class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition mb-2">
-        <div class="flex items-center gap-3">
-          <mat-icon class="text-indigo-500">email</mat-icon>
+  <mat-dialog-content class="mat-typography">
+    <div class="w-full max-w-lg mx-auto">
+      <!-- Header -->
+      <div class="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm relative">
+        <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500" src="https://i.pravatar.cc/150?img=11"
+          alt="User avatar" />
           <div>
-            <p class="text-sm text-gray-500">Email</p>
+            @if (editEnabledFor !== 'name') {
+              <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                {{ user.name }}
+                <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('name', user.name)"
+                  [disabled]="editEnabledFor">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </h2>
+            } @else {
+              <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Name', required: true}"></ng-container>
+            }
 
+            <p class="text-sm text-gray-500">{{ '@' + user.userName }}</p>
+          </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-6 space-y-6">
+          <!-- Email Card -->
+          <div
+            class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition mb-2">
+            <div class="flex items-center gap-3">
+              <mat-icon class="text-indigo-500">email</mat-icon>
+              <div>
+                <p class="text-sm text-gray-500">Email</p>
+
+                @if (editEnabledFor !== 'email') {
+                  <p class="text-base font-medium text-gray-800">{{ user.email }}</p>
+                } @else {
+                  <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Email', required: true}"></ng-container>
+                }
+              </div>
+            </div>
             @if (editEnabledFor !== 'email') {
-            <p class="text-base font-medium text-gray-800">{{ user.email }}</p>
-            } @else {
-            <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Email', required: true}"></ng-container>
+              <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('email', user.email)"
+                [disabled]="editEnabledFor">
+                <mat-icon>edit</mat-icon>
+              </button>
             }
           </div>
-        </div>
-        @if (editEnabledFor !== 'email') {
-        <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('email', user.email)"
-          [disabled]="editEnabledFor">
-          <mat-icon>edit</mat-icon>
-        </button>
-        }
-      </div>
 
-      <!-- Phone Card -->
-      <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition">
-        <div class="flex items-center gap-3">
-          <mat-icon class="text-indigo-500">phone</mat-icon>
-          <div>
-            <p class="text-sm text-gray-500">Phone</p>
+          <!-- Phone Card -->
+          <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition">
+            <div class="flex items-center gap-3">
+              <mat-icon class="text-indigo-500">phone</mat-icon>
+              <div>
+                <p class="text-sm text-gray-500">Phone</p>
 
+                @if (editEnabledFor !== 'phone') {
+                  <p class="text-base" [ngClass]="{'text-gray-800 font-medium': user.phone, 'text-gray-400': !user.phone}">
+                    {{ user.phone ?? 'No phone number yet' }}
+                  </p>
+                } @else {
+                  <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Phone', required: false}"></ng-container>
+                }
+              </div>
+            </div>
             @if (editEnabledFor !== 'phone') {
-            <p class="text-base" [ngClass]="{'text-gray-800 font-medium': user.phone, 'text-gray-400': !user.phone}">
-              {{ user.phone ?? 'No phone number yet' }}
-            </p>
-            } @else {
-            <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Phone', required: false}"></ng-container>
+              <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('phone', user.phone)"
+                [disabled]="editEnabledFor">
+                <mat-icon>edit</mat-icon>
+              </button>
             }
           </div>
         </div>
-        @if (editEnabledFor !== 'phone') {
-        <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('phone', user.phone)"
-          [disabled]="editEnabledFor">
-          <mat-icon>edit</mat-icon>
-        </button>
-        }
       </div>
-    </div>
-  </div>
-</mat-dialog-content>
+    </mat-dialog-content>
 
-<!-- Reusable input form block -->
-<ng-template #editFormField let-label="label" let-required="required">
-  <mat-form-field appearance="fill" class="w-full" floatLabel="always">
-    <mat-label>{{ label }}</mat-label>
-    <input matInput [placeholder]="label" [(ngModel)]="editData" [required]="required" [email]="label === 'Email'"
-      [disabled]="saveInProgress()" #inputField="ngModel" (keydown.enter)="onEnter(inputField, user)" />
+    <!-- Reusable input form block -->
+    <ng-template #editFormField let-label="label" let-required="required">
+      <mat-form-field appearance="fill" class="w-full" floatLabel="always">
+        <mat-label>{{ label }}</mat-label>
+        <input matInput [placeholder]="label" [(ngModel)]="editData" [required]="required" [email]="label === 'Email'"
+          [disabled]="saveInProgress()" #inputField="ngModel" (keydown.enter)="onEnter(inputField, user)" />
 
-    <div matSuffix class="flex gap-1 items-center">
-      <button mat-icon-button class="text-indigo-500 hover:text-indigo-600" (click)="onCancelEdit()"
-        [disabled]="saveInProgress()">
-        <mat-icon>close</mat-icon>
-      </button>
+          <div matSuffix class="flex gap-1 items-center">
+            <button mat-icon-button class="text-indigo-500 hover:text-indigo-600" (click)="onCancelEdit()"
+              [disabled]="saveInProgress()">
+              <mat-icon>close</mat-icon>
+            </button>
 
-      @if(saveInProgress()) {
-      <mat-progress-spinner mode="indeterminate" diameter="22" color="accent"></mat-progress-spinner>
-      } @else {
-      <button mat-icon-button class="text-indigo-500 hover:text-indigo-600" (click)="onSaveEdit(user)"
-        [disabled]="!inputField.valid || saveInProgress()">
-        <mat-icon>check</mat-icon>
-      </button>
-      }
-    </div>
+            @if(saveInProgress()) {
+              <mat-progress-spinner mode="indeterminate" diameter="22" color="accent"></mat-progress-spinner>
+            } @else {
+              <button mat-icon-button class="text-indigo-500 hover:text-indigo-600" (click)="onSaveEdit(user)"
+                [disabled]="!inputField.valid || saveInProgress()">
+                <mat-icon>check</mat-icon>
+              </button>
+            }
+          </div>
 
-    <mat-error *ngIf="inputField.hasError('required')"> {{ label }} is required</mat-error>
-    <mat-error *ngIf="inputField.hasError('email')"> {{ label }} is not a valid email</mat-error>
-  </mat-form-field>
-</ng-template>
-}
+          @if (inputField.hasError('required')) {
+            <mat-error> {{ label }} is required</mat-error>
+          }
+          @if (inputField.hasError('email')) {
+            <mat-error> {{ label }} is not a valid email</mat-error>
+          }
+        </mat-form-field>
+      </ng-template>
+    }

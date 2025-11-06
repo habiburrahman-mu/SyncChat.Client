@@ -15,21 +15,27 @@
       <mat-form-field class="w-full mb-1">
         <mat-label>Username</mat-label>
         <input matInput type="text" formControlName="userName" />
-        <mat-error *ngIf="form.controls.userName.hasError('required')">
-          {{errorMessages.userName.required}}
-        </mat-error>
+        @if (form.controls.userName.hasError('required')) {
+          <mat-error>
+            {{errorMessages.userName.required}}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field class="w-full mb-1">
         <mat-label>Password</mat-label>
         <input matInput type="password" formControlName="password" />
-        <mat-error *ngIf="form.controls.password.hasError('required')">
-          {{errorMessages.password.required}}
-        </mat-error>
+        @if (form.controls.password.hasError('required')) {
+          <mat-error>
+            {{errorMessages.password.required}}
+          </mat-error>
+        }
       </mat-form-field>
 
       <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="isLoginInProgress()">
-        <mat-icon *ngIf="isLoginInProgress()"><mat-spinner diameter="18"></mat-spinner></mat-icon>
+        @if (isLoginInProgress()) {
+          <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
+        }
         <span>Login</span>
       </button>
     </form>
