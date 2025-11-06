@@ -50,7 +50,8 @@ html, body {
   border-right: none;
 }
 
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 $myapp-theme-primary: mat.m2-define-palette(mat.$m2-indigo-palette, A400, A100, A700);
 $myapp-theme-accent: mat.m2-define-palette(mat.$m2-indigo-palette);
@@ -77,23 +78,23 @@ $myapp-theme: mat.m2-define-light-theme((color: (primary: $myapp-theme-primary,
 }
 
 .custom-toaster-success {
-  --mdc-snackbar-container-color: #43a047;
-  --mdc-snackbar-supporting-text-color: #fff;
+  --mat-snackbar-container-color: #43a047;
+  --mat-snackbar-supporting-text-color: #fff;
 }
 
 .custom-toaster-info {
-  --mdc-snackbar-container-color: #1976d2;
-  --mdc-snackbar-supporting-text-color: #fff;
+  --mat-snackbar-container-color: #1976d2;
+  --mat-snackbar-supporting-text-color: #fff;
 }
 
 .custom-toaster-warning {
-  --mdc-snackbar-container-color: #ffca28;
-  --mdc-snackbar-supporting-text-color: #000 !important;
+  --mat-snackbar-container-color: #ffca28;
+  --mat-snackbar-supporting-text-color: #000 !important;
 }
 
 .custom-toaster-danger {
-  --mdc-snackbar-container-color: #d32f2f;
-  --mdc-snackbar-supporting-text-color: #fff;
+  --mat-snackbar-container-color: #d32f2f;
+  --mat-snackbar-supporting-text-color: #fff;
 }
 
 // Customize the entire app. Change :root to your selector if you want to scope the styles.

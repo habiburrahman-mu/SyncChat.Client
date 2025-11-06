@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,13 +26,11 @@ import { AUTH_ROUTE_PATH } from '@core/constants';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    CommonModule,
     MatProgressSpinnerModule,
     MatIconModule,
-
     LottieComponent,
-    GoogleIconComponent,
-  ],
+    GoogleIconComponent
+],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

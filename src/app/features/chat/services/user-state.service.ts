@@ -9,6 +9,6 @@ export class UserStateService {
   private readonly userService = inject(UserService);
 
   readonly userResource = rxResource({
-    loader: () => this.userService.getUserDetail(),
+    stream: () => this.userService.getUserDetail(),
   });
 }
