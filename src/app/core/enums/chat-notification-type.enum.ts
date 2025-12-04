@@ -9,4 +9,5 @@ export enum ChatNotificationType {
   NewMemberAdded = 'NewMemberAdded',
   AddedToConversation = 'AddedToConversation',
   RemovedFromConversation = 'RemovedFromConversation',
+  MemberRemoved = 'MemberRemoved',
 }

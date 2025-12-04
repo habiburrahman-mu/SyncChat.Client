@@ -145,6 +145,18 @@ export class ChatStateService {
         }
       });
 
+    this.notificationService.listen<number>(ChatNotificationType.MemberRemoved)
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe({
+        next: (notification) => {
+          const conversationId = notification.data;
+
+          if (conversationId === this.selectedConversationId()) {
+            this.currentConversationMemberListUpdate.next();
+          }
+        }
+      });
+
     this.sortConversationSubject.asObservable()
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
