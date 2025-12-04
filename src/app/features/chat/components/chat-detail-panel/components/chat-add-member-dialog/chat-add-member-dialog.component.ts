@@ -60,7 +60,7 @@ export class ChatAddMemberDialogComponent implements OnInit {
   selectedConversation = this.chatStateService.selectedConversation;
 
   selectedUserAlreadyMember = computed(() => {
-    return this.selectedConversationMemberIds().some(x => x.userID === this.userSearchResponse()?.userID);
+    return this.selectedConversationMemberIds().some(x => x.userID === this.userSearchResponse()?.userID && x.leftAt === null);
   });
 
   ngOnInit() {
