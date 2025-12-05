@@ -26,4 +26,10 @@ export const SYSTEM_MESSAGE_CONFIGS: SystemMessageConfig[] = [
     getTargets: meta => [Number(meta['UserId'])],
     format: (actors, targets) => `${actors[0] || 'Someone'} removed ${targets[0] || 'a member'}.`
   },
+  {
+    type: SystemMessageType.MemberPromotedToAdmin,
+    getActors: meta => [Number(meta['PromotedBy'])],
+    getTargets: meta => [Number(meta['UserId'])],
+    format: (actors, targets) => `${actors[0] || 'Someone'} promoted ${targets[0] || 'a member'} to admin.`
+  },
 ];

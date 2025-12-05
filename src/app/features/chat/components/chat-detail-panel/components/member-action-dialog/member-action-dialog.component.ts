@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, Inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { ConversationMemberDTO } from '@features/chat/models';
 import { ChatStateService, ConversationMemberService } from '@features/chat/services';
 import { MemberRole } from '@core/enums';
 import { AuthService } from '@core/services';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'chat-member-action-dialog',
@@ -14,7 +15,7 @@ import { AuthService } from '@core/services';
     MatIconModule,
     MatProgressSpinnerModule,
     MatButtonModule
-],
+  ],
   templateUrl: './member-action-dialog.component.html',
   styleUrl: './member-action-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -25,6 +26,7 @@ export class MemberActionDialogComponent implements OnInit {
   public readonly member = inject(MAT_DIALOG_DATA) as ConversationMemberDTO;
   private readonly authService = inject(AuthService);
   private readonly conversationMemberService = inject(ConversationMemberService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly MemberRole = MemberRole;
 
@@ -47,7 +49,17 @@ export class MemberActionDialogComponent implements OnInit {
 
   makeAdmin() {
     this.loadingAdmin.set(true);
-    setTimeout(() => this.loadingAdmin.set(false), 2000);
+    this.conversationMemberService.makeAdmin(this.member.conversationMemberId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: _ => {
+          this.loadingAdmin.set(false);
+          this.dialogRef.close();
+        },
+        error: err => {
+          this.loadingAdmin.set(false);
+        }
+      });
   }
 
   makeOwner() {
@@ -63,15 +75,17 @@ export class MemberActionDialogComponent implements OnInit {
   removeMember() {
     this.loadingRemove.set(true);
     // todo: add confirmation
-    this.conversationMemberService.remove(this.member.conversationMemberId).subscribe({
-      next: _ => {
-        this.loadingRemove.set(false);
-        this.dialogRef.close();
-      },
-      error: err => {
-        this.loadingRemove.set(false);
-      }
-    });
+    this.conversationMemberService.remove(this.member.conversationMemberId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: _ => {
+          this.loadingRemove.set(false);
+          this.dialogRef.close();
+        },
+        error: err => {
+          this.loadingRemove.set(false);
+        }
+      });
   }
 
 
