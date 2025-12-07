@@ -27,6 +27,6 @@ export class ConversationMemberService {
 
   makeAdmin = (conversationMemberId: number) => {
     const url = `${API_ROUTES.ConversationMember.MakeAdmin}/${conversationMemberId}`;
-    return this.http.post<void>(url, {});
+    return this.http.put<void>(url, {});
   }
 }
