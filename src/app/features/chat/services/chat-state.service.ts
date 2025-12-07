@@ -169,6 +169,18 @@ export class ChatStateService {
         }
       });
 
+    this.notificationService.listen<number>(ChatNotificationType.MemberDemoted)
+      .pipe(takeUntil(this.destroySubscriptionSubject))
+      .subscribe({
+        next: (notification) => {
+          const conversationId = notification.data;
+
+          if (conversationId === this.selectedConversationId()) {
+            this.currentConversationMemberListUpdate.next();
+          }
+        }
+      });
+
     this.sortConversationSubject.asObservable()
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
@@ -202,7 +214,7 @@ export class ChatStateService {
 
       this.addConversation(conversation);
     } else {
-      if(this.removedFromConversation === newConversation.conversationId) {
+      if (this.removedFromConversation === newConversation.conversationId) {
         this.removedFromConversation = undefined;
       }
     }
@@ -357,7 +369,7 @@ export class ChatStateService {
   }
 
   private removeConversationIfUserNoLongerMember() {
-    if(this.removedFromConversation !== undefined) {
+    if (this.removedFromConversation !== undefined) {
       this.removeConversation(this.removedFromConversation);
       this.removedFromConversation = undefined;
     }

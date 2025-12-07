@@ -12,4 +12,5 @@ export enum ChatNotificationType {
   MemberRemoved = 'MemberRemoved',
   PromotedToAdmin = 'PromotedToAdmin',
   MemberRoleChanged = 'MemberRoleChanged',
+  MemberDemoted = 'MemberDemoted',
 }
