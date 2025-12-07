@@ -29,4 +29,9 @@ export class ConversationMemberService {
     const url = `${API_ROUTES.ConversationMember.MakeAdmin}/${conversationMemberId}`;
     return this.http.put<void>(url, {});
   }
+
+  removeAdminStatus = (conversationMemberId: number) => {
+    const url = `${API_ROUTES.ConversationMember.RemoveAdminStatus}/${conversationMemberId}`;
+    return this.http.put<void>(url, {});
+  }
 }

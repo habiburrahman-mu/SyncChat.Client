@@ -32,4 +32,10 @@ export const SYSTEM_MESSAGE_CONFIGS: SystemMessageConfig[] = [
     getTargets: meta => [Number(meta['UserId'])],
     format: (actors, targets) => `${actors[0] || 'Someone'} promoted ${targets[0] || 'a member'} to admin.`
   },
+  {
+    type: SystemMessageType.AdminStatusRemoved,
+    getActors: meta => [Number(meta['RemovedBy'])],
+    getTargets: meta => [Number(meta['UserId'])],
+    format: (actors, targets) => `${actors[0] || 'Someone'} removed admin privileges from ${targets[0] || 'a member'}.`
+  }
 ];

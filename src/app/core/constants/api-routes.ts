@@ -25,6 +25,7 @@ export const API_ROUTES = {
     Add: `${BASE_URL}/conversationMember/add` as const,
     Remove: `${BASE_URL}/conversationMember/remove` as const,
     MakeAdmin: `${BASE_URL}/conversationMember/makeAdmin` as const,
+    RemoveAdminStatus: `${BASE_URL}/conversationMember/removeAdminStatus` as const,
   },
   Message: {
     GetList: `${BASE_URL}/message/getList` as const,

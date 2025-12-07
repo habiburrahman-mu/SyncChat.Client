@@ -69,7 +69,17 @@ export class MemberActionDialogComponent implements OnInit {
 
   dismissAdmin() {
     this.loadingDismiss.set(true);
-    setTimeout(() => this.loadingDismiss.set(false), 1500);
+    this.conversationMemberService.removeAdminStatus(this.member.conversationMemberId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: _ => {
+          this.loadingDismiss.set(false);
+          this.dialogRef.close();
+        },
+        error: err => {
+          this.loadingDismiss.set(false);
+        }
+      });
   }
 
   removeMember() {

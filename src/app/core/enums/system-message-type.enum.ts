@@ -4,4 +4,5 @@ export enum SystemMessageType {
   MemberLeft = 'MemberLeft',
   MemberRemoved = 'MemberRemoved',
   MemberPromotedToAdmin = 'MemberPromotedToAdmin',
+  AdminStatusRemoved = 'AdminStatusRemoved',
 }
