@@ -3,7 +3,7 @@ import { ConversationMemberService, ConversationService, MessageService } from '
 import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService, NotificationService } from '@core/services';
-import { ChatNotificationType } from '@core/enums';
+import { ChatNotificationType, MessageType } from '@core/enums';
 import { MessageMapper } from '../utils';
 import { BehaviorSubject, forkJoin, of, Subject, takeUntil, tap } from 'rxjs';
 import { TypingEvent } from '@core/models';
@@ -423,7 +423,10 @@ export class ChatStateService {
         next: (chatNotification) => {
           this.addMessage(conversationId, MessageMapper.fromDTO(chatNotification.data));
           this.sortConversationSubject.next(conversationId);
-          this.playNotification();
+
+          if (chatNotification.data.type !== MessageType.System) {
+            this.playNotification();
+          }
         }
       });
 
@@ -512,6 +515,7 @@ export class ChatStateService {
 
         conversation.lastMessage = message.content;
         conversation.lastMessageMetaData = message.metaData ? message.metaData : null;
+        conversation.lastMessageType = message.type;
       }
 
       return conversations;
