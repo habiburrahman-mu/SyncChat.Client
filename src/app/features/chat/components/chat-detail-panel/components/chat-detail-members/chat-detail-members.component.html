@@ -33,7 +33,6 @@
       } @else if (state && state.data) {
       <mat-list class="space-y-1">
         @for (member of state.data; track member.userID) {
-        @if(member.isActive) {
         <div (click)="onClickMemberCard(member)">
           <mat-list-item class="rounded-lg border border-gray-200 bg-white/70 backdrop-blur-sm shadow-sm
              px-3 py-2 hover:shadow-md hover:bg-white transition-all duration-200 mb-2"
@@ -82,7 +81,6 @@
             </div>
           </mat-list-item>
         </div>
-        }
         }
       </mat-list>
 

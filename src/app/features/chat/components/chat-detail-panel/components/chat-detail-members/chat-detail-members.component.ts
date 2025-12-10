@@ -58,7 +58,7 @@ export class ChatDetailMembersComponent {
         tap(members => {
           this.conversationMemberList.set(members);
         }),
-        map(members => ({ isLoading: false, data: members, error: null })),
+        map(members => ({ isLoading: false, data: members.filter(x => x.isActive), error: null })),
         startWith({ isLoading: true, data: null, error: null }),
         catchError(() =>
           of({
