@@ -62,10 +62,10 @@ export class MemberActionDialogComponent implements OnInit {
       });
   }
 
-  makeOwner() {
-    this.loadingOwner.set(true);
-    setTimeout(() => this.loadingOwner.set(false), 1500);
-  }
+  // makeOwner() {
+  //   this.loadingOwner.set(true);
+  //   setTimeout(() => this.loadingOwner.set(false), 1500);
+  // }
 
   dismissAdmin() {
     this.loadingDismiss.set(true);
