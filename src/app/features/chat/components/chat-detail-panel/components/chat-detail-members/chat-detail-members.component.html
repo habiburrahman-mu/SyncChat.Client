@@ -10,79 +10,81 @@
     </mat-expansion-panel-header>
 
     @if(state && !state.isLoading && conversation()?.conversationType === ConversationType.Group &&
-      (isCurrentUserAdmin() || isCurrentUserOwner())) {
-      <div class="flex justify-end">
-        <button mat-raised-button aria-label="Add Member" (click)="onClickAddMember()">
-          <mat-icon>group_add</mat-icon>
-          Add Member
-        </button>
-      </div>
+    (isCurrentUserAdmin() || isCurrentUserOwner())) {
+    <div class="flex justify-end">
+      <button mat-raised-button aria-label="Add Member" (click)="onClickAddMember()">
+        <mat-icon>group_add</mat-icon>
+        Add Member
+      </button>
+    </div>
     }
 
 
     <div class="overflow-auto max-h-100">
       @if (state?.isLoading) {
-        <div class="flex justify-center py-2">
-          <mat-progress-spinner mode="indeterminate" diameter="24" color="warn" strokeWidth="3"></mat-progress-spinner>
-        </div>
+      <div class="flex justify-center py-2">
+        <mat-progress-spinner mode="indeterminate" diameter="24" color="warn" strokeWidth="3"></mat-progress-spinner>
+      </div>
       } @else if (state?.error) {
-        <div class="flex justify-center py-2">
-          <mat-icon color="warn">error</mat-icon>
-          <span>{{ state?.error }}</span>
-        </div>
+      <div class="flex justify-center py-2">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ state?.error }}</span>
+      </div>
       } @else if (state && state.data) {
-        <mat-list class="space-y-1">
-          @for (member of state.data; track member.userID) {
-            <div (click)="onClickMemberCard(member)">
+      <mat-list class="space-y-1">
+        @for (member of state.data; track member.userID) {
+        @if(member.isActive) {
+        <div (click)="onClickMemberCard(member)">
           <mat-list-item class="rounded-lg border border-gray-200 bg-white/70 backdrop-blur-sm shadow-sm
              px-3 py-2 hover:shadow-md hover:bg-white transition-all duration-200 mb-2"
-                [style]="{height: 'auto', paddingTop: '5px', paddingBottom: '5px'}">
+            [style]="{height: 'auto', paddingTop: '5px', paddingBottom: '5px'}">
 
-                <!-- Avatar -->
-                <div matListItemAvatar>
-                  <mat-icon
-                    class="inline-flex text-center items-center justify-center w-15 h-15 p-0 m-0 text-xl font-bold leading-none rounded-xl bg-blue-200">
-                    {{ member.name.charAt(0).toUpperCase() }}
-                  </mat-icon>
-                </div>
+            <!-- Avatar -->
+            <div matListItemAvatar>
+              <mat-icon
+                class="inline-flex text-center items-center justify-center w-15 h-15 p-0 m-0 text-xl font-bold leading-none rounded-xl bg-blue-200">
+                {{ member.name.charAt(0).toUpperCase() }}
+              </mat-icon>
+            </div>
 
-                <!-- Info -->
-                <div class="flex flex-col flex-1 ml-2">
-                  <!-- Name + Owner Badge -->
-                  <div class="flex items-center gap-1">
-                    <span class="font-semibold text-gray-700 text-sm">
-                      {{ member.userID === currentUserId ? 'You' : member.name}}
-                    </span>
-                    @if (member.role === 'owner') {
-                      <mat-icon class="text-blue-500 text-sm" matTooltip="Owner">
-                        verified
-                      </mat-icon>
-                    }
-                    @if(!member.isActive) {
-                      <div class="text-sm">(Left/Removed)</div>
-                    }
-                  </div>
+            <!-- Info -->
+            <div class="flex flex-col flex-1 ml-2">
+              <!-- Name + Owner Badge -->
+              <div class="flex items-center gap-1">
+                <span class="font-semibold text-gray-700 text-sm">
+                  {{ member.userID === currentUserId ? 'You' : member.name}}
+                </span>
+                @if (member.role === 'owner') {
+                <mat-icon class="text-blue-500 text-sm" matTooltip="Owner">
+                  verified
+                </mat-icon>
+                }
+                @if(!member.isActive) {
+                <div class="text-sm">(Left/Removed)</div>
+                }
+              </div>
 
-                  <!-- @username -->
-                  <span class="text-xs text-gray-500">{{ '@' + member.userName }}</span>
+              <!-- @username -->
+              <span class="text-xs text-gray-500">{{ '@' + member.userName }}</span>
 
-                  <!-- Role + Joined-->
-                  <div class="flex items-center text-xs text-gray-500 mt-1">
+              <!-- Role + Joined-->
+              <div class="flex items-center text-xs text-gray-500 mt-1">
                 <span class="px-2 py-0.5 rounded-full border font-medium
                    {{ member.role === 'owner'
                         ? 'bg-amber-50 border-amber-300 text-amber-700'
                         : 'bg-blue-50 border-blue-300 text-blue-700' }}">
-                      {{ member.role }}
-                    </span>
-                    <span class="ml-auto">
-                      Joined {{ member.joinedAt | date:'MMM d, y' }}
-                    </span>
-                  </div>
-                </div>
-              </mat-list-item>
+                  {{ member.role }}
+                </span>
+                <span class="ml-auto">
+                  Joined {{ member.joinedAt | date:'MMM d, y' }}
+                </span>
+              </div>
             </div>
-          }
-        </mat-list>
+          </mat-list-item>
+        </div>
+        }
+        }
+      </mat-list>
 
       }
 
