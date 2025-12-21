@@ -91,7 +91,8 @@ export class LoginComponent {
   private createRequest() {
     const request: TokenRequest = {
       userName: this.form.value.userName!,
-      password: this.form.value.password!
+      password: this.form.value.password!,
+      deviceIdentifier: this._authService.getDeviceIdentifier()
     };
 
     return request;
@@ -99,7 +100,7 @@ export class LoginComponent {
 
   private storeToken(response: TokenResponse) {
     this._localStorageService.setItem(LocalStorageKey.Token, response.token);
-    this._localStorageService.setItem(LocalStorageKey.ExpirationInMinutes, response.expirationInMinutes);
+    // this._localStorageService.setItem(LocalStorageKey.ExpirationInMinutes, response.expirationInMinutes);
   }
 
   private routeToLChatHome() {

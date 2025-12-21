@@ -40,6 +40,22 @@ export class AuthService {
     this.updateUserId();
   }
 
+  getDeviceIdentifier(): string  {
+    const deviceIdentifier = this._localStorageService.getItem<string>(LocalStorageKey.DeviceIdentifier);
+
+    if(!deviceIdentifier) {
+      const newDeviceIdentifier = this.generateDeviceIdentifier();
+
+      this._localStorageService.setItem(LocalStorageKey.DeviceIdentifier, newDeviceIdentifier);
+
+      return newDeviceIdentifier;
+    }
+
+    return deviceIdentifier;
+  }
+
+  private generateDeviceIdentifier() { return crypto.randomUUID(); }
+
   updateUserId() {
     this._userId = this.getUserId();
   }
