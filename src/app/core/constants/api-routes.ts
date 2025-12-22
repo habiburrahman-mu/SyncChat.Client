@@ -5,7 +5,7 @@ export const BASE_URL = environment.apiBaseUrl;
 export const API_ROUTES = {
   Auth: {
     Register: `${BASE_URL}/auth/register` as const,
-    Token: `${BASE_URL}/auth/token` as const,
+    Login: `${BASE_URL}/auth/login` as const,
   },
   User: {
     GetUserByUserName: `${BASE_URL}/user/GetByUserName` as const,

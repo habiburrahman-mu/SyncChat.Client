@@ -72,7 +72,7 @@ export class LoginComponent {
 
       const tokenRequest = this.createRequest();
 
-      this._authHttpService.getToken(tokenRequest)
+      this._authHttpService.login(tokenRequest)
         .pipe(takeUntilDestroyed(this._destroyRef))
         .subscribe({
           next: token => {
