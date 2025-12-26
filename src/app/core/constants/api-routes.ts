@@ -6,6 +6,9 @@ export const API_ROUTES = {
   Auth: {
     Register: `${BASE_URL}/auth/register` as const,
     Login: `${BASE_URL}/auth/login` as const,
+    RefreshToken: `${BASE_URL}/auth/refreshToken` as const,
+    Logout: `${BASE_URL}/auth/logout` as const,
+    LogoutAll: `${BASE_URL}/auth/logoutAll` as const,
   },
   User: {
     GetUserByUserName: `${BASE_URL}/user/GetByUserName` as const,
