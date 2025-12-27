@@ -14,7 +14,7 @@ export class AuthHttpService {
   register = (request: RegisterUserRequest): Observable<string> => this.http.post<string>(API_ROUTES.Auth.Register, request);
 
   login = (request: TokenRequest): Observable<string> =>
-    this.http.post<string>(API_ROUTES.Auth.Login, request);
+    this.http.post<string>(API_ROUTES.Auth.Login, request, {withCredentials: true});
 
   refresh = (request: RefreshRequest): Observable<string> =>
     this.http.post<string>(API_ROUTES.Auth.RefreshToken, request, { withCredentials: true });
