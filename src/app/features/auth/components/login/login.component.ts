@@ -8,7 +8,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { AuthHttpService } from '@features/auth/services';
 
-import { TokenRequest, TokenResponse } from '@features/auth/models';
+import { TokenRequest } from '@features/auth/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -75,8 +75,8 @@ export class LoginComponent {
       this._authHttpService.login(tokenRequest)
         .pipe(takeUntilDestroyed(this._destroyRef))
         .subscribe({
-          next: token => {
-            this.storeToken(token);
+          next: accessToken => {
+            this.storeToken(accessToken);
             this.isLoginInProgress.set(false);
             this.routeToLChatHome();
             this._authService.setAuthState(true);
@@ -98,8 +98,8 @@ export class LoginComponent {
     return request;
   }
 
-  private storeToken(response: TokenResponse) {
-    this._localStorageService.setItem(LocalStorageKey.Token, response.token);
+  private storeToken(accessToken: string) {
+    this._localStorageService.setItem(LocalStorageKey.Token, accessToken);
     // this._localStorageService.setItem(LocalStorageKey.ExpirationInMinutes, response.expirationInMinutes);
   }
 

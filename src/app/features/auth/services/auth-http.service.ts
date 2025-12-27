@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LogoutRequest, RefreshRequest, RegisterUserRequest, TokenRequest, TokenResponse } from '../models';
+import { LogoutRequest, RefreshRequest, RegisterUserRequest, TokenRequest } from '../models';
 import { Observable } from 'rxjs';
-import { API_ROUTES } from 'app/core/constants';
+import { API_ROUTES } from '@core/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +13,8 @@ export class AuthHttpService {
 
   register = (request: RegisterUserRequest): Observable<string> => this.http.post<string>(API_ROUTES.Auth.Register, request);
 
-  login = (request: TokenRequest): Observable<TokenResponse> =>
-    this.http.post<TokenResponse>(API_ROUTES.Auth.Login, request);
+  login = (request: TokenRequest): Observable<string> =>
+    this.http.post<string>(API_ROUTES.Auth.Login, request);
 
   refresh = (request: RefreshRequest): Observable<string> =>
     this.http.post<string>(API_ROUTES.Auth.RefreshToken, request, { withCredentials: true });

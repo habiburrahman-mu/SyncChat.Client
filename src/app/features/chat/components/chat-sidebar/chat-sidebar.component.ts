@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit, output, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,12 +7,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Conversation, NewConversation } from '@features/chat/models';
 import { NewChatDialogComponent } from '../new-chat-dialog/new-chat-dialog.component';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '@core/services';
-import { ChatStateService, ConversationService, UserService, UserStateService } from '@features/chat/services';
+import { ChatStateService, UserService, UserStateService } from '@features/chat/services';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { ConversationType, MessageType } from '@core/enums';
-import { catchError, map, of, startWith } from 'rxjs';
+import { MessageType } from '@core/enums';
 import { MatMenuModule } from '@angular/material/menu';
 import { ProfileComponent } from '../profile/profile.component';
 import { SystemMessageAsyncPipe } from '@features/chat/pipes';
@@ -42,13 +40,6 @@ export class ChatSidebarComponent implements OnInit {
   readonly conversationList = this.chatStateService.conversationList;
   readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
   readonly selectedConversation = this.chatStateService.selectedConversation;
-
-  // userDetailState$ = this.userService.getUserDetail()
-  //   .pipe(
-  //     map(response => ({ isLoading: false, data: response, error: null })),
-  //     startWith({ isLoading: true, data: null, error: null }),
-  //     catchError(error => of({ isLoading: false, data: null, error: 'An error occurred while loading user details.' }))
-  //   );
 
   readonly userDetailResource = this.userStateService.userResource;
   readonly MessageType = MessageType;

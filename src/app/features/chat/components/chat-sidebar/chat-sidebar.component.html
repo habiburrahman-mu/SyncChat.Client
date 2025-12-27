@@ -18,40 +18,40 @@
   <!-- Chat List -->
   <div class="flex-1 overflow-y-auto px-4 py-3 relative">
     @if(isConversationsLoading()) {
-      <div class="absolute inset-0 flex items-center justify-center">
-        <mat-progress-spinner color="accent" mode="indeterminate" diameter="40"></mat-progress-spinner>
-      </div>
+    <div class="absolute inset-0 flex items-center justify-center">
+      <mat-progress-spinner color="accent" mode="indeterminate" diameter="40"></mat-progress-spinner>
+    </div>
     } @else {
-      @for (chat of conversationList(); track chat) {
-<div (click)="selectChat(chat)" class="flex items-center gap-4 p-3 rounded-lg cursor-pointer
+    @for (chat of conversationList(); track chat) {
+    <div (click)="selectChat(chat)" class="flex items-center gap-4 p-3 rounded-lg cursor-pointer
                   border border-transparent hover:bg-gray-100 hover:border-gray-200 transition h-18 mb-2 relative"
-          [class.bg-gray-100]="selectedConversation()?.id === chat.id">
-          <!-- Avatar -->
-          <mat-icon class="text-gray-500 text-xl flex-shrink-0">account_circle</mat-icon>
-          <!-- Chat Info -->
-          <div class="flex flex-col overflow-hidden">
-            <div class="text-base font-semibold text-gray-900 truncate max-w-xs">
-              {{ chat.name }}
-            </div>
-            <div class="text-sm text-gray-600 truncate max-w-xs flex items-center gap-1"
-              [ngClass]="chat.hasUnreadMessages ? 'text-blue-600 font-bold' : 'text-gray-500'">
-              @switch (chat.lastMessageType) {
-                @case (MessageType.System) {
-                  <span title="{{ chat.lastMessageMetaData | systemMessageAsync | async }}">
-                    {{ chat.lastMessageMetaData |systemMessageAsync | async }}
-                  </span>
-                }
-                @default {
-                  <span [title]="chat.lastMessage">{{ chat.lastMessage }}</span>
-                }
-              }
-            </div>
-          </div>
-          @if (chat.hasUnreadMessages) {
-            <span class="absolute top-3 right-3 w-2 h-2 rounded-full bg-blue-500"></span>
+      [class.bg-gray-100]="selectedConversation()?.id === chat.id">
+      <!-- Avatar -->
+      <mat-icon class="text-gray-500 text-xl flex-shrink-0">account_circle</mat-icon>
+      <!-- Chat Info -->
+      <div class="flex flex-col overflow-hidden">
+        <div class="text-base font-semibold text-gray-900 truncate max-w-xs">
+          {{ chat.name }}
+        </div>
+        <div class="text-sm text-gray-600 truncate max-w-xs flex items-center gap-1"
+          [ngClass]="chat.hasUnreadMessages ? 'text-blue-600 font-bold' : 'text-gray-500'">
+          @switch (chat.lastMessageType) {
+          @case (MessageType.System) {
+          <span title="{{ chat.lastMessageMetaData | systemMessageAsync | async }}">
+            {{ chat.lastMessageMetaData |systemMessageAsync | async }}
+          </span>
+          }
+          @default {
+          <span [title]="chat.lastMessage">{{ chat.lastMessage }}</span>
+          }
           }
         </div>
+      </div>
+      @if (chat.hasUnreadMessages) {
+      <span class="absolute top-3 right-3 w-2 h-2 rounded-full bg-blue-500"></span>
       }
+    </div>
+    }
     }
   </div>
 
@@ -60,67 +60,67 @@
 
     <!-- 1. Loading State -->
     @if (userDetailResource.isLoading()) {
-      <div class="flex items-center gap-3 p-4 animate-pulse">
-        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
-        <div class="flex-1 space-y-2">
-          <div class="h-3 bg-gray-300 rounded w-1/3"></div>
-          <div class="h-4 bg-gray-300 rounded w-1/2"></div>
-        </div>
+    <div class="flex items-center gap-3 p-4 animate-pulse">
+      <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+      <div class="flex-1 space-y-2">
+        <div class="h-3 bg-gray-300 rounded w-1/3"></div>
+        <div class="h-4 bg-gray-300 rounded w-1/2"></div>
       </div>
+    </div>
     } @else {
-      @if (userDetailResource.error()) {
-        <div class="p-4 text-sm text-red-600">
-          {{ userDetailResource.error() }}
-        </div>
-      } @else {
-        @if(userDetailResource.hasValue() && userDetailResource.value()) {
-          @let data = userDetailResource.value();
-          <div class="flex items-center justify-between bg-white p-4 shadow border-t-1 border-t-gray-100">
-            <!-- Avatar + Status + Name -->
-            <div class="flex items-center gap-3">
-              <div class="relative">
-                <mat-icon>accessibility</mat-icon>
-                <!-- <img [src]="state.data?.profileImageUrl || defaultAvatar" alt="Avatar"
+    @if (userDetailResource.error()) {
+    <div class="p-4 text-sm text-red-600">
+      {{ userDetailResource.error() }}
+    </div>
+    } @else {
+    @if(userDetailResource.hasValue() && userDetailResource.value()) {
+    @let data = userDetailResource.value();
+    <div class="flex items-center justify-between bg-white p-4 shadow border-t-1 border-t-gray-100">
+      <!-- Avatar + Status + Name -->
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <mat-icon>accessibility</mat-icon>
+          <!-- <img [src]="state.data?.profileImageUrl || defaultAvatar" alt="Avatar"
                 class="w-10 h-10 rounded-full object-cover" /> -->
-            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full
+          <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full
                        ring-2 ring-white" [ngClass]="{
                   'bg-[#3d5afe]': data?.status === 'online',
                   'bg-gray-400':   data?.status !== 'online'
                 }"></span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-xs text-gray-500">
-                  Logged in as
-                </span>
-            <span class="text-sm font-semibold
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xs text-gray-500">
+            Logged in as
+          </span>
+          <span class="text-sm font-semibold
                        text-gray-900
                        truncate">
-                  {{ data?.name }}
-                </span>
-              </div>
-            </div>
-            <!-- Action Menu -->
-            <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Open user menu"
-              class="text-[#3d5afe] hover:text-[#3d5afe]/80">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #userMenu="matMenu">
-              <button mat-menu-item (click)="onClickProfile()">
-                <mat-icon>person</mat-icon>
-                <span>Profile</span>
-              </button>
-              <button mat-menu-item>
-                <mat-icon>settings</mat-icon>
-                <span>Settings</span>
-              </button>
-              <button mat-menu-item (click)="logout()">
-                <mat-icon color="warn">logout</mat-icon>
-                <span>Logout</span>
-              </button>
-            </mat-menu>
-          </div>
-        }
-      }
+            {{ data?.name }}
+          </span>
+        </div>
+      </div>
+      <!-- Action Menu -->
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Open user menu"
+        class="text-[#3d5afe] hover:text-[#3d5afe]/80">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="onClickProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon color="warn">logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+    }
+    }
     }
 
     <!-- 2. Loaded: Error or User Panel -->
