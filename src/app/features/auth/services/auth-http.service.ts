@@ -17,7 +17,7 @@ export class AuthHttpService {
     this.http.post<string>(API_ROUTES.Auth.Login, request, {withCredentials: true});
 
   refresh = (request: RefreshRequest): Observable<string> =>
-    this.http.post<string>(API_ROUTES.Auth.RefreshToken, request, { withCredentials: true });
+    this.http.post<string>(API_ROUTES.Auth.Refresh, request, { withCredentials: true });
 
   logout = (request: LogoutRequest): Observable<void> =>
     this.http.post<void>(API_ROUTES.Auth.Logout, request, { withCredentials: true });

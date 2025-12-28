@@ -12,6 +12,9 @@ export class ErrorHandlerService {
     if (error.status === 0) {
       this.toaster.error('Network Error', 'Unable to connect to the server. Please check your connection.');
     }
+    else if( error.status === 401) {
+      return;
+    }
     else if (error.status >= 400 && error.status < 500) {
 
       if (error.error.errors && error.error.errors instanceof Array && error.error.errors.length > 0) {
