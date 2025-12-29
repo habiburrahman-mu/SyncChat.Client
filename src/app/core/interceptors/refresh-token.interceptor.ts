@@ -15,9 +15,15 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+
       if (error.status !== 401) {
         return throwError(() => error);
       }
+
+      // if (req.url.includes('/auth/refresh')) {
+      //   authService.logout();
+      //   return throwError(() => error);
+      // }
 
       if (!isRefreshing) {
         isRefreshing = true;
@@ -28,19 +34,17 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
         }).pipe(
           switchMap(accessToken => {
             isRefreshing = false;
-            authService.setAuthState(true);
             localStorageService.setItem(LocalStorageKey.Token, accessToken);
             refreshTokenSubject.next(accessToken);
 
             return next(
               req.clone({
-                headers: req.headers.set('Authorization', `Bearer ${accessToken}`)
+                setHeaders: { Authorization: `Bearer ${accessToken}` }
               })
             );
           }),
           catchError(err => {
             isRefreshing = false;
-            authService.setAuthState(false);
             authService.logout();
             return throwError(() => err);
           })
@@ -50,13 +54,13 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
       return refreshTokenSubject.pipe(
         filter(token => token !== null),
         take(1),
-        switchMap(accessToken => {
-          return next(
+        switchMap(token =>
+          next(
             req.clone({
-              headers: req.headers.set('Authorization', `Bearer ${accessToken}`)
+              setHeaders: { Authorization: `Bearer ${token}` }
             })
-          );
-        })
+          )
+        )
       );
     })
   );

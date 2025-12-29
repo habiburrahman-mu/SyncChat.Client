@@ -22,19 +22,12 @@ export class AuthService {
   private _userId: number | null = this.getUserId();
 
   hasValidToken(): boolean {
-
     const decodedToken = this._getDecodedToken();
-
-    if (decodedToken && decodedToken.exp) {
-      const expiryTime = decodedToken.exp * 1000; // exp is in seconds
-      return expiryTime > Date.now();
-    }
-
-    return false;
+    return decodedToken !== null;
   }
 
   getAccessToken() {
-    return this.hasValidToken() ? this._getTokenString() : null;
+    return this._getTokenString();
   }
 
   setAuthState(isAuthenticated: boolean): void {
@@ -42,10 +35,10 @@ export class AuthService {
     this.updateUserId();
   }
 
-  getDeviceIdentifier(): string  {
+  getDeviceIdentifier(): string {
     const deviceIdentifier = this._localStorageService.getItem<string>(LocalStorageKey.DeviceIdentifier);
 
-    if(!deviceIdentifier) {
+    if (!deviceIdentifier) {
       const newDeviceIdentifier = this.generateDeviceIdentifier();
 
       this._localStorageService.setItem(LocalStorageKey.DeviceIdentifier, newDeviceIdentifier);
@@ -67,7 +60,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.authHttpService.logout({deviceIdentifier: this.getDeviceIdentifier()}).subscribe();
+    this.authHttpService.logout({ deviceIdentifier: this.getDeviceIdentifier() }).subscribe();
 
     this._localStorageService.clear();
     this.setAuthState(false);
