@@ -20,10 +20,10 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      // if (req.url.includes('/auth/refresh')) {
-      //   authService.logout();
-      //   return throwError(() => error);
-      // }
+      if (req.url.includes('/auth/refresh')) {
+        authService.logout();
+        return throwError(() => error);
+      }
 
       if (!isRefreshing) {
         isRefreshing = true;
