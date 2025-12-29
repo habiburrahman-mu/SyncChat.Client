@@ -1,12 +1,16 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { API_ROUTES } from '@core/constants';
 import { LocalStorageKey } from '@core/enums';
 import { AuthService, LocalStorageService } from '@core/services';
+import { environment } from '@environments/environment';
 import { AuthHttpService } from '@features/auth/services';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 
 let isRefreshing: boolean = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
+const BASE_URL = environment.apiBaseUrl;
+const REFRESH_URL = API_ROUTES.Auth.Refresh.split(BASE_URL)[1];
 
 export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -20,7 +24,7 @@ export const refreshTokenInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      if (req.url.includes('/auth/refresh')) {
+      if (req.url.includes(REFRESH_URL)) {
         authService.logout();
         return throwError(() => error);
       }
