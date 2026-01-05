@@ -4,3 +4,4 @@ export * from './local-storage/local-storage.service';
 export * from './auth/auth.service';
 export * from './notification/notification.service';
 export * from './user-store/user-store.service';
+export * from './google-identity/google-identity.service';
