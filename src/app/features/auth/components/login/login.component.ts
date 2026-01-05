@@ -14,7 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GoogleIconComponent } from '@shared/components';
 import { FEATURE_ROUTE_PATH } from '@core/constants';
-import { AuthService, LocalStorageService } from '@core/services';
+import { AuthService, GoogleIdentityService, LocalStorageService } from '@core/services';
 import { LocalStorageKey } from '@core/enums';
 import { environment } from '@environments/environment';
 
@@ -49,6 +49,7 @@ export class LoginComponent implements AfterViewInit{
   private readonly _router = inject(Router);
   private readonly _localStorageService = inject(LocalStorageService);
   private readonly _authService = inject(AuthService);
+  private readonly googleIdentityService = inject(GoogleIdentityService);
 
   public form = this._fb.nonNullable.group({
     userName: this._fb.nonNullable.control<string>('', { validators: [Validators.required] }),
@@ -65,21 +66,24 @@ export class LoginComponent implements AfterViewInit{
   };
 
   isLoginInProgress = signal<boolean>(false);
+  isGoogleLoginInProgress = this.googleIdentityService.googleLoginInProgress;
 
   ngAfterViewInit(): void {
-    google.accounts.id.initialize({
-      client_id: environment.googleClientId,
-      auto_select: false,
-      cancel_on_tap_outside: true,
-      callback: (response: GoogleCredentialResponse) => {
-        console.log(response);
-      }
-    });
+    // google.accounts.id.initialize({
+    //   client_id: environment.googleClientId,
+    //   auto_select: false,
+    //   cancel_on_tap_outside: true,
+    //   callback: (response: GoogleCredentialResponse) => {
+    //     console.log(response);
+    //   }
+    // });
 
-    google.accounts.id.renderButton(
-      document.getElementById('google-btn')!,
-      { theme: 'outline', size: 'medium', text: 'continue_with' }
-    );
+    // google.accounts.id.renderButton(
+    //   document.getElementById('google-btn')!,
+    //   { theme: 'outline', size: 'medium', text: 'continue_with' }
+    // );
+
+    this.googleIdentityService.init();
   }
 
   public onSubmit() {

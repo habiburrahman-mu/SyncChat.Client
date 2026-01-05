@@ -46,16 +46,9 @@
       <div class="flex-grow border-t border-gray-200"></div>
     </div>
 
-    <!-- <button mat-stroked-button class="w-full py-3 text-base font-medium normal-case hover:bg-gray-50 transition"
-      [disabled]="isLoginInProgress()" (click)="onGoogleLogin()">
-      <div class="flex gap-1">
-        <chat-google-icon [width]="20" [height]="20" />
-        <div>Continue with Google</div>
-      </div>
-    </button> -->
     <div class="flex flex-col gap-2 h-6">
       <div class="w-full flex justify-center" [class.hidden]="isLoginInProgress()">
-        <button id="google-btn" [disabled]="isLoginInProgress()"></button>
+        <button id="google-auth-btn" [disabled]="isLoginInProgress()"></button>
       </div>
     </div>
 
