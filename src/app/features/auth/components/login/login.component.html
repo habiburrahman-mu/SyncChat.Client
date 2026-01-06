@@ -32,7 +32,7 @@
         }
       </mat-form-field>
 
-      <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="isLoginInProgress()">
+      <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="isAnyLoginInProgress()">
         @if (isLoginInProgress()) {
         <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
         }
@@ -48,7 +48,13 @@
 
     <div class="flex flex-col gap-2 h-6">
       <div class="w-full flex justify-center" [class.hidden]="isLoginInProgress()">
-        <button id="google-auth-btn" [disabled]="isLoginInProgress()"></button>
+        @if(isGoogleLoginInProgress()) {
+        <button mat-flat-button color="warn" class="py-3 text-lg" disabled>
+          <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
+          <span>Signing in with Google...</span>
+        </button>
+        }
+        <button [class.hidden]="isGoogleLoginInProgress()" id="google-auth-btn" [disabled]="isLoginInProgress()"></button>
       </div>
     </div>
 

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -33,7 +33,7 @@ import { LocalStorageKey } from '@core/enums';
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LoginComponent implements AfterViewInit{
+export class LoginComponent implements AfterViewChecked{
   options: AnimationOptions = {
     path: 'assets/animations/login.json',
     loop: true,
@@ -65,7 +65,11 @@ export class LoginComponent implements AfterViewInit{
   isLoginInProgress = signal<boolean>(false);
   isGoogleLoginInProgress = this.googleIdentityService.googleLoginInProgress;
 
-  ngAfterViewInit(): void {
+  isAnyLoginInProgress = computed(() => {
+    return this.isLoginInProgress() || this.isGoogleLoginInProgress();
+  });
+
+  ngAfterViewChecked(): void {
     // google.accounts.id.initialize({
     //   client_id: environment.googleClientId,
     //   auto_select: false,
