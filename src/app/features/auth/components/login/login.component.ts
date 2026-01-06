@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,11 +12,9 @@ import { TokenRequest } from '@features/auth/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { GoogleIconComponent } from '@shared/components';
 import { FEATURE_ROUTE_PATH } from '@core/constants';
 import { AuthService, GoogleIdentityService, LocalStorageService } from '@core/services';
 import { LocalStorageKey } from '@core/enums';
-import { environment } from '@environments/environment';
 
 @Component({
   selector: 'chat-login',
@@ -29,8 +27,7 @@ import { environment } from '@environments/environment';
     RouterModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    LottieComponent,
-    GoogleIconComponent
+    LottieComponent
 ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
