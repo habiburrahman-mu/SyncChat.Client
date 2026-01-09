@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LogoutRequest, RefreshRequest, RegisterUserRequest, TokenRequest } from '../models';
+import { GoogleAuthRequest, LogoutRequest, RefreshRequest, RegisterUserRequest, TokenRequest } from '../models';
 import { Observable } from 'rxjs';
 import { API_ROUTES } from '@core/constants';
 
@@ -14,7 +14,7 @@ export class AuthHttpService {
   register = (request: RegisterUserRequest): Observable<string> => this.http.post<string>(API_ROUTES.Auth.Register, request);
 
   login = (request: TokenRequest): Observable<string> =>
-    this.http.post<string>(API_ROUTES.Auth.Login, request, {withCredentials: true});
+    this.http.post<string>(API_ROUTES.Auth.Login, request, { withCredentials: true });
 
   refresh = (request: RefreshRequest): Observable<string> =>
     this.http.post<string>(API_ROUTES.Auth.Refresh, request, { withCredentials: true });
@@ -24,4 +24,7 @@ export class AuthHttpService {
 
   logoutAll = (request: LogoutRequest): Observable<void> =>
     this.http.post<void>(API_ROUTES.Auth.LogoutAll, request, { withCredentials: true });
+
+  googleAuth = (request: GoogleAuthRequest): Observable<string> =>
+    this.http.post<string>(API_ROUTES.Auth.GoogleAuth, request);
 }

@@ -1,5 +1,7 @@
 import { inject, Injectable, NgZone, signal } from '@angular/core';
 import { environment } from '@environments/environment';
+import { AuthHttpService } from '@features/auth/services';
+import { AuthService } from '..';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +14,8 @@ export class GoogleIdentityService {
 
   private readonly ngZone = inject(NgZone);
   private readonly document = inject(Document);
+  private readonly authHttpService = inject(AuthHttpService);
+  private readonly authService = inject(AuthService);
 
   init(): void {
     if (!this.initialized) {
@@ -41,9 +45,24 @@ export class GoogleIdentityService {
   private handleGoogleCredential(idToken: string): void {
     // TODO: send the ID token to backend for verification and authentication
     this.googleLoginInProgress.set(true);
-    console.log('Google ID Token:', idToken);
-    setTimeout(() => {
-      this.googleLoginInProgress.set(false);
-    }, 2000);
+
+    this.authHttpService.googleAuth({
+      idToken: idToken,
+      deviceIdentifier: this.authService.getDeviceIdentifier()
+    }).subscribe({
+      next: accessToken => {
+        // this.authService.storeAccessToken(accessToken);
+        this.googleLoginInProgress.set(false);
+        // this.authService.setAuthState(true);
+      },
+      error: _ => {
+        this.googleLoginInProgress.set(false);
+      }
+    });
+
+    // console.log('Google ID Token:', idToken);
+    // setTimeout(() => {
+    //   this.googleLoginInProgress.set(false);
+    // }, 2000);
   }
 }
