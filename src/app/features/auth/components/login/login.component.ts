@@ -70,20 +70,6 @@ export class LoginComponent implements AfterViewChecked{
   });
 
   ngAfterViewChecked(): void {
-    // google.accounts.id.initialize({
-    //   client_id: environment.googleClientId,
-    //   auto_select: false,
-    //   cancel_on_tap_outside: true,
-    //   callback: (response: GoogleCredentialResponse) => {
-    //     console.log(response);
-    //   }
-    // });
-
-    // google.accounts.id.renderButton(
-    //   document.getElementById('google-btn')!,
-    //   { theme: 'outline', size: 'medium', text: 'continue_with' }
-    // );
-
     this.googleIdentityService.init();
   }
 

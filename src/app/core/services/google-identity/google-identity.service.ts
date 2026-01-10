@@ -1,7 +1,10 @@
 import { inject, Injectable, NgZone, signal } from '@angular/core';
 import { environment } from '@environments/environment';
 import { AuthHttpService } from '@features/auth/services';
-import { AuthService } from '..';
+import { AuthService, LocalStorageService } from '..';
+import { FEATURE_ROUTE_PATH } from '@core/constants';
+import { Router } from '@angular/router';
+import { LocalStorageKey } from '@core/enums';
 
 @Injectable({
   providedIn: 'root',
@@ -16,12 +19,15 @@ export class GoogleIdentityService {
   private readonly document = inject(Document);
   private readonly authHttpService = inject(AuthHttpService);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly localStorageService = inject(LocalStorageService);
+
 
   init(): void {
     if (!this.initialized) {
       this.google.accounts.id.initialize({
         client_id: environment.googleClientId,
-        callback: (response: any) => {
+        callback: (response: GoogleCredentialResponse) => {
           // Google callback is outside Angular zone
           this.ngZone.run(() => {
             this.handleGoogleCredential(response.credential);
@@ -43,7 +49,6 @@ export class GoogleIdentityService {
   }
 
   private handleGoogleCredential(idToken: string): void {
-    // TODO: send the ID token to backend for verification and authentication
     this.googleLoginInProgress.set(true);
 
     this.authHttpService.googleAuth({
@@ -51,18 +56,18 @@ export class GoogleIdentityService {
       deviceIdentifier: this.authService.getDeviceIdentifier()
     }).subscribe({
       next: accessToken => {
-        // this.authService.storeAccessToken(accessToken);
-        this.googleLoginInProgress.set(false);
-        // this.authService.setAuthState(true);
+         this.localStorageService.setItem(LocalStorageKey.Token, accessToken);
+         this.authService.setAuthState(true);
+         this.googleLoginInProgress.set(false);
+         this.routeToChatHome();
       },
       error: _ => {
         this.googleLoginInProgress.set(false);
       }
     });
+  }
 
-    // console.log('Google ID Token:', idToken);
-    // setTimeout(() => {
-    //   this.googleLoginInProgress.set(false);
-    // }, 2000);
+  private routeToChatHome() {
+    this.router.navigate([FEATURE_ROUTE_PATH.Chat]);
   }
 }
