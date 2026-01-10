@@ -18,14 +18,14 @@
         <mat-label>Full Name</mat-label>
         <input matInput formControlName="fullName" type="text">
         @if (form.controls.fullName.hasError('required')) {
-          <mat-error>
-            {{ errorMessages.fullName.required }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.fullName.required }}
+        </mat-error>
         }
         @if (form.controls.fullName.hasError('minlength')) {
-          <mat-error>
-            {{ errorMessages.fullName.minlength }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.fullName.minlength }}
+        </mat-error>
         }
       </mat-form-field>
 
@@ -34,19 +34,19 @@
         <mat-label>Username</mat-label>
         <input matInput formControlName="userName" type="text">
         @if (form.controls.userName.hasError('required')) {
-          <mat-error>
-            {{ errorMessages.userName.required }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.userName.required }}
+        </mat-error>
         }
         @if (form.controls.userName.hasError('minlength')) {
-          <mat-error>
-            {{ errorMessages.userName.minlength }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.userName.minlength }}
+        </mat-error>
         }
         @if (form.controls.userName.hasError('pattern')) {
-          <mat-error>
-            {{ errorMessages.userName.pattern }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.userName.pattern }}
+        </mat-error>
         }
       </mat-form-field>
 
@@ -55,14 +55,14 @@
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email">
         @if (form.controls.email.hasError('required')) {
-          <mat-error>
-            {{ errorMessages.email.required }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.email.required }}
+        </mat-error>
         }
         @if (form.controls.email.hasError('email')) {
-          <mat-error>
-            {{ errorMessages.email.email }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.email.email }}
+        </mat-error>
         }
       </mat-form-field>
 
@@ -74,14 +74,14 @@
           <mat-icon>{{ showPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
         @if (form.controls.password.hasError('required')) {
-          <mat-error>
-            {{ errorMessages.password.required }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.password.required }}
+        </mat-error>
         }
         @if (form.controls.password.hasError('minlength')) {
-          <mat-error>
-            {{ errorMessages.password.minlength }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.password.minlength }}
+        </mat-error>
         }
       </mat-form-field>
 
@@ -93,38 +93,43 @@
           <mat-icon>{{ showPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
         @if (form.controls.confirmPassword.hasError('required')) {
-          <mat-error>
-            {{ errorMessages.confirmPassword.required }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.confirmPassword.required }}
+        </mat-error>
         }
         @if (form.controls.confirmPassword.hasError('passwordMismatch')) {
-          <mat-error>
-            {{ errorMessages.confirmPassword.passwordMismatch }}
-          </mat-error>
+        <mat-error>
+          {{ errorMessages.confirmPassword.passwordMismatch }}
+        </mat-error>
         }
       </mat-form-field>
 
       <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="isRegistering()">
         @if (isRegistering()) {
-          <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
+        <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
         }
         <span>Register</span>
       </button>
     </form>
 
     <div class="relative flex items-center my-3">
-      <div class="flex-grow border-t border-gray-200"></div>
+      <div class="grow border-t border-gray-200"></div>
       <span class="mx-4 text-gray-400 text-sm">or</span>
-      <div class="flex-grow border-t border-gray-200"></div>
+      <div class="grow border-t border-gray-200"></div>
     </div>
 
-    <button mat-stroked-button class="w-full py-3 text-base font-medium normal-case hover:bg-gray-50 transition"
-      [disabled]="isRegistering()">
-      <div class="flex gap-1">
-        <chat-google-icon [width]="20" [height]="20" />
-        <div>Continue with Google</div>
+    <div class="flex flex-col gap-2 h-6">
+      <div class="w-full flex justify-center" [class.hidden]="isRegistering()">
+        @if(isGoogleLoginInProgress()) {
+        <button mat-flat-button color="warn" class="py-3 text-lg" disabled>
+          <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
+          <span>Signing in with Google...</span>
+        </button>
+        }
+        <button [class.hidden]="isGoogleLoginInProgress()" id="google-auth-btn"
+          [disabled]="isRegistering()"></button>
       </div>
-    </button>
+    </div>
 
     <div class="text-center text-sm text-gray-600 mt-4">
       Already have an account?

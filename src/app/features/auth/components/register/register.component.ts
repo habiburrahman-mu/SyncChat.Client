@@ -1,5 +1,5 @@
 
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,7 +10,7 @@ import { RegisterUserRequest } from '@features/auth/models';
 import { AuthHttpService } from '@features/auth/services';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ToasterService } from '@core/services';
+import { GoogleIdentityService, ToasterService } from '@core/services';
 import { GoogleIconComponent } from '@shared/components';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,14 +28,13 @@ import { AUTH_ROUTE_PATH } from '@core/constants';
     RouterModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    LottieComponent,
-    GoogleIconComponent
+    LottieComponent
 ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, AfterViewChecked {
 
   private readonly _fb = inject(FormBuilder);
   private readonly _authHttpService = inject(AuthHttpService);
@@ -43,12 +42,15 @@ export class RegisterComponent implements OnInit {
   private readonly _toasterService = inject(ToasterService);
   private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
+    private readonly googleIdentityService = inject(GoogleIdentityService);
 
   readonly options: AnimationOptions = {
     path: 'assets/animations/register.json',
     loop: true,
     autoplay: true
   };
+
+  isGoogleLoginInProgress = this.googleIdentityService.googleLoginInProgress;
 
   private confirmPasswordValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     if (!control.parent) return null;
@@ -105,6 +107,10 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.setupPasswordConfirmationWatcher();
+  }
+
+  ngAfterViewChecked(): void {
+    this.googleIdentityService.init();
   }
 
   private setupPasswordConfirmationWatcher() {
