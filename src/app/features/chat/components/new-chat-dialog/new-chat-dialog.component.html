@@ -3,27 +3,27 @@
 <mat-dialog-content class="p-4 pt-0 space-y-4">
 
   @if(selectedUsers().length > 1)
-    {
-    <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full mb-5 pt-2">
-      <mat-label>Group Name</mat-label>
-      <input matInput type="text" [(ngModel)]="groupName" (blur)="onChangeGroupName()" required autocomplete="off" />
-    </mat-form-field>
+  {
+  <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full mb-5 pt-2">
+    <mat-label>Group Name</mat-label>
+    <input matInput type="text" [(ngModel)]="groupName" (blur)="onChangeGroupName()" required autocomplete="off" />
+  </mat-form-field>
   }
 
   <!-- Selected Users (Chips) -->
   @if (selectedUsers().length) {
-    <div class="flex flex-wrap gap-2 mb-5">
-      <mat-chip-listbox>
-        @for (user of selectedUsers(); track user) {
-          <mat-chip selected removable color="primary" (removed)="removeUser(user)">
-            &#64;{{ user.userName}}
-            <button matChipRemove>
-              <mat-icon>cancel</mat-icon>
-            </button>
-          </mat-chip>
-        }
-      </mat-chip-listbox>
-    </div>
+  <div class="flex flex-wrap gap-2 mb-5">
+    <mat-chip-listbox>
+      @for (user of selectedUsers(); track user) {
+      <mat-chip selected removable color="primary" (removed)="removeUser(user)">
+        &#64;{{ user.userName}}
+        <button matChipRemove>
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+      }
+    </mat-chip-listbox>
+  </div>
   }
 
   <!-- Search Field -->
@@ -32,67 +32,63 @@
       <mat-label>Username</mat-label>
       <input matInput type="text" [(ngModel)]="searchText" placeholder="Type to search..." autocomplete="off"
         (keydown.enter)="searchUser()" />
-      </mat-form-field>
+    </mat-form-field>
 
-      <button mat-raised-button color="outline" (click)="searchUser()" [disabled]="searchText.length === 0">
-        @if(isLoading()) {<mat-icon><mat-spinner diameter="18" color="accent"></mat-spinner></mat-icon>}
-        @else {<mat-icon aria-hidden="false" aria-label="Search by username" fontIcon="search"></mat-icon>}
-        Search
-      </button>
-    </div>
-
-
-    @if (!isLoading()) {
-      <div class="max-h-96 overflow-auto space-y-1 mt-2">
-        @if (userSearchResponse(); as user) {
-          <div (click)="user.userID !== currentUserId && selectUser(user)"
-            [class.cursor-default]="user.userID === currentUserId" [class.cursor-pointer]="user.userID !== currentUserId"
-            [class.bg-gray-100]="user.userID === currentUserId"
-            class="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-gray-100 transition">
-            <div class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-700 font-semibold">
-              {{ user.name.charAt(0).toUpperCase() }}
-            </div>
-            <span class="text-sm font-medium text-gray-800">
-              {{ user.name }}
-            </span>
-            @if (user.userID === currentUserId) {
-              <span class="text-xs text-gray-500 ml-1">(You)</span>
-            }
-            @if (isUserSelected()) {
-              <span class="text-xs text-gray-500 ml-1">(Already added)</span>
-            }
-          </div>
-        }
-        @if (userSearchResponse() === null) {
-          <div class="text-sm text-gray-500 p-3">
-            No user found.
-          </div>
-        }
-      </div>
-    }
-
-
-
-  </mat-dialog-content>
-
-  <mat-dialog-actions align="end" class="p-4 pt-0">
-    <button mat-button (click)="onCancel()">
-      <mat-icon>close</mat-icon>
-      Cancel
+    <button mat-raised-button color="outline" (click)="searchUser()" [disabled]="searchText.length === 0">
+      @if(isLoading()) {<mat-icon><mat-spinner diameter="18" color="accent"></mat-spinner></mat-icon>}
+      @else {<mat-icon aria-hidden="false" aria-label="Search by username" fontIcon="search"></mat-icon>}
+      Search
     </button>
-    <button mat-flat-button color="primary"
-      [disabled]="saveInProgress() || !selectedUsers().length || (this.selectedUsers().length > 1 && this.groupName.length === 0)"
-      (click)="onCreate()">
+  </div>
 
-      @if(saveInProgress()) {
-        <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
+
+  @if (!isLoading()) {
+  <div class="max-h-96 overflow-auto space-y-1 mt-2">
+    @if (userSearchResponse(); as user) {
+    <div (click)="user.userID !== currentUserId && selectUser(user)"
+      [class.cursor-default]="user.userID === currentUserId" [class.cursor-pointer]="user.userID !== currentUserId"
+      [class.bg-gray-100]="user.userID === currentUserId"
+      class="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+      <div class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-700 font-semibold">
+        {{ user.name.charAt(0).toUpperCase() }}
+      </div>
+      <span class="text-sm font-medium text-gray-800">
+        {{ user.name }}
+      </span>
+      @if (user.userID === currentUserId) {
+      <span class="text-xs text-gray-500 ml-1">(You)</span>
       }
-      @else {
-      @if (!saveInProgress()) {
-        <mat-icon>add</mat-icon>
+      @if (isUserSelected()) {
+      <span class="text-xs text-gray-500 ml-1">(Already added)</span>
       }
+    </div>
     }
+    @if (userSearchResponse() === null) {
+    <div class="text-sm text-gray-500 p-3">
+      No user found.
+    </div>
+    }
+  </div>
+  }
 
+
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-4 pt-0">
+  <button matButton (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+    Cancel
+  </button>
+  <button mat-flat-button color="primary"
+    [disabled]="saveInProgress() || !selectedUsers().length || (this.selectedUsers().length > 1 && this.groupName.length === 0)"
+    (click)="onCreate()">
+
+    @if(saveInProgress()) {
+    <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
+    }@else {
+    <mat-icon>add</mat-icon>
+    }
     Create
   </button>
 </mat-dialog-actions>

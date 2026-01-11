@@ -14,6 +14,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { AuthService } from '@core/services';
 import { ConversationType } from '@core/enums';
+import { Router } from '@angular/router';
+import { CHAT_ROUTE_PATH, FEATURE_ROUTE_PATH } from '@core/constants';
 
 
 @Component({
@@ -60,6 +62,7 @@ export class NewChatDialogComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly conversationService = inject(ConversationService);
   private readonly chatStateService = inject(ChatStateService);
+  private readonly router = inject(Router);
 
   readonly conversationList = this.chatStateService.conversationList;
 
@@ -68,7 +71,7 @@ export class NewChatDialogComponent implements OnInit {
   }
 
   @HostListener('keydown.tab', ['$event'])
-  onTab(event: KeyboardEvent) {
+  onTab(event: Event) {
     if(this.userSearchResponse()) {
       event.preventDefault();
       this.selectUser(this.userSearchResponse()!);
@@ -124,6 +127,7 @@ export class NewChatDialogComponent implements OnInit {
       if (conversationExist) {
         this.chatStateService.selectConversation(conversationExist.id);
         this.dialogRef.close();
+        this.routeToChatDetail();
         return;
       }
     }
@@ -163,6 +167,7 @@ export class NewChatDialogComponent implements OnInit {
           this.chatStateService.selectConversation(conversation.id);
           this.chatStateService.refreshLastMessage(conversation.id);
           this.dialogRef.close();
+          this.routeToChatDetail();
         },
         error: err => {
           this.saveInProgress.set(false);
@@ -172,5 +177,9 @@ export class NewChatDialogComponent implements OnInit {
 
   onChangeGroupName() {
     this.groupName = this.groupName.trim();
+  }
+
+  private routeToChatDetail() {
+    this.router.navigate([FEATURE_ROUTE_PATH.Chat]);
   }
 }
