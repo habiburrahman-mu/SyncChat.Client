@@ -12,7 +12,7 @@ import { TokenRequest } from '@features/auth/models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FEATURE_ROUTE_PATH } from '@core/constants';
+import { CHAT_ROUTE_PATH, FEATURE_ROUTE_PATH } from '@core/constants';
 import { AuthService, GoogleIdentityService, LocalStorageService } from '@core/services';
 import { LocalStorageKey } from '@core/enums';
 
@@ -111,6 +111,6 @@ export class LoginComponent implements AfterViewChecked{
   }
 
   private routeToChatHome() {
-    this._router.navigate([FEATURE_ROUTE_PATH.Chat]);
+    this._router.navigate([FEATURE_ROUTE_PATH.Chat, CHAT_ROUTE_PATH.List]);
   }
 }

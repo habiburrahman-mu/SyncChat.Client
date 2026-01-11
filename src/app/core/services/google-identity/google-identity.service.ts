@@ -2,7 +2,7 @@ import { inject, Injectable, NgZone, signal } from '@angular/core';
 import { environment } from '@environments/environment';
 import { AuthHttpService } from '@features/auth/services';
 import { AuthService, LocalStorageService } from '..';
-import { FEATURE_ROUTE_PATH } from '@core/constants';
+import { CHAT_ROUTE_PATH, FEATURE_ROUTE_PATH } from '@core/constants';
 import { Router } from '@angular/router';
 import { LocalStorageKey } from '@core/enums';
 
@@ -68,6 +68,6 @@ export class GoogleIdentityService {
   }
 
   private routeToChatHome() {
-    this.router.navigate([FEATURE_ROUTE_PATH.Chat]);
+    this.router.navigate([FEATURE_ROUTE_PATH.Chat, CHAT_ROUTE_PATH.List]);
   }
 }

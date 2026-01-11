@@ -97,6 +97,7 @@ export class ChatThreadComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.chatStateService.newMessage$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(_ => this.onNewMessage());

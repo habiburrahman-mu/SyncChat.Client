@@ -8,3 +8,7 @@ export const AUTH_ROUTE_PATH = {
   Register: 'register'
 };
 
+export const CHAT_ROUTE_PATH = {
+  List: 'list'
+}
+

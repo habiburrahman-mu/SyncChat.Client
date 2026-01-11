@@ -1,11 +1,12 @@
 import { computed, DestroyRef, Injectable, signal } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ConversationMemberService, ConversationService, MessageService } from '.';
 import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService, LocalStorageService, NotificationService } from '@core/services';
 import { ChatNotificationType, LocalStorageKey, MessageType } from '@core/enums';
 import { MessageMapper } from '../utils';
-import { BehaviorSubject, forkJoin, of, Subject, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, of, pipe, Subject, takeUntil, tap } from 'rxjs';
 import { TypingEvent } from '@core/models';
 import { UI_CONSTANTS } from '@core/constants';
 
@@ -66,6 +67,7 @@ export class ChatStateService {
   // conversationMemberListStore = new Map<number, ConversationMemberDTO[]>();
 
   removedFromConversation: number | undefined = undefined;
+  readonly isMobileScreen = signal<boolean>(false);
 
   constructor(
     private readonly conversationService: ConversationService,
@@ -74,13 +76,22 @@ export class ChatStateService {
     private messageService: MessageService,
     private notificationService: NotificationService,
     private authService: AuthService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private breakpoints: BreakpointObserver
   ) {
     const isPinned = this.localStorageService.getItem<boolean>(LocalStorageKey.ChatSideBarPinned);
     this.chatListPanelPinned.set(isPinned ?? false);
     if (this.chatListPanelPinned()) {
       this.chatListPanelOpen.set(true);
     }
+
+    this.breakpoints.observe([
+      Breakpoints.Handset
+    ])
+      .pipe(takeUntilDestroyed(destroyRef))
+      .subscribe(result => {
+        this.isMobileScreen.set(result.matches);
+      });
   }
 
   onInitialize() {
@@ -199,6 +210,10 @@ export class ChatStateService {
           }
         }
       });
+  }
+
+   isMobile(): boolean {
+    return this.isMobileScreen();
   }
 
   private handleNewConversationNotification(newConversation: ConversationDTO) {
