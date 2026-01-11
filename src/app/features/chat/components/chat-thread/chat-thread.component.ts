@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { UI_CONSTANTS } from '@core/constants';
+import { CHAT_ROUTE_PATH, UI_CONSTANTS } from '@core/constants';
 import { MessageType } from '@core/enums';
 import { AuthService } from '@core/services';
 import { ConversationService, MessageService, ChatStateService } from '@features/chat/services';
@@ -17,6 +17,7 @@ import { ChatTimestampPipe } from '@shared/pipes';
 import { Subject, throttleTime } from 'rxjs';
 import { ChatTypingIndicatorComponent } from '../chat-typing-indicator/chat-typing-indicator.component';
 import { SystemMessageAsyncPipe } from '@features/chat/pipes';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'chat-chat-thread',
@@ -31,8 +32,9 @@ import { SystemMessageAsyncPipe } from '@features/chat/pipes';
     MatTooltipModule,
     ChatTimestampPipe,
     ChatTypingIndicatorComponent,
-    SystemMessageAsyncPipe
-  ],
+    SystemMessageAsyncPipe,
+    RouterLink
+],
   templateUrl: './chat-thread.component.html',
   styleUrl: './chat-thread.component.scss'
 })
@@ -67,11 +69,13 @@ export class ChatThreadComponent implements OnInit {
   private readonly typing$ = new Subject<void>();
 
   readonly MessageType = MessageType;
+  readonly CHAT_ROUTE_PATH = CHAT_ROUTE_PATH;
 
   readonly conversationMemberList = this.chatStateService.conversationMemberList;
 
   readonly chatListPanelOpen = this.chatStateService.chatListPanelOpen;
   readonly chatListPanelPinned = this.chatStateService.chatListPanelPinned;
+  readonly isMobileScreen = this.chatStateService.isMobileScreen;
 
   constructor() {
     effect(() => {

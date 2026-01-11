@@ -91,6 +91,12 @@ export class ChatStateService {
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe(result => {
         this.isMobileScreen.set(result.matches);
+        if(this.isMobileScreen()) {
+          if(this.chatDetailPanelOpen()) {
+            this.toggleChatListPanelPinned();
+          }
+          this.chatListPanelOpen.set(false);
+        }
       });
   }
 

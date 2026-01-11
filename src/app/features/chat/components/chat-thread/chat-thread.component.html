@@ -7,12 +7,18 @@
 <!-- Chat Header -->
 <div class="flex items-center justify-between gap-3 px-6 py-4 bg-white shrink-0">
   <div>
+    @if(isMobileScreen()) {
+    <button mat-icon-button [routerLink]="CHAT_ROUTE_PATH.List">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    } @else {
     @if(!chatListPanelPinned()){
     <button mat-icon-button (click)="toggleChatPanel()">
       <mat-icon>
         {{ chatListPanelOpen() ? 'chevron_left' : 'chevron_right' }}
       </mat-icon>
     </button>
+    }
     }
   </div>
 
@@ -96,6 +102,7 @@
 }
 
 <!-- Message Input -->
+@if (selectedConversation()) {
 <div class="px-6 py-4 bg-white flex items-center gap-3 flex-shrink-0">
   <mat-form-field subscriptSizing="dynamic" class="flex-1 appearance-outline">
     <input matInput placeholder="Message..." [(ngModel)]="messageText" (keydown.enter)="sendMessage()"
@@ -105,4 +112,5 @@
     Send
   </button>
 </div>
+}
 }

@@ -15,6 +15,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ProfileComponent } from '../profile/profile.component';
 import { SystemMessageAsyncPipe } from '@features/chat/pipes';
 import { MatTooltip } from "@angular/material/tooltip";
+import { Router } from '@angular/router';
+import { FEATURE_ROUTE_PATH } from '@core/constants';
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -39,6 +41,7 @@ export class ChatSidebarComponent implements OnInit {
   private readonly chatStateService = inject(ChatStateService);
   private readonly userService = inject(UserService);
   private readonly userStateService = inject(UserStateService);
+  private readonly router = inject(Router);
   readonly conversationList = this.chatStateService.conversationList;
   readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
   readonly selectedConversation = this.chatStateService.selectedConversation;
@@ -48,7 +51,9 @@ export class ChatSidebarComponent implements OnInit {
   readonly chatListPanelPinned = this.chatStateService.chatListPanelPinned;
 
   ngOnInit(): void {
-    this.chatStateService.loadConversations();
+    if (this.chatStateService.conversationList().length === 0) {
+      this.chatStateService.loadConversations();
+    }
     this.userDetailResource.reload();
   }
 
@@ -72,6 +77,8 @@ export class ChatSidebarComponent implements OnInit {
     if (!this.chatStateService.chatListPanelPinned()) {
       this.chatStateService.toggleChatListPanel();
     }
+
+    this.router.navigate([FEATURE_ROUTE_PATH.Chat]);
   }
 
   onClickProfile() {

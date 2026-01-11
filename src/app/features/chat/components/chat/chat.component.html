@@ -1,11 +1,14 @@
 <div class="h-screen bg-gray-50 text-gray-800 font-[Inter]">
   <!-- Sidebar -->
   <mat-drawer-container class="flex">
-    <mat-drawer [mode]="chatListPanelPinned() ? 'side' : 'over'" [opened]="chatListPanelOpen() || chatListPanelPinned()" class="h-screen" [(opened)]="chatListPanelOpen">
+    @if(!isMobileScreen()) {
+    <mat-drawer [mode]="chatListPanelPinned() ? 'side' : 'over'"
+      [opened]="(chatListPanelOpen() || chatListPanelPinned())" class="h-screen" [(opened)]="chatListPanelOpen">
       <aside class="w-72 border-gray-200 bg-white shrink-0 h-screen">
         <chat-chat-sidebar />
       </aside>
     </mat-drawer>
+    }
 
     <mat-drawer-content class="flex flex-col flex-1 h-screen">
       <!-- Chat Thread -->

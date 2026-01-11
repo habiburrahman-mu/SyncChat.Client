@@ -28,6 +28,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   readonly chatListPanelOpen = this.chatStateService.chatListPanelOpen;
   readonly chatListPanelPinned = this.chatStateService.chatListPanelPinned;
+  readonly isMobileScreen = this.chatStateService.isMobileScreen;
 
   ngOnInit(): void {
     this.chatStateService.onInitialize();
