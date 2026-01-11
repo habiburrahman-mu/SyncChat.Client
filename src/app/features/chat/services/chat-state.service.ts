@@ -99,6 +99,13 @@ export class ChatStateService {
           this.chatListPanelOpen.set(false);
         }
       });
+
+    this.authService.isAuthenticated$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isAuthenticated => {
+        this.conversations.set([]);
+        this.selectConversation(null);
+      });
   }
 
   onInitialize() {

@@ -55,7 +55,10 @@ export class ChatSidebarComponent implements OnInit {
     if (this.chatStateService.conversationList().length === 0) {
       this.chatStateService.loadConversations();
     }
-    this.userDetailResource.reload();
+
+    if (!this.userDetailResource.hasValue()) {
+      this.userDetailResource.reload();
+    }
   }
 
   onPinClick() {
