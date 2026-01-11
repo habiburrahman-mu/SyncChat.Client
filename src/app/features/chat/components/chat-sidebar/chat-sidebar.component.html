@@ -1,8 +1,17 @@
 <div class="flex flex-col h-full">
   <!-- Sidebar Header -->
   <div class="flex items-center justify-between px-5 py-4">
-    <span class="text-lg font-semibold">Chats</span>
+    <div class="text-lg font-semibold">Chats</div>
+
+    <button matIconButton aria-label="Pin chats" (click)="onPinClick()"
+      [matTooltip]="chatListPanelPinned() ? 'Unpin' : 'Pin'" matTooltipPosition="right">
+      <mat-icon class="transition-transform duration-200" [class.rotate-45]="chatListPanelPinned()">
+        push_pin
+      </mat-icon>
+    </button>
+
   </div>
+
 
   <!-- Search & New Chat Button -->
   <div class="px-5 py-4 space-y-3 flex flex-row items-center gap-2">

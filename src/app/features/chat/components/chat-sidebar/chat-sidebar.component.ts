@@ -14,6 +14,7 @@ import { MessageType } from '@core/enums';
 import { MatMenuModule } from '@angular/material/menu';
 import { ProfileComponent } from '../profile/profile.component';
 import { SystemMessageAsyncPipe } from '@features/chat/pipes';
+import { MatTooltip } from "@angular/material/tooltip";
 
 @Component({
   selector: 'chat-chat-sidebar',
@@ -25,7 +26,8 @@ import { SystemMessageAsyncPipe } from '@features/chat/pipes';
     MatIconModule,
     MatProgressSpinner,
     MatMenuModule,
-    SystemMessageAsyncPipe
+    SystemMessageAsyncPipe,
+    MatTooltip
   ],
   templateUrl: './chat-sidebar.component.html',
   styleUrl: './chat-sidebar.component.scss'
@@ -43,10 +45,18 @@ export class ChatSidebarComponent implements OnInit {
 
   readonly userDetailResource = this.userStateService.userResource;
   readonly MessageType = MessageType;
+  readonly chatListPanelPinned = this.chatStateService.chatListPanelPinned;
 
   ngOnInit(): void {
     this.chatStateService.loadConversations();
     this.userDetailResource.reload();
+  }
+
+  onPinClick() {
+    this.chatStateService.toggleChatListPanelPinned();
+    if (!this.chatStateService.chatListPanelPinned()) {
+      this.chatStateService.toggleChatListPanel();
+    }
   }
 
   createNewChat() {
@@ -59,6 +69,9 @@ export class ChatSidebarComponent implements OnInit {
 
   selectChat(conversation: Conversation) {
     this.chatStateService.selectConversation(conversation.id);
+    if (!this.chatStateService.chatListPanelPinned()) {
+      this.chatStateService.toggleChatListPanel();
+    }
   }
 
   onClickProfile() {

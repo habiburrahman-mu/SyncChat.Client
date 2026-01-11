@@ -71,6 +71,7 @@ export class ChatThreadComponent implements OnInit {
   readonly conversationMemberList = this.chatStateService.conversationMemberList;
 
   readonly chatListPanelOpen = this.chatStateService.chatListPanelOpen;
+  readonly chatListPanelPinned = this.chatStateService.chatListPanelPinned;
 
   constructor() {
     effect(() => {

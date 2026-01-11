@@ -26,6 +26,7 @@ export class ChatStateService {
 
   chatDetailPanelOpen = signal<boolean>(false);
   chatListPanelOpen = signal<boolean>(false);
+  chatListPanelPinned = signal<boolean>(false);
 
   readonly conversationList = computed(() => this.conversations());
   readonly isConversationsLoading = computed(() => this.conversationsLoading());
@@ -237,12 +238,18 @@ export class ChatStateService {
     });
   }
 
+  toggleChatListPanelPinned() {
+    this.chatListPanelPinned.set(!this.chatListPanelPinned());
+  }
+
   toggleChatDetailPanel() {
     this.chatDetailPanelOpen.set(!this.chatDetailPanelOpen());
   }
 
   toggleChatListPanel() {
-    this.chatListPanelOpen.set(!this.chatListPanelOpen());
+    if (!this.chatListPanelPinned()) {
+      this.chatListPanelOpen.set(!this.chatListPanelOpen());
+    }
   }
 
   private sortConversations(conversationId: number): void {

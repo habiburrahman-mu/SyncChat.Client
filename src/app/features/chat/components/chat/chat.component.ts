@@ -27,6 +27,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   readonly selectedConversation = this.chatStateService.selectedConversation;
 
   readonly chatListPanelOpen = this.chatStateService.chatListPanelOpen;
+  readonly chatListPanelPinned = this.chatStateService.chatListPanelPinned;
 
   ngOnInit(): void {
     this.chatStateService.onInitialize();
@@ -35,5 +36,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.chatStateService.onDestroy();
   }
+
 
 }
