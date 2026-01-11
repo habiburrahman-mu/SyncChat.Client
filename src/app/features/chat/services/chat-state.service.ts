@@ -31,9 +31,10 @@ export class ChatStateService {
 
   readonly conversationList = computed(() => this.conversations());
   readonly isConversationsLoading = computed(() => this.conversationsLoading());
-  readonly selectedConversation = computed(() =>
-    this.conversations().find(c => c.id === this.selectedConversationId()) ?? null
-  );
+  readonly selectedConversation = computed(() => {
+    var selectedConversationId = this.selectedConversationId();
+    return selectedConversationId ? this.conversations().find(c => c.id === selectedConversationId) ?? null : null;
+  });
 
   readonly isSelectedConversationMessagesLoading = computed(() => {
     const conversationId = this.selectedConversationId();
@@ -91,8 +92,8 @@ export class ChatStateService {
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe(result => {
         this.isMobileScreen.set(result.matches);
-        if(this.isMobileScreen()) {
-          if(this.chatDetailPanelOpen()) {
+        if (this.isMobileScreen()) {
+          if (this.chatDetailPanelOpen()) {
             this.toggleChatListPanelPinned();
           }
           this.chatListPanelOpen.set(false);
@@ -218,7 +219,7 @@ export class ChatStateService {
       });
   }
 
-   isMobile(): boolean {
+  isMobile(): boolean {
     return this.isMobileScreen();
   }
 
@@ -356,15 +357,14 @@ export class ChatStateService {
             lastSeenMessageId: c.lastSeenMessageId
           } as Conversation));
           this.conversations.set(conversations);
-          this.selectFirstConversation();
+          // this.selectFirstConversation();
         },
         complete: () => this.conversationsLoading.set(false)
       });
   }
 
-  selectConversation(conversationId: number) {
+  selectConversation(conversationId: number | null) {
     const conversation = this.conversations().find(c => c.id === conversationId);
-    if (!conversation) return;
 
     this.removeConversationIfUserNoLongerMember();
 
@@ -377,36 +377,39 @@ export class ChatStateService {
     // Set selected conversation
     this.selectedConversationId.set(conversationId);
 
-    this._listenNotification(conversationId);
+    if (conversationId !== null && conversation) {
 
-    if (conversation.messages() || this.selectedConversationId() === 0) return;
+      this._listenNotification(conversationId);
 
-    // Mark messages loading
-    this.setMessageLoading(conversationId, true);
+      if (conversation.messages() || this.selectedConversationId() === 0) return;
 
-    // Fetch messages
-    this.messageService.getMessages(conversationId, undefined, this._pageSize)
-      .pipe(takeUntil(this.conversationChangeSubject))
-      .subscribe({
-        next: (response) => {
-          const messages = response.messages;
+      // Mark messages loading
+      this.setMessageLoading(conversationId, true);
 
-          this.conversations.update(conversations => {
-            const conversation = conversations.find(x => x.id === conversationId);
+      // Fetch messages
+      this.messageService.getMessages(conversationId, undefined, this._pageSize)
+        .pipe(takeUntil(this.conversationChangeSubject))
+        .subscribe({
+          next: (response) => {
+            const messages = response.messages;
 
-            if (conversation) {
-              conversation.messages.set(messages.map(MessageMapper.fromDTO));
-              conversation.hasMoreMessages = messages.length === this._pageSize;
-              conversation.hasUnreadMessages = false;
-            }
+            this.conversations.update(conversations => {
+              const conversation = conversations.find(x => x.id === conversationId);
 
-            return conversations;
-          });
+              if (conversation) {
+                conversation.messages.set(messages.map(MessageMapper.fromDTO));
+                conversation.hasMoreMessages = messages.length === this._pageSize;
+                conversation.hasUnreadMessages = false;
+              }
 
-          // this.updateLastMessage(conversationId);
-        },
-        complete: () => this.setMessageLoading(conversationId, false)
-      });
+              return conversations;
+            });
+
+            // this.updateLastMessage(conversationId);
+          },
+          complete: () => this.setMessageLoading(conversationId, false)
+        });
+    }
   }
 
   private removeConversationIfUserNoLongerMember() {

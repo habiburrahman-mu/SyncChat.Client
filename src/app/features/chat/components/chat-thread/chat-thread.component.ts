@@ -17,7 +17,7 @@ import { ChatTimestampPipe } from '@shared/pipes';
 import { Subject, throttleTime } from 'rxjs';
 import { ChatTypingIndicatorComponent } from '../chat-typing-indicator/chat-typing-indicator.component';
 import { SystemMessageAsyncPipe } from '@features/chat/pipes';
-import { RouterLink } from "@angular/router";
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'chat-chat-thread',
@@ -33,8 +33,7 @@ import { RouterLink } from "@angular/router";
     ChatTimestampPipe,
     ChatTypingIndicatorComponent,
     SystemMessageAsyncPipe,
-    RouterLink
-],
+  ],
   templateUrl: './chat-thread.component.html',
   styleUrl: './chat-thread.component.scss'
 })
@@ -50,6 +49,8 @@ export class ChatThreadComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly chatStateService = inject(ChatStateService);
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   readonly currentUserId = this.authService.userId;
 
@@ -229,6 +230,11 @@ export class ChatThreadComponent implements OnInit {
     } else {
       this.chatStateService.typingIndicator(this.selectedConversation()!.id, false);
     }
+  }
+
+  onBack() {
+    this.chatStateService.selectConversation(null);
+    this.router.navigate([CHAT_ROUTE_PATH.List], {relativeTo: this.activatedRoute});
   }
 
 }

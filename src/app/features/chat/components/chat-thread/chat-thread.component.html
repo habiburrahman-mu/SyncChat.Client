@@ -1,3 +1,4 @@
+@if(selectedConversation()) {
 @if (isConversationsLoading() || isSelectedConversationMessagesLoading()) {
 <div class="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
   <mat-progress-spinner color="accent" mode="indeterminate" diameter="40"></mat-progress-spinner>
@@ -8,7 +9,7 @@
 <div class="flex items-center justify-between gap-3 px-6 py-4 bg-white shrink-0">
   <div>
     @if(isMobileScreen()) {
-    <button mat-icon-button [routerLink]="CHAT_ROUTE_PATH.List">
+    <button mat-icon-button (click)="onBack()">
       <mat-icon>arrow_back</mat-icon>
     </button>
     } @else {
@@ -113,4 +114,23 @@
   </button>
 </div>
 }
+}
+}
+@else {
+<div class="flex h-full w-full items-center justify-center">
+  <div class="flex flex-col items-center text-center gap-3 text-gray-500">
+
+    <mat-icon class="text-2xl text-gray-300">chat</mat-icon>
+
+    <div class="text-lg font-medium text-gray-700">
+      No conversation selected
+    </div>
+
+    <div class="text-sm max-w-xs">
+      Select a conversation from the list or start a new one to begin chatting.
+    </div>
+
+  </div>
+</div>
+
 }

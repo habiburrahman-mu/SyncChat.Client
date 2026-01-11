@@ -49,6 +49,7 @@ export class ChatSidebarComponent implements OnInit {
   readonly userDetailResource = this.userStateService.userResource;
   readonly MessageType = MessageType;
   readonly chatListPanelPinned = this.chatStateService.chatListPanelPinned;
+  readonly isMobileScreen = this.chatStateService.isMobileScreen;
 
   ngOnInit(): void {
     if (this.chatStateService.conversationList().length === 0) {
