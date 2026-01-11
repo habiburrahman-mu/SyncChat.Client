@@ -2,8 +2,8 @@ import { computed, DestroyRef, Injectable, signal } from '@angular/core';
 import { ConversationMemberService, ConversationService, MessageService } from '.';
 import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService, NotificationService } from '@core/services';
-import { ChatNotificationType, MessageType } from '@core/enums';
+import { AuthService, LocalStorageService, NotificationService } from '@core/services';
+import { ChatNotificationType, LocalStorageKey, MessageType } from '@core/enums';
 import { MessageMapper } from '../utils';
 import { BehaviorSubject, forkJoin, of, Subject, takeUntil, tap } from 'rxjs';
 import { TypingEvent } from '@core/models';
@@ -74,7 +74,14 @@ export class ChatStateService {
     private messageService: MessageService,
     private notificationService: NotificationService,
     private authService: AuthService,
-  ) { }
+    private localStorageService: LocalStorageService
+  ) {
+    const isPinned = this.localStorageService.getItem<boolean>(LocalStorageKey.ChatSideBarPinned);
+    this.chatListPanelPinned.set(isPinned ?? false);
+    if (this.chatListPanelPinned()) {
+      this.chatListPanelOpen.set(true);
+    }
+  }
 
   onInitialize() {
     this.notificationService.connect()
@@ -240,6 +247,7 @@ export class ChatStateService {
 
   toggleChatListPanelPinned() {
     this.chatListPanelPinned.set(!this.chatListPanelPinned());
+    this.localStorageService.setItem<boolean>(LocalStorageKey.ChatSideBarPinned, this.chatListPanelPinned());
   }
 
   toggleChatDetailPanel() {
