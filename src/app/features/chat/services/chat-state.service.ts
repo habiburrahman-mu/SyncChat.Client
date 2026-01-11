@@ -25,6 +25,7 @@ export class ChatStateService {
   private newMessageSubject = new Subject<void>();
 
   chatDetailPanelOpen = signal<boolean>(false);
+  chatListPanelOpen = signal<boolean>(false);
 
   readonly conversationList = computed(() => this.conversations());
   readonly isConversationsLoading = computed(() => this.conversationsLoading());
@@ -240,6 +241,10 @@ export class ChatStateService {
     this.chatDetailPanelOpen.set(!this.chatDetailPanelOpen());
   }
 
+  toggleChatListPanel() {
+    this.chatListPanelOpen.set(!this.chatListPanelOpen());
+  }
+
   private sortConversations(conversationId: number): void {
     this.conversations.update(conversations => {
       const index = conversations.findIndex(c => c.id === conversationId);
@@ -327,7 +332,7 @@ export class ChatStateService {
 
     this.removeConversationIfUserNoLongerMember();
 
-    this.chatDetailPanelOpen.set(true); // TODO: change to false
+    this.chatDetailPanelOpen.set(false); // TODO: change to false
 
     this._leftConversationNotificationSubscription();
 

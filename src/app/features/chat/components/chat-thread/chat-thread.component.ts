@@ -70,6 +70,8 @@ export class ChatThreadComponent implements OnInit {
 
   readonly conversationMemberList = this.chatStateService.conversationMemberList;
 
+  readonly chatListPanelOpen = this.chatStateService.chatListPanelOpen;
+
   constructor() {
     effect(() => {
       const messageLoading = this.isSelectedConversationMessagesLoading();
@@ -165,6 +167,10 @@ export class ChatThreadComponent implements OnInit {
 
   onClickViewSidebar() {
     this.chatStateService.toggleChatDetailPanel();
+  }
+
+  toggleChatPanel() {
+    this.chatStateService.toggleChatListPanel();
   }
 
 

@@ -1,26 +1,28 @@
-<div class="flex h-screen bg-gray-50 text-gray-800 font-[Inter]">
+<div class="h-screen bg-gray-50 text-gray-800 font-[Inter]">
   <!-- Sidebar -->
-  <aside class="w-72 border-gray-200 bg-white flex-shrink-0">
-    <chat-chat-sidebar />
-  </aside>
+  <mat-drawer-container class="flex">
+    <mat-drawer mode="side" [opened]="chatListPanelOpen()" class="h-screen">
+      <aside class="w-72 border-gray-200 bg-white shrink-0 h-screen">
+        <chat-chat-sidebar />
+      </aside>
+    </mat-drawer>
 
-  <!-- <button type="button" matButton (click)="drawer.toggle()">
-    Toggle sidenav
-  </button> -->
+    <mat-drawer-content class="flex flex-col flex-1 h-screen">
+      <!-- Chat Thread -->
+      <main class="flex-1">
+        <mat-drawer-container>
+          <mat-drawer-content>
+            <chat-chat-thread />
+          </mat-drawer-content>
 
-  <!-- Chat Thread -->
-  <main class="flex-1">
-    <mat-drawer-container>
-      <mat-drawer-content>
-        <chat-chat-thread />
-      </mat-drawer-content>
+          @if(selectedConversation()) {
+          <mat-drawer mode="side" position="end" [opened]="isChatDetailPanelOpen()">
+            <chat-detail-panel />
+          </mat-drawer>
+          }
 
-      @if(selectedConversation()) {
-      <mat-drawer mode="side" position="end" [opened]="isChatDetailPanelOpen()">
-        <chat-detail-panel />
-      </mat-drawer>
-      }
-
-    </mat-drawer-container>
-  </main>
+        </mat-drawer-container>
+      </main>
+    </mat-drawer-content>
+  </mat-drawer-container>
 </div>

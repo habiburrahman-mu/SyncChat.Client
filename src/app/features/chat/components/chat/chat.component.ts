@@ -4,6 +4,7 @@ import { ChatStateService } from '@features/chat/services';
 import { ChatThreadComponent } from '../chat-thread/chat-thread.component';
 import { ChatDetailPanelComponent } from "../chat-detail-panel/chat-detail-panel.component";
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'chat-chat',
@@ -12,7 +13,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
     ChatThreadComponent,
     ChatDetailPanelComponent,
     MatSidenavModule,
-],
+    MatIconModule
+  ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
@@ -24,6 +26,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   readonly selectedConversation = this.chatStateService.selectedConversation;
 
+  readonly chatListPanelOpen = this.chatStateService.chatListPanelOpen;
+
   ngOnInit(): void {
     this.chatStateService.onInitialize();
   }
@@ -31,4 +35,5 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.chatStateService.onDestroy();
   }
+
 }
