@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API_ROUTES } from '@core/constants';
 import { MediaOwnerType } from '@core/enums';
-import { InitiateUploadRequest, InitiateUploadResponse } from '../models';
+import { ConfirmUploadResponse, InitiateUploadRequest, InitiateUploadResponse } from '../models';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -70,5 +70,10 @@ export class MediaService {
         }
       };
     });
+  }
+
+  confirmUpload(mediaId: string): Observable<ConfirmUploadResponse> {
+    const url = API_ROUTES.Media.ConfirmUpload;
+    return this.http.post<ConfirmUploadResponse>(url, { mediaId });
   }
 }

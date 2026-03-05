@@ -19,3 +19,4 @@ export * from './get-user-meta-data-response.model';
 export * from './system-message-config.model';
 export * from './initiate-upload-request.model';
 export * from './initiate-upload-response.model';
+export * from './confirm-upload-response.model';
