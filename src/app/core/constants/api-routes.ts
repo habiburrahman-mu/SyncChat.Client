@@ -34,6 +34,7 @@ export const API_ROUTES = {
   Message: {
     GetList: `${BASE_URL}/message/getList` as const,
     Send: `${BASE_URL}/message/send` as const,
+    SendMedia: `${BASE_URL}/message/sendMedia` as const,
   },
   Media: {
     InitiateUpload: `${BASE_URL}/media/initiateUpload` as const,

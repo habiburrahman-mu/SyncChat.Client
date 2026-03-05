@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GetMessagesResponse, SendMessageRequest, SendMessageResponse } from '../models';
+import { GetMessagesResponse, SendMediaMessageRequest, SendMediaMessageResponse, SendMessageRequest, SendMessageResponse } from '../models';
 import { API_ROUTES } from '@core/constants';
 import { Observable } from 'rxjs';
 
@@ -28,5 +28,10 @@ export class MessageService {
   sendMessage = (request: SendMessageRequest): Observable<SendMessageResponse> => {
     const url = API_ROUTES.Message.Send;
     return this.http.post<SendMessageResponse>(url, request);
+  }
+
+  sendMediaMessage = (request: SendMediaMessageRequest): Observable<SendMediaMessageResponse> => {
+    const url = API_ROUTES.Message.SendMedia;
+    return this.http.post<SendMediaMessageResponse>(url, request);
   }
 }
