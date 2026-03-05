@@ -22,3 +22,4 @@ export * from './system-message-config.model';
 export * from './initiate-upload-request.model';
 export * from './initiate-upload-response.model';
 export * from './confirm-upload-response.model';
+export * from './get-media-access-url-response.model';
