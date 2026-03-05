@@ -4,3 +4,4 @@ export * from './chat-state.service';
 export * from './message.service';
 export * from './user-state.service';
 export * from './conversation-member.service';
+export * from './media.service';
