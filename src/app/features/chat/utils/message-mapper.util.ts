@@ -14,6 +14,7 @@ export class MessageMapper {
       conversationId: dto.conversationId,
       senderId: dto.senderId,
       content: dto.content,
+      mediaId: dto.mediaId,
       senderUserName: dto.senderUserName,
       senderName: dto.senderName,
       updatedAt: dto.updatedAt,

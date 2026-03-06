@@ -7,6 +7,7 @@ export interface Message {
   senderId: number;
   type: MessageType;
   content: string | null;
+  mediaId: string | null;
   senderUserName: string;
   senderName: string;
   updatedAt: string;

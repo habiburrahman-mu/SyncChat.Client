@@ -7,6 +7,7 @@ export interface MessageDTO {
   senderId: number;
   type: MessageType;
   content: string | null;
+  mediaId: string | null;
   metaData?: string;
   createdAt: string;
   updatedAt: string;
