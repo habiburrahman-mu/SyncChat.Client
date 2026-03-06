@@ -207,6 +207,7 @@ export class ChatThreadComponent implements OnInit {
               conversationId: response.conversationId,
               senderId: response.senderId,
               content: response.content ?? null,
+              mediaId: null,
               senderUserName: response.senderUserName,
               senderName: response.senderName,
               updatedAt: response.updatedAt,
