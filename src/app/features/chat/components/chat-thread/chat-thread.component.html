@@ -79,7 +79,15 @@
               : 'bg-white border'
           "
       class="max-w-[75%] p-3 rounded-2xl text-sm shadow-md leading-snug transition hover:shadow-lg wrap-break-word">
-      {{ message.content }}
+
+      @if (message.mediaId) {
+      <chat-media-image [mediaId]="message.mediaId" />
+      }
+
+      @if (message.content) {
+      <span [class.mt-2]="message.mediaId" [class.block]="message.mediaId">{{ message.content }}</span>
+      }
+
     </div>
 
     <span class="text-[10px] mt-1 opacity-60 select-none" [ngClass]="
@@ -124,14 +132,31 @@
 
 <!-- Message Input -->
 @if (selectedConversation()) {
-<div class="px-6 py-4 bg-white flex items-center gap-3 shrink-0">
-  <mat-form-field subscriptSizing="dynamic" class="flex-1 appearance-outline">
-    <input matInput placeholder="Message..." [(ngModel)]="messageText" (keydown.enter)="sendMessage()"
-      (keydown)="onKeydown()" />
-  </mat-form-field>
-  <button mat-flat-button color="primary" (click)="sendMessage()" class="normal-case">
-    Send
-  </button>
+<div
+  class="px-6 py-4 bg-white shrink-0 flex flex-col gap-2"
+  (dragover)="onDragOverThread($event)"
+  (dragleave)="onDragLeaveThread($event)"
+  (drop)="onDropThread($event)"
+  [class.ring-2]="isThreadDragOver()"
+  [class.ring-blue-400]="isThreadDragOver()"
+  [class.ring-inset]="isThreadDragOver()"
+>
+  <div class="flex items-center gap-3">
+    <chat-media-input
+      #mediaInput
+      [uploadProgress]="uploadProgress()"
+      [isUploading]="isUploadingMedia()"
+      (fileSelected)="onMediaFileSelected($event)"
+      (attachmentCleared)="onAttachmentCleared()"
+    />
+    <mat-form-field subscriptSizing="dynamic" class="flex-1 appearance-outline">
+      <input matInput placeholder="Message..." [(ngModel)]="messageText" (keydown.enter)="sendMessage()"
+        (keydown)="onKeydown()" />
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="sendMessage()" [disabled]="isUploadingMedia()" class="normal-case">
+      Send
+    </button>
+  </div>
 </div>
 }
 }

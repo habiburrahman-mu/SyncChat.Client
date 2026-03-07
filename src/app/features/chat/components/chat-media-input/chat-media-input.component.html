@@ -1,0 +1,66 @@
+<!-- Hidden file input -->
+<input #fileInput type="file" class="hidden" [accept]="acceptedTypes" (change)="onFileInputChange($event)" />
+
+<!-- Drop zone (only visible when no attachment) -->
+@if (!pendingAttachment()) {
+<div
+  class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-colors"
+  [class.bg-blue-50]="isDragOver()"
+  [class.border-blue-400]="isDragOver()"
+  [class.border-2]="isDragOver()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="onBrowseClick()"
+  matTooltip="Attach image"
+  [matTooltipShowDelay]="500"
+>
+  <button mat-icon-button type="button" tabindex="-1" class="pointer-events-none">
+    <mat-icon class="text-gray-400">image</mat-icon>
+  </button>
+</div>
+}
+
+<!-- Attachment preview (visible once a file is chosen) -->
+@if (pendingAttachment()) {
+<div class="relative flex items-end gap-2">
+  <div class="relative select-none" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+    <img
+      [src]="pendingAttachment()!.previewUrl"
+      alt="Attachment preview"
+      class="h-16 w-16 object-cover rounded-xl border border-gray-200 shadow-sm"
+    />
+
+    <!-- Upload progress overlay -->
+    @if (isUploading()) {
+    <div class="absolute inset-0 rounded-xl bg-black/40 flex flex-col items-center justify-center gap-1">
+      <span class="text-white text-xs font-semibold">{{ uploadProgress() ?? 0 }}%</span>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="uploadProgress() ?? 0"
+        class="w-12 rounded"
+        color="accent"
+      ></mat-progress-bar>
+    </div>
+    }
+
+    <!-- Remove button (only when not uploading) -->
+    @if (!isUploading()) {
+    <button
+      mat-icon-button
+      type="button"
+      class="absolute -top-3 -right-3 !w-5 !h-5 !min-w-0 bg-white border border-gray-300 shadow rounded-full flex items-center justify-center"
+      (click)="clearAttachment()"
+      matTooltip="Remove"
+    >
+      <mat-icon class="!text-[14px] !w-4 !h-4 text-gray-500">close</mat-icon>
+    </button>
+    }
+  </div>
+</div>
+}
+
+<!-- Validation error -->
+@if (validationError()) {
+<span class="text-xs text-red-500 self-center">{{ validationError() }}</span>
+}

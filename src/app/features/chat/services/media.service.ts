@@ -43,7 +43,6 @@ export class MediaService {
     return new Observable<number>(subscriber => {
       const xhr = new XMLHttpRequest();
       xhr.open('PUT', uploadUri);
-      xhr.setRequestHeader('Content-Type', file.type);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {

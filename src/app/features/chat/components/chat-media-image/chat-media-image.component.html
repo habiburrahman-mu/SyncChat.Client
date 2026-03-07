@@ -1,0 +1,18 @@
+@if (isLoading()) {
+<div class="flex items-center justify-center w-48 h-32 rounded-lg bg-gray-100">
+  <mat-progress-spinner diameter="24" mode="indeterminate" color="accent"></mat-progress-spinner>
+</div>
+} @else if (loadError()) {
+<div class="flex flex-col items-center justify-center gap-1 w-48 h-32 rounded-lg bg-gray-100 text-gray-400">
+  <mat-icon>broken_image</mat-icon>
+  <span class="text-xs">Image unavailable</span>
+</div>
+} @else {
+<img
+  [src]="imageUrl()"
+  alt="Attached image"
+  class="max-w-[240px] max-h-[320px] rounded-lg object-contain cursor-pointer"
+  (error)="onImageError()"
+  (load)="onImageLoad()"
+/>
+}

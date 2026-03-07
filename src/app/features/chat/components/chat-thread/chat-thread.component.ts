@@ -10,14 +10,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CHAT_ROUTE_PATH, UI_CONSTANTS } from '@core/constants';
-import { MessageType } from '@core/enums';
+import { MediaOwnerType, MessageType } from '@core/enums';
 import { AuthService } from '@core/services';
-import { ConversationService, MessageService, ChatStateService } from '@features/chat/services';
+import { ConversationService, MediaService, MessageService, ChatStateService } from '@features/chat/services';
 import { ChatTimestampPipe } from '@shared/pipes';
 import { Subject, throttleTime } from 'rxjs';
 import { ChatTypingIndicatorComponent } from '../chat-typing-indicator/chat-typing-indicator.component';
 import { SystemMessageAsyncPipe } from '@features/chat/pipes';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ChatMediaInputComponent, MediaAttachment } from '../chat-media-input/chat-media-input.component';
+import { ChatMediaImageComponent } from '../chat-media-image/chat-media-image.component';
 
 @Component({
   selector: 'chat-chat-thread',
@@ -33,19 +35,29 @@ import { ActivatedRoute, Router } from '@angular/router';
     ChatTimestampPipe,
     ChatTypingIndicatorComponent,
     SystemMessageAsyncPipe,
+    ChatMediaInputComponent,
+    ChatMediaImageComponent,
   ],
   templateUrl: './chat-thread.component.html',
   styleUrl: './chat-thread.component.scss'
 })
 export class ChatThreadComponent implements OnInit {
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
+  mediaInput = viewChild<ChatMediaInputComponent>('mediaInput');
 
   messageText = '';
 
   sendingMessage = signal(false);
 
+  // Media upload state
+  readonly pendingMediaAttachment = signal<MediaAttachment | null>(null);
+  readonly isUploadingMedia = signal(false);
+  readonly uploadProgress = signal<number | null>(null);
+  readonly isThreadDragOver = signal(false);
+
   private readonly conversationService = inject(ConversationService);
   private readonly messageService = inject(MessageService);
+  private readonly mediaService = inject(MediaService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly chatStateService = inject(ChatStateService);
@@ -182,46 +194,149 @@ export class ChatThreadComponent implements OnInit {
 
 
   sendMessage() {
-    if (!this.messageText.trim()) return;
+    const attachment = this.pendingMediaAttachment();
+
+    if (!attachment && !this.messageText.trim()) return;
 
     const conversation = this.selectedConversation();
+    if (!conversation) return;
 
-    if (conversation) {
-      const messageBackup = this.messageText;
-      this.messageService.sendMessage({
-        conversationId: conversation.id,
-        senderId: this.currentUserId!,
-        type: MessageType.Text,
-        content: this.messageText,
-        metaData: undefined,
-        replyTo: undefined,
-      })
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: response => {
-            this.chatStateService.typingIndicator(this.selectedConversation()!.id, false);
-
-            this.chatStateService.addMessageToSelectedConversation({
-              messageId: response.messageId,
-              uuid: response.uuid,
-              conversationId: response.conversationId,
-              senderId: response.senderId,
-              content: response.content ?? null,
-              mediaId: null,
-              senderUserName: response.senderUserName,
-              senderName: response.senderName,
-              updatedAt: response.updatedAt,
-              metaData: response.metaData ? JSON.parse(response.metaData) : undefined,
-              type: response.type
-            });
-          },
-          error: (err: HttpErrorResponse) => {
-            this.messageText = messageBackup;
-          }
-        });
+    if (attachment) {
+      this._sendMediaMessage(conversation.id, attachment);
+    } else {
+      this._sendTextMessage(conversation.id);
     }
+  }
+
+  private _sendTextMessage(conversationId: number) {
+    const messageBackup = this.messageText;
+    this.messageService.sendMessage({
+      conversationId,
+      senderId: this.currentUserId!,
+      type: MessageType.Text,
+      content: this.messageText,
+      metaData: undefined,
+      replyTo: undefined,
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: response => {
+          this.chatStateService.typingIndicator(this.selectedConversation()!.id, false);
+          this.chatStateService.addMessageToSelectedConversation({
+            messageId: response.messageId,
+            uuid: response.uuid,
+            conversationId: response.conversationId,
+            senderId: response.senderId,
+            content: response.content ?? null,
+            mediaId: null,
+            senderUserName: response.senderUserName,
+            senderName: response.senderName,
+            updatedAt: response.updatedAt,
+            metaData: response.metaData ? JSON.parse(response.metaData) : undefined,
+            type: response.type
+          });
+        },
+        error: (_: HttpErrorResponse) => {
+          this.messageText = messageBackup;
+        }
+      });
 
     this.messageText = '';
+  }
+
+  private _sendMediaMessage(conversationId: number, attachment: MediaAttachment) {
+    const caption = this.messageText.trim() || undefined;
+    this.messageText = '';
+    this.isUploadingMedia.set(true);
+    this.uploadProgress.set(0);
+
+    this.mediaService.initiateUpload(
+      MediaOwnerType.Conversation,
+      String(conversationId),
+      attachment.file
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ mediaId, uploadUri }) => {
+          this.mediaService.uploadToStorage(uploadUri, attachment.file)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (progress) => this.uploadProgress.set(progress),
+              complete: () => {
+                this.mediaService.confirmUpload(mediaId)
+                  .pipe(takeUntilDestroyed(this.destroyRef))
+                  .subscribe({
+                    next: () => {
+                      this.messageService.sendMediaMessage({
+                        conversationId,
+                        senderId: this.currentUserId!,
+                        type: MessageType.Image,
+                        mediaId,
+                        caption,
+                        replyTo: undefined,
+                      })
+                        .pipe(takeUntilDestroyed(this.destroyRef))
+                        .subscribe({
+                          next: (response) => {
+                            this.chatStateService.addMessageToSelectedConversation({
+                              messageId: response.messageId,
+                              uuid: response.uuid,
+                              conversationId: response.conversationId,
+                              senderId: response.senderId,
+                              content: response.content ?? null,
+                              mediaId: response.mediaId,
+                              senderUserName: response.senderUserName,
+                              senderName: response.senderByName,
+                              updatedAt: response.updatedAt,
+                              metaData: response.metaData ? JSON.parse(response.metaData) : undefined,
+                              type: response.type,
+                            });
+                            this._resetMediaState();
+                          },
+                          error: () => this._resetMediaState(),
+                        });
+                    },
+                    error: () => this._resetMediaState(),
+                  });
+              },
+              error: () => this._resetMediaState(),
+            });
+        },
+        error: () => this._resetMediaState(),
+      });
+  }
+
+  private _resetMediaState() {
+    this.isUploadingMedia.set(false);
+    this.uploadProgress.set(null);
+    this.pendingMediaAttachment.set(null);
+    this.mediaInput()?.clearAttachment();
+  }
+
+  onMediaFileSelected(attachment: MediaAttachment) {
+    this.pendingMediaAttachment.set(attachment);
+  }
+
+  onAttachmentCleared() {
+    this.pendingMediaAttachment.set(null);
+  }
+
+  onDragOverThread(event: DragEvent) {
+    if (event.dataTransfer?.types.includes('Files')) {
+      event.preventDefault();
+      this.isThreadDragOver.set(true);
+    }
+  }
+
+  onDragLeaveThread(event: DragEvent) {
+    event.preventDefault();
+    this.isThreadDragOver.set(false);
+  }
+
+  onDropThread(event: DragEvent) {
+    event.preventDefault();
+    this.isThreadDragOver.set(false);
+    this.mediaInput()?.onDrop(event);
   }
 
   onKeydown() {
