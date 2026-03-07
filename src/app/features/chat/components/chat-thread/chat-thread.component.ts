@@ -18,8 +18,9 @@ import { Subject, throttleTime } from 'rxjs';
 import { ChatTypingIndicatorComponent } from '../chat-typing-indicator/chat-typing-indicator.component';
 import { SystemMessageAsyncPipe } from '@features/chat/pipes';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ChatMediaInputComponent, MediaAttachment } from '../chat-media-input/chat-media-input.component';
+import { ChatMediaInputComponent } from '../chat-media-input/chat-media-input.component';
 import { ChatMediaImageComponent } from '../chat-media-image/chat-media-image.component';
+import { MediaAttachment } from '@features/chat/models';
 
 @Component({
   selector: 'chat-chat-thread',

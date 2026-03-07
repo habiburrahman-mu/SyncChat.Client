@@ -11,8 +11,9 @@
 <img
   [src]="imageUrl()"
   alt="Attached image"
-  class="max-w-[240px] max-h-[320px] rounded-lg object-contain cursor-pointer"
+  class="max-w-[240px] max-h-[320px] rounded-lg object-contain cursor-pointer hover:opacity-90 transition-opacity"
   (error)="onImageError()"
   (load)="onImageLoad()"
+  (click)="openViewer()"
 />
 }

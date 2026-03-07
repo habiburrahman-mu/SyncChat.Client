@@ -5,11 +5,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { MEDIA_CONSTANTS } from '@features/chat/configs/media.config';
-
-export interface MediaAttachment {
-  file: File;
-  previewUrl: string;
-}
+import { MediaAttachment } from '@features/chat/models';
 
 @Component({
   selector: 'chat-media-input',

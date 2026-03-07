@@ -103,3 +103,9 @@ $myapp-theme: mat.m2-define-light-theme((color: (primary: $myapp-theme-primary,
     active-indicator-color: white,
   ));
 }
+
+// Fullscreen image viewer overlay (CDK Dialog)
+.image-viewer-panel {
+  max-width: none !important;
+  padding: 0 !important;
+}

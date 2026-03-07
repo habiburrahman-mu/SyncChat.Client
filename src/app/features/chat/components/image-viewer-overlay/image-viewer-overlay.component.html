@@ -1,0 +1,23 @@
+<div class="overlay-backdrop" (click)="onBackdropClick($event)">
+  <!-- Top bar -->
+  <div class="overlay-toolbar">
+    <a [href]="data.imageUrl" download target="_blank" rel="noopener noreferrer">
+      <button mat-icon-button aria-label="Download image">
+        <mat-icon>download</mat-icon>
+      </button>
+    </a>
+    <button mat-icon-button aria-label="Close" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Image container -->
+  <div class="image-container" (click)="onBackdropClick($event)">
+    <img
+      [src]="data.imageUrl"
+      alt="Full size image"
+      [class.zoomed]="zoomed"
+      (click)="toggleZoom(); $event.stopPropagation()"
+    />
+  </div>
+</div>

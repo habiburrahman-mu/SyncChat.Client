@@ -2,7 +2,9 @@ import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { Dialog } from '@angular/cdk/dialog';
 import { MediaService } from '@features/chat/services';
+import { ImageViewerOverlayComponent } from '../image-viewer-overlay/image-viewer-overlay.component';
 
 @Component({
   selector: 'chat-media-image',
@@ -15,6 +17,7 @@ export class ChatMediaImageComponent implements OnInit {
   mediaId = input.required<string>();
 
   private readonly mediaService = inject(MediaService);
+  private readonly dialog = inject(Dialog);
 
   readonly imageUrl = signal<string | null>(null);
   readonly isLoading = signal(true);
@@ -40,6 +43,18 @@ export class ChatMediaImageComponent implements OnInit {
 
   onImageLoad() {
     this.isLoading.set(false);
+  }
+
+  openViewer() {
+    const url = this.imageUrl();
+    if (!url) return;
+    this.dialog.open(ImageViewerOverlayComponent, {
+      data: { imageUrl: url },
+      panelClass: 'image-viewer-panel',
+      hasBackdrop: false,
+      width: '100vw',
+      height: '100vh',
+    });
   }
 
   private _fetchUrl() {
