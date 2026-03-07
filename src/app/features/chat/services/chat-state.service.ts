@@ -1,5 +1,4 @@
 import { computed, DestroyRef, Injectable, signal } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ConversationMemberService, ConversationService, MessageService } from '.';
 import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -9,6 +8,7 @@ import { MessageMapper } from '../utils';
 import { BehaviorSubject, forkJoin, of, pipe, Subject, takeUntil, tap } from 'rxjs';
 import { TypingEvent } from '@core/models';
 import { UI_CONSTANTS } from '@core/constants';
+import { ChatPanelStateService } from './chat-panel-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,9 +25,11 @@ export class ChatStateService {
 
   private newMessageSubject = new Subject<void>();
 
-  chatDetailPanelOpen = signal<boolean>(false);
-  chatListPanelOpen = signal<boolean>(false);
-  chatListPanelPinned = signal<boolean>(false);
+  // Panel state — delegated to ChatPanelStateService
+  get chatDetailPanelOpen() { return this.panelState.chatDetailPanelOpen; }
+  get chatListPanelOpen() { return this.panelState.chatListPanelOpen; }
+  get chatListPanelPinned() { return this.panelState.chatListPanelPinned; }
+  get isMobileScreen() { return this.panelState.isMobileScreen; }
 
   readonly conversationList = computed(() => this.conversations());
   readonly isConversationsLoading = computed(() => this.conversationsLoading());
@@ -68,7 +70,6 @@ export class ChatStateService {
   // conversationMemberListStore = new Map<number, ConversationMemberDTO[]>();
 
   removedFromConversation: number | undefined = undefined;
-  readonly isMobileScreen = signal<boolean>(false);
 
   constructor(
     private readonly conversationService: ConversationService,
@@ -78,28 +79,8 @@ export class ChatStateService {
     private notificationService: NotificationService,
     private authService: AuthService,
     private localStorageService: LocalStorageService,
-    private breakpoints: BreakpointObserver
+    readonly panelState: ChatPanelStateService
   ) {
-    const isPinned = this.localStorageService.getItem<boolean>(LocalStorageKey.ChatSideBarPinned);
-    this.chatListPanelPinned.set(isPinned ?? false);
-    if (this.chatListPanelPinned()) {
-      this.chatListPanelOpen.set(true);
-    }
-
-    this.breakpoints.observe([
-      Breakpoints.Handset
-    ])
-      .pipe(takeUntilDestroyed(destroyRef))
-      .subscribe(result => {
-        this.isMobileScreen.set(result.matches);
-        if (this.isMobileScreen()) {
-          if (this.chatDetailPanelOpen()) {
-            this.toggleChatListPanelPinned();
-          }
-          this.chatListPanelOpen.set(false);
-        }
-      });
-
     this.authService.isAuthenticated$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAuthenticated => {
@@ -227,7 +208,7 @@ export class ChatStateService {
   }
 
   isMobile(): boolean {
-    return this.isMobileScreen();
+    return this.panelState.isMobile();
   }
 
   private handleNewConversationNotification(newConversation: ConversationDTO) {
@@ -274,20 +255,9 @@ export class ChatStateService {
     });
   }
 
-  toggleChatListPanelPinned() {
-    this.chatListPanelPinned.set(!this.chatListPanelPinned());
-    this.localStorageService.setItem<boolean>(LocalStorageKey.ChatSideBarPinned, this.chatListPanelPinned());
-  }
-
-  toggleChatDetailPanel() {
-    this.chatDetailPanelOpen.set(!this.chatDetailPanelOpen());
-  }
-
-  toggleChatListPanel() {
-    if (!this.chatListPanelPinned()) {
-      this.chatListPanelOpen.set(!this.chatListPanelOpen());
-    }
-  }
+  toggleChatListPanelPinned() { this.panelState.toggleChatListPanelPinned(); }
+  toggleChatDetailPanel() { this.panelState.toggleChatDetailPanel(); }
+  toggleChatListPanel() { this.panelState.toggleChatListPanel(); }
 
   private sortConversations(conversationId: number): void {
     this.conversations.update(conversations => {
