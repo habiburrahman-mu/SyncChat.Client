@@ -1,4 +1,4 @@
-import { computed, DestroyRef, Injectable, signal } from '@angular/core';
+﻿import { computed, DestroyRef, Injectable, signal } from '@angular/core';
 import { ConversationMemberService, ConversationService, MessageService } from '.';
 import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -86,6 +86,10 @@ export class ChatStateService {
   }
 
   onInitialize() {
+    if (this.destroySubscriptionSubject.closed) {
+      this.destroySubscriptionSubject = new Subject<void>();
+    }
+
     this.notificationService.connect()
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe();
