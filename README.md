@@ -14,6 +14,7 @@ The frontend integrates with SyncChat.Backend (.NET) using JWT-based authenticat
 | Language | TypeScript (strict mode) |
 | Styling | SCSS + Tailwind CSS 4 + Angular Material |
 | Real-time | SignalR (`@microsoft/signalr`) |
+| Media Storage | MinIO (S3-compatible, presigned URLs) |
 | Authentication | JWT + Refresh Token + Google Identity Services (GIS) |
 | Animations | Lottie (`ngx-lottie`) |
 | Reactivity | RxJS + Angular Signals |
@@ -48,7 +49,7 @@ src/
  app/
     core/
        constants/       # API routes, app route paths, UI constants
-       enums/           # App-wide enums (ConversationType, HubMethods, UserStatus, etc.)
+       enums/           # App-wide enums (ConversationType, HubMethods, UserStatus, MediaOwnerType, etc.)
        guards/          # Functional route guards (authGuard, mobileOnlyGuard)
        interceptors/    # HTTP interceptors (auth, refresh-token, http-error)
        models/          # Core interfaces (DecodedToken, ChatNotification, etc.)
@@ -57,7 +58,13 @@ src/
        utils/           # Shared utilities
     features/
        auth/            # Login, Register components + AuthHttpService
-       chat/            # Full chat UI + ChatStateService (central state)
+       chat/
+          components/  # Chat UI components (chat-thread, chat-media-input, chat-media-image, etc.)
+          configs/     # Feature-level constants (media limits, allowed MIME types, system message config)
+          models/      # DTOs, domain models, request/response types
+          pipes/       # Chat-specific pipes
+          services/    # ChatStateService, MessageService, MediaService, etc.
+          utils/       # Mappers, validators (message-mapper, media-validation, etc.)
        settings/        # (placeholder)
     pages/
        home/
@@ -170,13 +177,28 @@ export const API_ROUTES = {
     // ...
   },
   Conversation: { ... },
-  Message: { ... },
+  Message: {
+    Send: `${BASE_URL}/message/send` as const,
+    SendMedia: `${BASE_URL}/message/sendMedia` as const,
+    // ...
+  },
+  Media: {
+    InitiateUpload: `${BASE_URL}/media/initiateUpload` as const,
+    ConfirmUpload:  `${BASE_URL}/media/confirmUpload` as const,
+    GetAccessUrl:   `${BASE_URL}/media/getAccessUrl` as const,
+  },
 };
 ```
 
 ### Feature HTTP Services
 
-Each feature has its own HTTP service(s) (`AuthHttpService`, `ConversationService`, `MessageService`, `UserService`, etc.) that return typed `Observable<T>`.
+Each feature has its own HTTP service(s) (`AuthHttpService`, `ConversationService`, `MessageService`, `MediaService`, `UserService`, etc.) that return typed `Observable<T>`.
+
+`MediaService` exposes:
+- `initiateUpload(ownerType, ownerId, file)` — requests a presigned PUT URL from the backend
+- `uploadToStorage(uploadUri, file)` — PUT directly to MinIO via raw `XMLHttpRequest` (bypasses Angular interceptors); emits upload progress 0–100
+- `confirmUpload(mediaId)` — notifies the backend that the binary has been stored
+- `getAccessUrl(mediaId)` — fetches a short-lived presigned GET URL for rendering
 
 ### Interceptors (functional `HttpInterceptorFn`)
 
@@ -298,6 +320,18 @@ Token refresh is handled automatically by `refreshTokenInterceptor` on any 401 r
 
 ---
 
+## Media Upload
+
+Media (images) in chat messages go through a multi-step pipeline coordinated between the frontend, backend, and MinIO object storage:
+
+1. **Initiate** — `POST /media/initiateUpload` — backend creates a media record and returns a presigned PUT URL
+2. **Upload** — frontend PUTs the file binary directly to MinIO using the presigned URL via `XMLHttpRequest` (progress events supported)
+3. **Confirm** — `POST /media/confirmUpload` — backend verifies the upload and marks the media as active
+4. **Send** — `POST /message/sendMedia` — sends the chat message referencing the `mediaId`
+5. **Render** — `GET /media/getAccessUrl?mediaId=...` — fetches a short-lived presigned GET URL used by `<chat-media-image>` to display the image
+
+---
+
 ## Running the Application Locally
 
 **Prerequisites:**
@@ -305,6 +339,7 @@ Token refresh is handled automatically by `refreshTokenInterceptor` on any 401 r
 - Node.js (LTS)
 - Angular CLI
 - SyncChat.Backend running on `https://localhost:5001`
+- MinIO running on `localhost:9000`
 
 **Steps:**
 
