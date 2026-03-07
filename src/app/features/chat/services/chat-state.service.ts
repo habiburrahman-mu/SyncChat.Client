@@ -3,12 +3,12 @@ import { ConversationMemberService, ConversationService, MessageService } from '
 import { Conversation, ConversationDTO, ConversationMemberDTO, Message, MessageDTO } from '../models';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService, LocalStorageService, NotificationService } from '@core/services';
-import { ChatNotificationType, LocalStorageKey, MessageType } from '@core/enums';
+import { ChatNotificationType, MessageType } from '@core/enums';
 import { MessageMapper } from '../utils';
-import { BehaviorSubject, forkJoin, of, pipe, Subject, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { TypingEvent } from '@core/models';
-import { UI_CONSTANTS } from '@core/constants';
 import { ChatPanelStateService } from './chat-panel-state.service';
+import { ChatTypingIndicatorService } from './chat-typing-indicator.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +20,6 @@ export class ChatStateService {
 
   // per-conversation message loading state (Map of conversationId → boolean)
   private messagesLoading = signal<Map<number, boolean>>(new Map());
-
-  private selectedChatTypingIndicators = signal<Set<number>>(new Set());
 
   private newMessageSubject = new Subject<void>();
 
@@ -45,13 +43,10 @@ export class ChatStateService {
 
   readonly isSelectedConversationTyping = computed(() => {
     const conversationId = this.selectedConversationId();
-    return conversationId ? this.selectedChatTypingIndicators().size > 0 : false;
+    return conversationId ? this.typingService.isAnyoneTyping() : false;
   });
 
   newMessage$ = this.newMessageSubject.asObservable();
-
-  private typingTimeouts = new Map<number, ReturnType<typeof setTimeout>>();
-
 
   readonly sortConversationSubject = new BehaviorSubject<number | null>(null);
 
@@ -79,7 +74,8 @@ export class ChatStateService {
     private notificationService: NotificationService,
     private authService: AuthService,
     private localStorageService: LocalStorageService,
-    readonly panelState: ChatPanelStateService
+    readonly panelState: ChatPanelStateService,
+    private readonly typingService: ChatTypingIndicatorService
   ) {
     this.authService.isAuthenticated$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -358,6 +354,7 @@ export class ChatStateService {
   private _cleanupPreviousConversation() {
     this.removeConversationIfUserNoLongerMember();
     this.chatDetailPanelOpen.set(false);
+    this.typingService.clearAll();
     this._leftConversationNotificationSubscription();
     this.conversationChangeSubject = new Subject<void>();
   }
@@ -453,17 +450,8 @@ export class ChatStateService {
       .pipe(takeUntil(this.conversationChangeSubject))
       .subscribe({
         next: (typingNotification) => {
-          const { conversationId, userId } = typingNotification.data;
-          this.setTypingIndicator(userId, true);
-
-          clearTimeout(this.typingTimeouts.get(userId));
-
-          // Set a new timeout to auto-hide after 2 seconds
-          const timeout = setTimeout(() => {
-            this.setTypingIndicator(userId, false);
-            this.typingTimeouts.delete(userId);
-          }, UI_CONSTANTS.CHAT.TYPING_INDICATOR_DELAY);
-          this.typingTimeouts.set(userId, timeout);
+          const { userId } = typingNotification.data;
+          this.typingService.userStartedTyping(userId);
         }
       });
 
@@ -471,12 +459,8 @@ export class ChatStateService {
       .pipe(takeUntil(this.conversationChangeSubject))
       .subscribe({
         next: (typingNotification) => {
-          const { conversationId, userId } = typingNotification.data;
-
-          clearTimeout(this.typingTimeouts.get(userId));
-          this.typingTimeouts.delete(userId);
-          this.setTypingIndicator(userId, false);
-
+          const { userId } = typingNotification.data;
+          this.typingService.userStoppedTyping(userId);
         }
       });
   }
@@ -549,18 +533,6 @@ export class ChatStateService {
     this.messagesLoading.set(updatedMap);
   }
 
-  private setTypingIndicator(userId: number, isTyping: boolean) {
-    const updatedSet = new Set(this.selectedChatTypingIndicators());
-
-    if (isTyping) {
-      updatedSet.add(userId);
-    } else {
-      updatedSet.delete(userId);
-    }
-
-    this.selectedChatTypingIndicators.set(updatedSet);
-  }
-
   updateSelectedConversation(conversation: Conversation) {
     this.selectedConversationId.set(conversation.id);
     this.conversations.update(conversations => {
@@ -588,7 +560,7 @@ export class ChatStateService {
   }
 
   typingIndicator(conversationId: number, isTyping: boolean) {
-    this.notificationService.typing(conversationId, isTyping);
+    this.typingService.sendTyping(conversationId, isTyping);
   }
 
   // updateConversationMemberStore(conversationId: number, members: ConversationMemberDTO[]) {
