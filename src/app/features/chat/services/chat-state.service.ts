@@ -113,6 +113,18 @@ export class ChatStateService {
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe();
 
+    this._subscribeToHasNewMessage();
+    this._subscribeToNewConversationCreated();
+    this._subscribeToNewMemberAdded();
+    this._subscribeToAddedToConversation();
+    this._subscribeToRemovedFromConversation();
+    this._subscribeToMemberRemoved();
+    this._subscribeToMemberRoleChanged();
+    this._subscribeToMemberDemoted();
+    this._subscribeToSortConversation();
+  }
+
+  private _subscribeToHasNewMessage() {
     this.notificationService.listen<number>(ChatNotificationType.HasNewMessage)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
@@ -138,83 +150,65 @@ export class ChatStateService {
           }
         }
       });
+  }
 
+  private _subscribeToNewConversationCreated() {
     this.notificationService.listen<ConversationDTO>(ChatNotificationType.NewConversationCreated)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: (notification) => {
-          const newConversation = notification.data;
-          this.handleNewConversationNotification(newConversation);
-        }
+        next: (notification) => this.handleNewConversationNotification(notification.data)
       });
+  }
 
+  private _subscribeToNewMemberAdded() {
     this.notificationService.listen<number>(ChatNotificationType.NewMemberAdded)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: (notification) => {
-          const conversationId = notification.data;
-
-          if (conversationId === this.selectedConversationId()) {
-            this.currentConversationMemberListUpdate.next();
-          }
-        }
+        next: (notification) => this._notifyMemberListUpdateIfSelected(notification.data)
       });
+  }
 
+  private _subscribeToAddedToConversation() {
     this.notificationService.listen<ConversationDTO>(ChatNotificationType.AddedToConversation)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: (notification) => {
-          const newConversation = notification.data;
-
-          this.handleNewConversationNotification(newConversation);
-        }
+        next: (notification) => this.handleNewConversationNotification(notification.data)
       });
+  }
 
+  private _subscribeToRemovedFromConversation() {
     this.notificationService.listen<number>(ChatNotificationType.RemovedFromConversation)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: (notification) => {
-          const conversationId = notification.data;
-          this.handleRemovedFromConversationNotification(conversationId);
-        }
+        next: (notification) => this.handleRemovedFromConversationNotification(notification.data)
       });
+  }
 
+  private _subscribeToMemberRemoved() {
     this.notificationService.listen<number>(ChatNotificationType.MemberRemoved)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: (notification) => {
-          const conversationId = notification.data;
-
-          if (conversationId === this.selectedConversationId()) {
-            this.currentConversationMemberListUpdate.next();
-          }
-        }
+        next: (notification) => this._notifyMemberListUpdateIfSelected(notification.data)
       });
+  }
 
+  private _subscribeToMemberRoleChanged() {
     this.notificationService.listen<number>(ChatNotificationType.MemberRoleChanged)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: (notification) => {
-          const conversationId = notification.data;
-
-          if (conversationId === this.selectedConversationId()) {
-            this.currentConversationMemberListUpdate.next();
-          }
-        }
+        next: (notification) => this._notifyMemberListUpdateIfSelected(notification.data)
       });
+  }
 
+  private _subscribeToMemberDemoted() {
     this.notificationService.listen<number>(ChatNotificationType.MemberDemoted)
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
-        next: (notification) => {
-          const conversationId = notification.data;
-
-          if (conversationId === this.selectedConversationId()) {
-            this.currentConversationMemberListUpdate.next();
-          }
-        }
+        next: (notification) => this._notifyMemberListUpdateIfSelected(notification.data)
       });
+  }
 
+  private _subscribeToSortConversation() {
     this.sortConversationSubject.asObservable()
       .pipe(takeUntil(this.destroySubscriptionSubject))
       .subscribe({
@@ -224,6 +218,12 @@ export class ChatStateService {
           }
         }
       });
+  }
+
+  private _notifyMemberListUpdateIfSelected(conversationId: number) {
+    if (conversationId === this.selectedConversationId()) {
+      this.currentConversationMemberListUpdate.next();
+    }
   }
 
   isMobile(): boolean {
@@ -373,50 +373,48 @@ export class ChatStateService {
   selectConversation(conversationId: number | null) {
     const conversation = this.conversations().find(c => c.id === conversationId);
 
-    this.removeConversationIfUserNoLongerMember();
-
-    this.chatDetailPanelOpen.set(false); // TODO: change to false
-
-    this._leftConversationNotificationSubscription();
-
-    this.conversationChangeSubject = new Subject<void>();
-
-    // Set selected conversation
+    this._cleanupPreviousConversation();
     this.selectedConversationId.set(conversationId);
 
     if (conversationId !== null && conversation) {
-
       this._listenNotification(conversationId);
 
-      if (conversation.messages() || this.selectedConversationId() === 0) return;
-
-      // Mark messages loading
-      this.setMessageLoading(conversationId, true);
-
-      // Fetch messages
-      this.messageService.getMessages(conversationId, undefined, this._pageSize)
-        .pipe(takeUntil(this.conversationChangeSubject))
-        .subscribe({
-          next: (response) => {
-            const messages = response.messages;
-
-            this.conversations.update(conversations => {
-              const conversation = conversations.find(x => x.id === conversationId);
-
-              if (conversation) {
-                conversation.messages.set(messages.map(MessageMapper.fromDTO));
-                conversation.hasMoreMessages = messages.length === this._pageSize;
-                conversation.hasUnreadMessages = false;
-              }
-
-              return conversations;
-            });
-
-            // this.updateLastMessage(conversationId);
-          },
-          complete: () => this.setMessageLoading(conversationId, false)
-        });
+      if (!conversation.messages() && this.selectedConversationId() !== 0) {
+        this._fetchInitialMessages(conversationId);
+      }
     }
+  }
+
+  private _cleanupPreviousConversation() {
+    this.removeConversationIfUserNoLongerMember();
+    this.chatDetailPanelOpen.set(false);
+    this._leftConversationNotificationSubscription();
+    this.conversationChangeSubject = new Subject<void>();
+  }
+
+  private _fetchInitialMessages(conversationId: number) {
+    this.setMessageLoading(conversationId, true);
+
+    this.messageService.getMessages(conversationId, undefined, this._pageSize)
+      .pipe(takeUntil(this.conversationChangeSubject))
+      .subscribe({
+        next: (response) => {
+          const messages = response.messages;
+
+          this.conversations.update(conversations => {
+            const conversation = conversations.find(x => x.id === conversationId);
+
+            if (conversation) {
+              conversation.messages.set(messages.map(MessageMapper.fromDTO));
+              conversation.hasMoreMessages = messages.length === this._pageSize;
+              conversation.hasUnreadMessages = false;
+            }
+
+            return conversations;
+          });
+        },
+        complete: () => this.setMessageLoading(conversationId, false)
+      });
   }
 
   private removeConversationIfUserNoLongerMember() {
