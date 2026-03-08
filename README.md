@@ -1,8 +1,11 @@
 ﻿# SyncChat.Client
 
-SyncChat.Client is the Angular frontend application for SyncChat, a real-time chat platform designed with security, scalability, and clean architecture in mind.
+SyncChat.Client is the Angular 20 frontend for **SyncChat**, a real-time chat platform with:
 
-The frontend integrates with SyncChat.Backend (.NET) using JWT-based authentication, refresh tokens, and optional Google login. All sensitive operations such as token issuance, validation, and identity linking are handled exclusively by the backend.
+- **Secure authentication:** JWT + Refresh Tokens + Google login  
+- **Real-time messaging:** SignalR-powered chat & notifications  
+- **Media support:** Direct image upload to MinIO via presigned URLs  
+- **Modern architecture:** Feature-based, standalone components, and reactive state with Angular Signals + RxJS
 
 ---
 
