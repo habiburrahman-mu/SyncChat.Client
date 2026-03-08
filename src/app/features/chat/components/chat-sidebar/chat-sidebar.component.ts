@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -34,7 +34,7 @@ import { FEATURE_ROUTE_PATH } from '@core/constants';
   templateUrl: './chat-sidebar.component.html',
   styleUrl: './chat-sidebar.component.scss'
 })
-export class ChatSidebarComponent implements OnInit {
+export class ChatSidebarComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
@@ -52,6 +52,10 @@ export class ChatSidebarComponent implements OnInit {
   readonly isMobileScreen = this.chatStateService.isMobileScreen;
 
   ngOnInit(): void {
+    if (this.isMobileScreen()) {
+      this.chatStateService.onInitialize();
+    }
+
     if (this.chatStateService.conversationList().length === 0) {
       this.chatStateService.loadConversations();
     }
@@ -93,6 +97,12 @@ export class ChatSidebarComponent implements OnInit {
 
   logout() {
     this.authService.logout();
+  }
+
+  ngOnDestroy(): void {
+    if (this.isMobileScreen()) {
+      this.chatStateService.onDestroy();
+    }
   }
 
 }
