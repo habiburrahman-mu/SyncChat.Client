@@ -16,7 +16,7 @@
       <div class="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm relative">
         <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500" src="https://i.pravatar.cc/150?img=11"
           alt="User avatar" />
-          <div>
+          <div class="min-w-0 flex-1">
             @if (editEnabledFor !== 'name') {
               <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
                 {{ user.name }}
@@ -38,9 +38,9 @@
           <!-- Email Card -->
           <div
             class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition mb-2">
-            <div class="flex items-center gap-3">
-              <mat-icon class="text-indigo-500">email</mat-icon>
-              <div>
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <mat-icon class="text-indigo-500 shrink-0">email</mat-icon>
+              <div class="min-w-0 flex-1">
                 <p class="text-sm text-gray-500">Email</p>
 
                 @if (editEnabledFor !== 'email') {
@@ -60,9 +60,9 @@
 
           <!-- Phone Card -->
           <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition">
-            <div class="flex items-center gap-3">
-              <mat-icon class="text-indigo-500">phone</mat-icon>
-              <div>
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <mat-icon class="text-indigo-500 shrink-0">phone</mat-icon>
+              <div class="min-w-0 flex-1">
                 <p class="text-sm text-gray-500">Phone</p>
 
                 @if (editEnabledFor !== 'phone') {
