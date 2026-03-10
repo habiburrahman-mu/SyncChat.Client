@@ -47,6 +47,13 @@
         <div class="text-sm text-gray-600 truncate max-w-xs flex items-center gap-1"
           [ngClass]="chat.hasUnreadMessages ? 'text-blue-600 font-bold' : 'text-gray-500'">
           @switch (chat.lastMessageType) {
+          @case (MessageType.Image) {
+          <div class="flex items-center gap-2 w-full">
+            <mat-icon class="text-gray-400 flex-shrink-0">image</mat-icon>
+            <span title="Photo" class="text-sm text-gray-700 flex-shrink-0 mr-1">Photo</span>
+            <span class="text-sm text-gray-500 truncate opacity-80 flex-1 min-w-0">{{ chat.lastMessage }}</span>
+          </div>
+          }
           @case (MessageType.System) {
           <span title="{{ chat.lastMessageMetaData | systemMessageAsync | async }}">
             {{ chat.lastMessageMetaData |systemMessageAsync | async }}
