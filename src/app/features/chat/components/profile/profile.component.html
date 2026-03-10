@@ -14,16 +14,24 @@
     <div class="w-full max-w-lg mx-auto">
       <!-- Header -->
       <div class="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm relative">
-        <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500" src="https://i.pravatar.cc/150?img=11"
-          alt="User avatar" />
+        <div class="relative">
+            @if (savedLocalPhoto() || previewImage() || user.avatarUrl) {
+              <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500 cursor-pointer"
+                [src]="(savedLocalPhoto() || previewImage() || user.avatarUrl)" alt="User avatar" (click)="openPhotoModal(user)" />
+            } @else {
+              <div class="h-16 w-16 rounded-full bg-indigo-50 border-2 border-indigo-200 flex items-center justify-center cursor-pointer avatar-placeholder" (click)="openPhotoModal(user)">
+                <mat-icon class="text-indigo-600">person</mat-icon>
+              </div>
+            }
+        </div>
           <div class="min-w-0 flex-1">
             @if (editEnabledFor !== 'name') {
               <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                {{ user.name }}
-                <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('name', user.name)"
-                  [disabled]="editEnabledFor">
-                  <mat-icon>edit</mat-icon>
-                </button>
+                  {{ user.name }}
+                  <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('name', user.name)"
+                    [disabled]="editEnabledFor">
+                    <mat-icon>edit</mat-icon>
+                  </button>
               </h2>
             } @else {
               <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Name', required: true}"></ng-container>
@@ -84,6 +92,30 @@
         </div>
       </div>
     </mat-dialog-content>
+
+    @if(photoModalOpen()) {
+      <div class="photo-modal-backdrop">
+        <div class="photo-modal">
+          <h3 class="text-lg font-semibold mb-2">Update profile photo</h3>
+          <div class="mb-4">
+              @if(previewImage() || savedLocalPhoto() || user.avatarUrl) {
+                <img class="w-48 h-48 rounded-full object-cover mx-auto" [src]="(previewImage() || savedLocalPhoto() || user.avatarUrl)" alt="preview" />
+              } @else {
+                <div class="w-48 h-48 rounded-full bg-indigo-50 border border-indigo-200 mx-auto flex items-center justify-center">
+                  <mat-icon class="text-indigo-600 text-2xl">person</mat-icon>
+                </div>
+              }
+          </div>
+
+          <input type="file" accept="image/*" #modalFile hidden (change)="onFileSelected($event)" />
+          <div class="flex justify-center gap-3">
+            <button mat-stroked-button (click)="modalFile.click()" [disabled]="saveInProgress()">Choose file</button>
+            <button mat-flat-button color="primary" (click)="onSavePhoto()" [disabled]="!previewImage() || saveInProgress()">Save</button>
+            <button mat-button (click)="closePhotoModal()" [disabled]="saveInProgress()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    }
 
     <!-- Reusable input form block -->
     <ng-template #editFormField let-label="label" let-required="required">

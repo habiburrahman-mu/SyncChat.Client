@@ -13,4 +13,5 @@ export interface GetUserDetailResponse {
   createdAt: string;   // ISO date string
   isVerified: boolean;
   isBanned: boolean;
+  avatarUrl?: string; // Optional, in case the user doesn't have an avatar
 }

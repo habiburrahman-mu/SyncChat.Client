@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, resource, signal } from '@angular/core';
-import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, NgModel } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService, ToasterService } from '@core/services';
 import { GetUserDetailResponse, UpdateUserRequest } from '@features/chat/models';
 import { UserStateService } from '@features/chat/services';
@@ -16,18 +16,19 @@ import { Subject } from 'rxjs';
 
 @Component({
   selector: 'chat-profile',
+  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinner,
+    MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule
   ],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss',
+  styleUrls: ['./profile.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfileComponent {
@@ -39,6 +40,10 @@ export class ProfileComponent {
 
   private readonly currentUserId = this.authService.userId;
   readonly saveInProgress = signal(false);
+
+  readonly previewImage = signal<string | undefined>(undefined);
+  readonly savedLocalPhoto = signal<string | undefined>(undefined);
+  readonly photoModalOpen = signal(false);
 
   editEnabledFor: keyof UpdateUserRequest | undefined = undefined;
   editData: string | undefined = '';
@@ -69,6 +74,45 @@ export class ProfileComponent {
 
       this.updateUser(user);
     }
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewImage.set(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onSavePhoto() {
+    const preview = this.previewImage();
+    if (!preview) return;
+
+    this.savedLocalPhoto.set(preview);
+    this.previewImage.set(undefined);
+    this.photoModalOpen.set(false);
+  }
+
+  onCancelPhoto() {
+    this.previewImage.set(undefined);
+    this.photoModalOpen.set(false);
+  }
+
+  openPhotoModal(user?: GetUserDetailResponse) {
+    const current = this.savedLocalPhoto() || (user as any)?.avatarUrl;
+    this.previewImage.set(current);
+    this.photoModalOpen.set(true);
+  }
+
+  closePhotoModal() {
+    this.previewImage.set(undefined);
+    this.photoModalOpen.set(false);
   }
 
   updateUser(user: GetUserDetailResponse) {
