@@ -40,5 +40,6 @@ export const API_ROUTES = {
     InitiateUpload: `${BASE_URL}/media/initiateUpload` as const,
     ConfirmUpload: `${BASE_URL}/media/confirmUpload` as const,
     GetAccessUrl: `${BASE_URL}/media/getAccessUrl` as const,
+    GetState: `${BASE_URL}/media/getState` as const,
   }
 };

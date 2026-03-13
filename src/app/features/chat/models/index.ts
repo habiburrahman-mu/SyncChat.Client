@@ -23,5 +23,6 @@ export * from './initiate-upload-request.model';
 export * from './initiate-upload-response.model';
 export * from './confirm-upload-response.model';
 export * from './get-media-access-url-response.model';
+export * from './get-media-state-response.model';
 export * from './image-viewer-data.model';
 export * from './media-attachment.model';

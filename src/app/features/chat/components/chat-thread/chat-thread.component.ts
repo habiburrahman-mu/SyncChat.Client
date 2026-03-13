@@ -268,31 +268,38 @@ export class ChatThreadComponent implements OnInit {
                   .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
                     next: () => {
-                      this.messageService.sendMediaMessage({
-                        conversationId,
-                        senderId: this.currentUserId!,
-                        type: MessageType.Image,
-                        mediaId,
-                        caption,
-                        replyTo: undefined,
-                      })
+                      this.mediaService.pollUntilActive(mediaId)
                         .pipe(takeUntilDestroyed(this.destroyRef))
                         .subscribe({
-                          next: (response) => {
-                            this.chatStateService.addMessageToSelectedConversation({
-                              messageId: response.messageId,
-                              uuid: response.uuid,
-                              conversationId: response.conversationId,
-                              senderId: response.senderId,
-                              content: response.content ?? null,
-                              mediaId: response.mediaId,
-                              senderUserName: response.senderUserName,
-                              senderName: response.senderByName,
-                              updatedAt: response.updatedAt,
-                              metaData: response.metaData ? JSON.parse(response.metaData) : undefined,
-                              type: response.type,
-                            });
-                            this._resetMediaState();
+                          next: () => {
+                            this.messageService.sendMediaMessage({
+                              conversationId,
+                              senderId: this.currentUserId!,
+                              type: MessageType.Image,
+                              mediaId,
+                              caption,
+                              replyTo: undefined,
+                            })
+                              .pipe(takeUntilDestroyed(this.destroyRef))
+                              .subscribe({
+                                next: (response) => {
+                                  this.chatStateService.addMessageToSelectedConversation({
+                                    messageId: response.messageId,
+                                    uuid: response.uuid,
+                                    conversationId: response.conversationId,
+                                    senderId: response.senderId,
+                                    content: response.content ?? null,
+                                    mediaId: response.mediaId,
+                                    senderUserName: response.senderUserName,
+                                    senderName: response.senderByName,
+                                    updatedAt: response.updatedAt,
+                                    metaData: response.metaData ? JSON.parse(response.metaData) : undefined,
+                                    type: response.type,
+                                  });
+                                  this._resetMediaState();
+                                },
+                                error: () => this._resetMediaState(),
+                              });
                           },
                           error: () => this._resetMediaState(),
                         });

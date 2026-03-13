@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API_ROUTES } from '@core/constants';
-import { MediaOwnerType } from '@core/enums';
-import { ConfirmUploadResponse, GetMediaAccessUrlResponse, InitiateUploadRequest, InitiateUploadResponse } from '../models';
-import { Observable } from 'rxjs';
+import { MediaOwnerType, MediaState } from '@core/enums';
+import { ConfirmUploadResponse, GetMediaAccessUrlResponse, GetMediaStateResponse, InitiateUploadRequest, InitiateUploadResponse } from '../models';
+import { filter, map, Observable, switchMap, take, throwError, timer, timeout } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -80,5 +80,24 @@ export class MediaService {
     const url = API_ROUTES.Media.GetAccessUrl;
     const params = new HttpParams().set('mediaId', mediaId);
     return this.http.get<GetMediaAccessUrlResponse>(url, { params });
+  }
+
+  getMediaState(mediaId: string): Observable<GetMediaStateResponse> {
+    const params = new HttpParams().set('mediaId', mediaId);
+    return this.http.get<GetMediaStateResponse>(API_ROUTES.Media.GetState, { params });
+  }
+
+  /**
+   * Polls getMediaState every `pollInterval` ms until the media reaches Active state.
+   * Errors if the media is not active within `pollTimeout` ms.
+   */
+  pollUntilActive(mediaId: string, pollInterval = 1500, pollTimeout = 60_000): Observable<void> {
+    return timer(500, pollInterval).pipe(
+      switchMap(() => this.getMediaState(mediaId)),
+      filter(r => r.mediaState === MediaState.Active),
+      take(1),
+      map(() => undefined),
+      timeout({ first: pollTimeout }),
+    );
   }
 }
