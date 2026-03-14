@@ -3,4 +3,5 @@ export interface GetUserByUserNameResponse {
   uuId: string;
   userName: string;
   name: string;
+  avatarUrl: string | null;
 }

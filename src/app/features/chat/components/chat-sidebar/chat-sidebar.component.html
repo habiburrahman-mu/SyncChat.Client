@@ -97,9 +97,14 @@
       <!-- Avatar + Status + Name -->
       <div class="flex items-center gap-3">
         <div class="relative">
-          <mat-icon>accessibility</mat-icon>
-          <!-- <img [src]="state.data?.profileImageUrl || defaultAvatar" alt="Avatar"
-                class="w-10 h-10 rounded-full object-cover" /> -->
+          @if (data?.avatarUrl) {
+          <img [src]="data.avatarUrl" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-gray-300" />
+          } @else {
+          <div
+            class="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-semibold">
+            {{ (data?.name || data?.userName || '?').charAt(0).toUpperCase() }}
+          </div>
+          }
           <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full
                        ring-2 ring-white" [ngClass]="{
                   'bg-[#3d5afe]': data?.status === 'online',

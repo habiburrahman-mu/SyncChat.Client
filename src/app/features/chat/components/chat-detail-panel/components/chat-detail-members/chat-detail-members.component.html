@@ -40,10 +40,18 @@
 
             <!-- Avatar -->
             <div matListItemAvatar>
-              <mat-icon
-                class="inline-flex text-center items-center justify-center w-15 h-15 p-0 m-0 text-xl font-bold leading-none rounded-xl bg-blue-200">
+              @if (member.avatarUrl) {
+              <img
+                [src]="member.avatarUrl"
+                [alt]="member.name"
+                class="inline-flex w-10 h-10 rounded-full object-cover border border-gray-300"
+              />
+              } @else {
+              <div
+                class="inline-flex text-center items-center justify-center w-10 h-10 text-sm font-bold leading-none rounded-full bg-blue-200 text-blue-800">
                 {{ member.name.charAt(0).toUpperCase() }}
-              </mat-icon>
+              </div>
+              }
             </div>
 
             <!-- Info -->
