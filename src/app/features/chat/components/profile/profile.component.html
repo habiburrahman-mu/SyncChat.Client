@@ -14,7 +14,7 @@
     <div class="w-full max-w-lg mx-auto">
       <!-- Header -->
       <div class="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm relative">
-        <div class="relative">
+        <div class="relative avatar-root">
             @if (savedLocalPhoto() || previewImage() || user.avatarUrl) {
               <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500 cursor-pointer"
                 [src]="(savedLocalPhoto() || previewImage() || user.avatarUrl)" alt="User avatar" (click)="openPhotoModal(user)" />
@@ -23,6 +23,11 @@
                 <mat-icon class="text-indigo-600">person</mat-icon>
               </div>
             }
+
+            <button type="button" class="absolute -right-1 -bottom-1 bg-white rounded-full border border-gray-200 p-1 w-7 h-7 flex items-center justify-center shadow-sm cursor-pointer transform transition hover:-translate-y-1"
+              (click)="openPhotoModal(user)" aria-label="Edit profile photo" title="Change photo">
+              <mat-icon class="text-indigo-700 text-sm">edit</mat-icon>
+            </button>
         </div>
           <div class="min-w-0 flex-1">
             @if (editEnabledFor !== 'name') {
