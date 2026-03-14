@@ -8,11 +8,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AuthService, ToasterService } from '@core/services';
 import { GetUserDetailResponse, UpdateUserRequest } from '@features/chat/models';
-import { UserStateService } from '@features/chat/services';
+import { UserStateService, MediaService } from '@features/chat/services';
 import { UserService } from '@features/chat/services/user.service';
-import { Subject } from 'rxjs';
+import { MediaOwnerType } from '@core/enums';
+import { validateMediaFile } from '@features/chat/utils';
 
 @Component({
   selector: 'chat-profile',
@@ -23,6 +25,7 @@ import { Subject } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule
@@ -37,6 +40,7 @@ export class ProfileComponent {
   private readonly userStateService = inject(UserStateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly toasterService = inject(ToasterService);
+  private readonly mediaService = inject(MediaService);
 
   private readonly currentUserId = this.authService.userId;
   readonly saveInProgress = signal(false);
@@ -44,6 +48,11 @@ export class ProfileComponent {
   readonly previewImage = signal<string | undefined>(undefined);
   readonly savedLocalPhoto = signal<string | undefined>(undefined);
   readonly photoModalOpen = signal(false);
+
+  readonly avatarUploadProgress = signal<number | null>(null);
+  readonly avatarUploadError = signal<string | null>(null);
+
+  private avatarFile: File | null = null;
 
   editEnabledFor: keyof UpdateUserRequest | undefined = undefined;
   editData: string | undefined = '';
@@ -82,6 +91,17 @@ export class ProfileComponent {
     if (!file) {
       return;
     }
+    this.avatarUploadError.set(null);
+
+    const validation = validateMediaFile(file);
+    if (validation) {
+      this.avatarUploadError.set(validation.description);
+      this.previewImage.set(undefined);
+      this.avatarFile = null;
+      return;
+    }
+
+    this.avatarFile = file;
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -91,20 +111,68 @@ export class ProfileComponent {
   }
 
   onSavePhoto() {
+    const file = this.avatarFile;
     const preview = this.previewImage();
-    if (!preview) return;
 
-    this.savedLocalPhoto.set(preview);
-    this.previewImage.set(undefined);
-    this.photoModalOpen.set(false);
+    if (!file || !preview || !this.currentUserId) {
+      return;
+    }
+
+    this.saveInProgress.set(true);
+    this.avatarUploadProgress.set(0);
+    this.avatarUploadError.set(null);
+
+    this.mediaService.initiateUpload(MediaOwnerType.User, String(this.currentUserId), file)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ mediaId, uploadUri }) => {
+          this.mediaService.uploadToStorage(uploadUri, file)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (progress) => this.avatarUploadProgress.set(progress),
+              complete: () => {
+                this.mediaService.confirmUpload(mediaId)
+                  .pipe(takeUntilDestroyed(this.destroyRef))
+                  .subscribe({
+                    next: () => {
+                      this.mediaService.pollUntilActive(mediaId)
+                        .pipe(takeUntilDestroyed(this.destroyRef))
+                        .subscribe({
+                          next: () => {
+                            this.savedLocalPhoto.set(preview);
+                            this.userResource.reload();
+
+                            this.saveInProgress.set(false);
+                            this.avatarUploadProgress.set(null);
+                            this.avatarFile = null;
+                            this.previewImage.set(undefined);
+                            this.photoModalOpen.set(false);
+                          },
+                          error: (error) => this.handleAvatarUploadError(error),
+                        });
+                    },
+                    error: (error) => this.handleAvatarUploadError(error),
+                  });
+              },
+              error: (error) => this.handleAvatarUploadError(error),
+            });
+        },
+        error: (error) => this.handleAvatarUploadError(error),
+      });
   }
 
   onCancelPhoto() {
     this.previewImage.set(undefined);
+    this.avatarFile = null;
+    this.avatarUploadProgress.set(null);
+    this.avatarUploadError.set(null);
     this.photoModalOpen.set(false);
   }
 
   openPhotoModal(user?: GetUserDetailResponse) {
+    this.avatarUploadError.set(null);
+    this.avatarUploadProgress.set(null);
+    this.avatarFile = null;
     const current = this.savedLocalPhoto() || (user as any)?.avatarUrl;
     this.previewImage.set(current);
     this.photoModalOpen.set(true);
@@ -112,6 +180,9 @@ export class ProfileComponent {
 
   closePhotoModal() {
     this.previewImage.set(undefined);
+    this.avatarFile = null;
+    this.avatarUploadProgress.set(null);
+    this.avatarUploadError.set(null);
     this.photoModalOpen.set(false);
   }
 
@@ -142,6 +213,12 @@ export class ProfileComponent {
           this.saveInProgress.set(false);
         }
       });
+  }
+
+  private handleAvatarUploadError(_error: unknown) {
+    this.saveInProgress.set(false);
+    this.avatarUploadProgress.set(null);
+    this.toasterService.error('Failed to update profile photo.', 'Please try again.');
   }
 
   updateUserProfile() {

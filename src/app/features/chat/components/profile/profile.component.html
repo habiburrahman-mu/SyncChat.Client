@@ -107,6 +107,17 @@
               }
           </div>
 
+            @if(avatarUploadProgress() !== null) {
+              <div class="mb-4 flex flex-col items-center gap-1">
+                <mat-progress-bar mode="determinate" [value]="avatarUploadProgress() ?? 0" class="w-full"></mat-progress-bar>
+                <span class="text-xs text-gray-500">{{ avatarUploadProgress() }}%</span>
+              </div>
+            }
+
+            @if(avatarUploadError()) {
+              <p class="mb-2 text-sm text-red-500 text-center">{{ avatarUploadError() }}</p>
+            }
+
           <input type="file" accept="image/*" #modalFile hidden (change)="onFileSelected($event)" />
           <div class="flex justify-center gap-3">
             <button mat-stroked-button (click)="modalFile.click()" [disabled]="saveInProgress()">Choose file</button>
