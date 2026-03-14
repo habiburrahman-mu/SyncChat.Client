@@ -161,6 +161,7 @@ export class NewChatDialogComponent implements OnInit {
             messages: signal(undefined),
             hasUnreadMessages: false,
             lastSeenMessageId: null,
+            avatarUrl: isGroup ? null : selectedUsers[0].avatarUrl
           };
 
           this.chatStateService.addConversation(conversation);

@@ -16,4 +16,5 @@ export interface Conversation {
   olderMessageLoading: WritableSignal<boolean>;
   lastSeenMessageId: number | null;
   hasUnreadMessages: boolean;
+  avatarUrl: string | null;
 }

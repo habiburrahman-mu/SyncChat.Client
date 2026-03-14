@@ -210,7 +210,8 @@ export class ConversationStateService {
         hasMoreMessages: true,
         olderMessageLoading: signal(false),
         hasUnreadMessages: true,
-        lastSeenMessageId: null
+        lastSeenMessageId: null,
+        avatarUrl: newConversation.avatarUrl
       };
 
       this.addConversation(conversation);
@@ -266,7 +267,8 @@ export class ConversationStateService {
             hasMoreMessages: true,
             olderMessageLoading: signal(false),
             hasUnreadMessages: c.haveUnreadMessages,
-            lastSeenMessageId: c.lastSeenMessageId
+            lastSeenMessageId: c.lastSeenMessageId,
+            avatarUrl: c.avatarUrl
           } as Conversation));
           this.conversations.set(conversations);
         },
