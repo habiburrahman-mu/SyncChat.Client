@@ -28,8 +28,14 @@
         placeholder="Search…"
         [value]="searchQuery()"
         (input)="searchQuery.set($any($event.target).value)"
-        class="w-full bg-slate-100 text-slate-800 placeholder-slate-400 text-sm pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 transition"
+        class="w-full bg-slate-100 text-slate-800 placeholder-slate-400 text-sm pl-9 pr-9 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 transition"
       />
+      @if (searchQuery()) {
+      <button (click)="searchQuery.set('')"
+        class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+        <mat-icon class="!text-[16px] !w-4 !h-4">close</mat-icon>
+      </button>
+      }
     </div>
     <button
       mat-mini-fab
