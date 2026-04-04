@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -45,6 +45,12 @@ export class ChatSidebarComponent implements OnInit, OnDestroy {
   readonly conversationList = this.chatStateService.conversationList;
   readonly isConversationsLoading = this.chatStateService.isConversationsLoading;
   readonly selectedConversation = this.chatStateService.selectedConversation;
+  readonly searchQuery = signal('');
+  readonly filteredConversations = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    if (!query) return this.conversationList();
+    return this.conversationList().filter(c => c.name.toLowerCase().includes(query));
+  });
 
   readonly userDetailResource = this.userStateService.userResource;
   readonly MessageType = MessageType;
