@@ -1,67 +1,132 @@
-<div class="flex flex-col justify-between md:flex-row min-h-dvh overflow-hidden">
-  <!-- Left Side: Lottie Animation -->
-  <div class="relative w-full md:w-1/2 h-64 md:h-auto md">
-    <ng-lottie [options]="options" class="absolute inset-0 w-full h-full" style="pointer-events: none"></ng-lottie>
-  </div>
+<div class="flex min-h-dvh overflow-hidden font-[Inter]">
 
-  <!-- Right Side: Login Form -->
-  <div class="flex flex-col justify-center w-full lg:max-w-150 p-8 bg-white">
-    <div class="text-center mb-5">
-      <h2 class="text-2xl font-semibold text-gray-700">Login to SyncChat</h2>
-      <p class="mt-1 text-gray-500 text-sm">Good to see you again!</p>
-    </div>
+  <!-- ── Left Panel ────────────────────────────────────────────────── -->
+  <div class="hidden lg:flex lg:w-1/2 xl:w-3/5 relative flex-col bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 overflow-hidden">
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <mat-form-field class="w-full mb-1">
-        <mat-label>Username</mat-label>
-        <input matInput type="text" formControlName="userName" />
-        @if (form.controls.userName.hasError('required')) {
-        <mat-error>
-          {{errorMessages.userName.required}}
-        </mat-error>
-        }
-      </mat-form-field>
+    <!-- Decorative blobs -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-purple-900/30 blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/2 left-1/4 w-48 h-48 rounded-full bg-indigo-400/20 blur-2xl pointer-events-none"></div>
 
-      <mat-form-field class="w-full mb-1">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" formControlName="password" />
-        @if (form.controls.password.hasError('required')) {
-        <mat-error>
-          {{errorMessages.password.required}}
-        </mat-error>
-        }
-      </mat-form-field>
-
-      <button mat-flat-button color="primary" class="w-full py-3 text-lg" [disabled]="isAnyLoginInProgress()">
-        @if (isLoginInProgress()) {
-        <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
-        }
-        <span>Login</span>
-      </button>
-    </form>
-
-    <div class="relative flex items-center my-3">
-      <div class="grow border-t border-gray-200"></div>
-      <span class="mx-4 text-gray-400 text-sm">or</span>
-      <div class="grow border-t border-gray-200"></div>
-    </div>
-
-    <div class="flex flex-col gap-2 h-6">
-      <div class="w-full flex justify-center" [class.hidden]="isLoginInProgress()">
-        @if(isGoogleLoginInProgress()) {
-        <button mat-flat-button color="warn" class="py-3 text-lg" disabled>
-          <mat-icon><mat-spinner diameter="18"></mat-spinner></mat-icon>
-          <span>Signing in with Google...</span>
-        </button>
-        }
-        <button [class.hidden]="isGoogleLoginInProgress()" id="google-auth-btn" [disabled]="isLoginInProgress()"></button>
+    <!-- Branding -->
+    <div class="relative z-10 px-10 pt-10">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+          <mat-icon class="!text-white !text-[22px]">chat</mat-icon>
+        </div>
+        <span class="text-2xl font-bold text-white tracking-tight">SyncChat</span>
       </div>
     </div>
 
+    <!-- Lottie -->
+    <div class="relative z-10 flex-1 flex items-center justify-center px-8 py-6">
+      <ng-lottie [options]="options" class="w-full max-w-lg" style="pointer-events: none"></ng-lottie>
+    </div>
 
-    <div class="text-center text-sm text-gray-600 mt-4">
-      Don't have an account?
-      <a [routerLink]="['../register']" class="text-blue-600 hover:underline">Register here</a>
+    <!-- Tagline -->
+    <div class="relative z-10 px-10 pb-10">
+      <p class="text-white font-semibold text-xl leading-snug">Connect, collaborate,<br>and chat in real time.</p>
+      <p class="text-white/60 text-sm mt-1">Your conversations, always in sync.</p>
     </div>
   </div>
+
+  <!-- ── Right Panel ───────────────────────────────────────────────── -->
+  <div class="flex-1 flex flex-col justify-center items-center px-6 py-12 bg-white">
+
+    <!-- Mobile branding -->
+    <div class="lg:hidden flex items-center gap-2.5 mb-8">
+      <div class="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center">
+        <mat-icon class="!text-indigo-600 !text-[22px]">chat</mat-icon>
+      </div>
+      <span class="text-2xl font-bold text-slate-800 tracking-tight">SyncChat</span>
+    </div>
+
+    <div class="w-full max-w-sm">
+
+      <!-- Heading -->
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-slate-800">Welcome back</h1>
+        <p class="text-sm text-slate-500 mt-1">Sign in to your account to continue</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+
+        <!-- Username -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-widest">Username</label>
+          <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+            <input matInput type="text" formControlName="userName" placeholder="your_username" autocomplete="username" />
+            @if (form.controls.userName.hasError('required') && form.controls.userName.touched) {
+            <mat-error>{{ errorMessages.userName.required }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-widest">Password</label>
+          <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+            <input matInput type="password" formControlName="password" placeholder="••••••••" autocomplete="current-password" />
+            @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+            <mat-error>{{ errorMessages.password.required }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="isAnyLoginInProgress()"
+          class="w-full py-3 rounded-xl text-sm font-semibold text-white mt-2
+                 bg-gradient-to-r from-indigo-500 to-violet-600
+                 hover:from-indigo-600 hover:to-violet-700
+                 disabled:opacity-50 disabled:cursor-not-allowed
+                 transition-all shadow-md shadow-indigo-200/60
+                 flex items-center justify-center gap-2">
+          @if (isLoginInProgress()) {
+          <mat-spinner diameter="18"></mat-spinner>
+          <span>Signing in…</span>
+          } @else {
+          <span>Sign in</span>
+          <mat-icon class="!text-[18px]">arrow_forward</mat-icon>
+          }
+        </button>
+
+      </form>
+
+      <!-- Divider -->
+      <div class="relative flex items-center my-6">
+        <div class="flex-1 border-t border-slate-200"></div>
+        <span class="mx-4 text-xs text-slate-400 font-medium">or continue with</span>
+        <div class="flex-1 border-t border-slate-200"></div>
+      </div>
+
+      <!-- Google Sign-in -->
+      <div class="flex justify-center min-h-[40px]" [class.opacity-50]="isLoginInProgress()">
+        @if (isGoogleLoginInProgress()) {
+        <div class="flex items-center gap-2 text-sm text-slate-500 py-2">
+          <mat-spinner diameter="16" color="accent"></mat-spinner>
+          <span>Signing in with Google…</span>
+        </div>
+        }
+        <button
+          id="google-auth-btn"
+          [class.hidden]="isGoogleLoginInProgress()"
+          [disabled]="isLoginInProgress()">
+        </button>
+      </div>
+
+      <!-- Register link -->
+      <p class="text-center text-sm text-slate-500 mt-8">
+        Don't have an account?
+        <a [routerLink]="['../register']"
+          class="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors ml-0.5">
+          Create one
+        </a>
+      </p>
+
+    </div>
+  </div>
+
 </div>
