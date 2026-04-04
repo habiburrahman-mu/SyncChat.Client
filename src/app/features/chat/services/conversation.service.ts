@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CreateConversationRequest, GetConversationsResponse, GetLastMessageResponse, MarkMessageAsSeenRequest } from '../models';
+import { ConversationDTO, CreateConversationRequest, GetConversationsResponse, GetLastMessageResponse, MarkMessageAsSeenRequest } from '../models';
 import { API_ROUTES } from '@core/constants';
 
 @Injectable({
@@ -25,6 +25,11 @@ export class ConversationService {
   getLastMessage = (conversationId: number) => {
     const url = `${API_ROUTES.Conversation.GetLastMessage}/${conversationId}`;
     return this.http.get<GetLastMessageResponse>(url);
+  }
+
+  getDetail = (conversationId: number) => {
+    const url = `${API_ROUTES.Conversation.GetDetail}/${conversationId}`;
+    return this.http.get<ConversationDTO>(url);
   }
 
   markMessageAsSeen = (conversationId: number, messageId: number) => {
