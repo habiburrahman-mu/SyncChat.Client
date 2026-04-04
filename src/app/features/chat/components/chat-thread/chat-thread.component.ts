@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, untracked, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -94,12 +94,13 @@ export class ChatThreadComponent implements OnInit {
   constructor() {
     effect(() => {
       const messageLoading = this.isSelectedConversationMessagesLoading();
-      const selectedConversation = this.selectedConversation();
 
-      if (!messageLoading || selectedConversation) {
+      if (!messageLoading && untracked(() => this.selectedConversation())) {
         this.scrollPositionBeforeLoadingPreviousMessages = 0;
-        // delay to ensure DOM updated
-        setTimeout(() => this.scrollToBottom(false), 0);
+        // wait two frames so Angular finishes rendering the message list
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => this.scrollToBottom(false));
+        });
       }
     });
 
@@ -136,6 +137,15 @@ export class ChatThreadComponent implements OnInit {
         this.scrollToBottom(true);
       });
     });
+  }
+
+  onMediaImageLoaded() {
+    const container = this.messagesContainer()?.nativeElement;
+    if (!container) return;
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    if (distanceFromBottom < 300) {
+      this.scrollToBottom(false);
+    }
   }
 
   onScrollMessage() {

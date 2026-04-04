@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +15,7 @@ import { ImageViewerOverlayComponent } from '../image-viewer-overlay/image-viewe
 })
 export class ChatMediaImageComponent implements OnInit {
   mediaId = input.required<string>();
+  readonly loaded = output<void>();
 
   private readonly mediaService = inject(MediaService);
   private readonly dialog = inject(Dialog);
@@ -43,6 +44,7 @@ export class ChatMediaImageComponent implements OnInit {
 
   onImageLoad() {
     this.isLoading.set(false);
+    this.loaded.emit();
   }
 
   openViewer() {

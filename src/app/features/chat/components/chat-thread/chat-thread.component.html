@@ -89,7 +89,7 @@
       class="max-w-[75%] p-3 rounded-2xl text-sm shadow-md leading-snug transition hover:shadow-lg wrap-break-word">
 
       @if (message.mediaId) {
-      <chat-media-image [mediaId]="message.mediaId" />
+      <chat-media-image [mediaId]="message.mediaId" (loaded)="onMediaImageLoaded()" />
       }
 
       @if (message.content) {
