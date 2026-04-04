@@ -1,167 +1,194 @@
 @if(userResource.isLoading()) {
-  <div class="flex justify-center items-center h-64">
-    <mat-progress-spinner mode="indeterminate" diameter="22" color="accent"></mat-progress-spinner>
-  </div>
+<div class="flex justify-center items-center h-64 w-80">
+  <mat-progress-spinner mode="indeterminate" diameter="28" color="accent"></mat-progress-spinner>
+</div>
+
 } @else if(userResource.error()) {
-  <div class="text-center text-red-500">
-    <p>Error loading user data. Please try again later.</p>
-  </div>
+<div class="flex items-center justify-center h-40 w-80 text-red-500 text-sm px-6 text-center">
+  Error loading profile. Please try again.
+</div>
+
 } @else if(userResource.hasValue()) {
+@let user = userResource.value();
 
-  @let user = userResource.value();
+<!-- ── Gradient Header (outside mat-dialog-content so it spans full width) ── -->
+<div class="bg-gradient-to-br from-indigo-500 to-violet-600 px-6 pt-8 pb-14 flex justify-center">
+  <div class="relative inline-block">
+    @if (savedLocalPhoto() || previewImage() || user.avatarUrl) {
+    <img
+      class="w-20 h-20 rounded-full object-cover ring-4 ring-white shadow-lg cursor-pointer"
+      [src]="(savedLocalPhoto() || previewImage() || user.avatarUrl)"
+      alt="User avatar"
+      (click)="openPhotoModal(user)" />
+    } @else {
+    <div
+      class="w-20 h-20 rounded-full bg-white/20 ring-4 ring-white shadow-lg flex items-center justify-center cursor-pointer"
+      (click)="openPhotoModal(user)">
+      <mat-icon class="!text-white !text-4xl">person</mat-icon>
+    </div>
+    }
+    <button type="button" (click)="openPhotoModal(user)" aria-label="Change photo"
+      class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white border-2 border-indigo-200
+             flex items-center justify-center shadow hover:bg-indigo-50 transition">
+      <mat-icon class="!text-indigo-600 !text-[14px]">photo_camera</mat-icon>
+    </button>
+  </div>
+</div>
 
-  <mat-dialog-content class="mat-typography">
-    <div class="w-full max-w-lg mx-auto">
-      <!-- Header -->
-      <div class="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm relative">
-        <div class="relative avatar-root">
-            @if (savedLocalPhoto() || previewImage() || user.avatarUrl) {
-              <img class="h-16 w-16 rounded-full object-cover border-2 border-indigo-500 cursor-pointer"
-                [src]="(savedLocalPhoto() || previewImage() || user.avatarUrl)" alt="User avatar" (click)="openPhotoModal(user)" />
-            } @else {
-              <div class="h-16 w-16 rounded-full bg-indigo-50 border-2 border-indigo-200 flex items-center justify-center cursor-pointer avatar-placeholder" (click)="openPhotoModal(user)">
-                <mat-icon class="text-indigo-600">person</mat-icon>
-              </div>
-            }
+<!-- ── Scrollable Content ─────────────────────────────────────────── -->
+<mat-dialog-content class="!px-4 !pt-0 !pb-5">
 
-            <button type="button" class="absolute -right-1 -bottom-1 bg-white rounded-full border border-gray-200 p-1 w-7 h-7 flex items-center justify-center shadow-sm cursor-pointer transform transition hover:-translate-y-1"
-              (click)="openPhotoModal(user)" aria-label="Edit profile photo" title="Change photo">
-              <mat-icon class="text-indigo-700 text-sm">edit</mat-icon>
-            </button>
+  <!-- Name card — overlaps the gradient with negative margin -->
+  <div class="-mt-8 bg-white rounded-2xl shadow-sm border border-slate-100 px-5 py-4 mb-3">
+    <div class="flex items-center justify-between gap-2">
+      <div class="min-w-0 flex-1">
+        @if (editEnabledFor !== 'name') {
+        <div class="text-base font-bold text-slate-800 truncate">{{ user.name }}</div>
+        <div class="text-xs text-slate-400 mt-0.5">&#64;{{ user.userName }}</div>
+        } @else {
+        <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Name', required: true}"></ng-container>
+        }
+      </div>
+      @if (editEnabledFor !== 'name') {
+      <button mat-icon-button class="!text-slate-400 hover:!text-indigo-600 shrink-0"
+        (click)="onClickEdit('name', user.name)" [disabled]="editEnabledFor">
+        <mat-icon class="!text-[18px]">edit</mat-icon>
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Email -->
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4 mb-3">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0">
+          <mat-icon class="!text-indigo-600 !text-[17px]">email</mat-icon>
         </div>
-          <div class="min-w-0 flex-1">
-            @if (editEnabledFor !== 'name') {
-              <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                  {{ user.name }}
-                  <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('name', user.name)"
-                    [disabled]="editEnabledFor">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-              </h2>
-            } @else {
-              <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Name', required: true}"></ng-container>
-            }
-
-            <p class="text-sm text-gray-500">{{ '@' + user.userName }}</p>
-          </div>
-        </div>
-
-        <!-- Info Section -->
-        <div class="mt-6 space-y-6">
-          <!-- Email Card -->
-          <div
-            class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition mb-2">
-            <div class="flex items-center gap-3 min-w-0 flex-1">
-              <mat-icon class="text-indigo-500 shrink-0">email</mat-icon>
-              <div class="min-w-0 flex-1">
-                <p class="text-sm text-gray-500">Email</p>
-
-                @if (editEnabledFor !== 'email') {
-                  <p class="text-base font-medium text-gray-800">{{ user.email }}</p>
-                } @else {
-                  <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Email', required: true}"></ng-container>
-                }
-              </div>
-            </div>
-            @if (editEnabledFor !== 'email') {
-              <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('email', user.email)"
-                [disabled]="editEnabledFor">
-                <mat-icon>edit</mat-icon>
-              </button>
-            }
-          </div>
-
-          <!-- Phone Card -->
-          <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition">
-            <div class="flex items-center gap-3 min-w-0 flex-1">
-              <mat-icon class="text-indigo-500 shrink-0">phone</mat-icon>
-              <div class="min-w-0 flex-1">
-                <p class="text-sm text-gray-500">Phone</p>
-
-                @if (editEnabledFor !== 'phone') {
-                  <p class="text-base" [ngClass]="{'text-gray-800 font-medium': user.phone, 'text-gray-400': !user.phone}">
-                    {{ user.phone ?? 'No phone number yet' }}
-                  </p>
-                } @else {
-                  <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Phone', required: false}"></ng-container>
-                }
-              </div>
-            </div>
-            @if (editEnabledFor !== 'phone') {
-              <button mat-icon-button class="text-gray-500 hover:text-indigo-600" (click)="onClickEdit('phone', user.phone)"
-                [disabled]="editEnabledFor">
-                <mat-icon>edit</mat-icon>
-              </button>
-            }
-          </div>
+        <div class="min-w-0 flex-1">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">Email</div>
+          @if (editEnabledFor !== 'email') {
+          <div class="text-sm font-medium text-slate-800 truncate mt-0.5">{{ user.email }}</div>
+          } @else {
+          <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Email', required: true}"></ng-container>
+          }
         </div>
       </div>
-    </mat-dialog-content>
+      @if (editEnabledFor !== 'email') {
+      <button mat-icon-button class="!text-slate-400 hover:!text-indigo-600 shrink-0"
+        (click)="onClickEdit('email', user.email)" [disabled]="editEnabledFor">
+        <mat-icon class="!text-[18px]">edit</mat-icon>
+      </button>
+      }
+    </div>
+  </div>
 
-    @if(photoModalOpen()) {
-      <div class="photo-modal-backdrop">
-        <div class="photo-modal">
-          <h3 class="text-lg font-semibold mb-2">Update profile photo</h3>
-          <div class="mb-4">
-              @if(previewImage() || savedLocalPhoto() || user.avatarUrl) {
-                <img class="w-48 h-48 rounded-full object-cover mx-auto" [src]="(previewImage() || savedLocalPhoto() || user.avatarUrl)" alt="preview" />
-              } @else {
-                <div class="w-48 h-48 rounded-full bg-indigo-50 border border-indigo-200 mx-auto flex items-center justify-center">
-                  <mat-icon class="text-indigo-600 text-2xl">person</mat-icon>
-                </div>
-              }
+  <!-- Phone -->
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+          <mat-icon class="!text-slate-500 !text-[17px]">phone</mat-icon>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">Phone</div>
+          @if (editEnabledFor !== 'phone') {
+          <div class="text-sm mt-0.5 truncate"
+            [class.font-medium]="user.phone" [class.text-slate-800]="user.phone"
+            [class.text-slate-400]="!user.phone">
+            {{ user.phone ?? 'Not set' }}
           </div>
-
-            @if(avatarUploadProgress() !== null) {
-              <div class="mb-4 flex flex-col items-center gap-1">
-                <mat-progress-bar mode="determinate" [value]="avatarUploadProgress() ?? 0" class="w-full"></mat-progress-bar>
-                <span class="text-xs text-gray-500">{{ avatarUploadProgress() }}%</span>
-              </div>
-            }
-
-            @if(avatarUploadError()) {
-              <p class="mb-2 text-sm text-red-500 text-center">{{ avatarUploadError() }}</p>
-            }
-
-          <input type="file" accept="image/*" #modalFile hidden (change)="onFileSelected($event)" />
-          <div class="flex justify-center gap-3">
-            <button mat-stroked-button (click)="modalFile.click()" [disabled]="saveInProgress()">Choose file</button>
-            <button mat-flat-button color="primary" (click)="onSavePhoto()" [disabled]="!previewImage() || saveInProgress()">Save</button>
-            <button mat-button (click)="closePhotoModal()" [disabled]="saveInProgress()">Cancel</button>
-          </div>
+          } @else {
+          <ng-container *ngTemplateOutlet="editFormField; context: {label: 'Phone', required: false}"></ng-container>
+          }
         </div>
       </div>
+      @if (editEnabledFor !== 'phone') {
+      <button mat-icon-button class="!text-slate-400 hover:!text-indigo-600 shrink-0"
+        (click)="onClickEdit('phone', user.phone)" [disabled]="editEnabledFor">
+        <mat-icon class="!text-[18px]">edit</mat-icon>
+      </button>
+      }
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<!-- ── Photo Modal ──────────────────────────────────────────────────── -->
+@if(photoModalOpen()) {
+<div class="photo-modal-backdrop">
+  <div class="photo-modal">
+    <h3 class="text-base font-bold text-slate-800 mb-4">Update profile photo</h3>
+    <div class="mb-5 flex justify-center">
+      @if(previewImage() || savedLocalPhoto() || user.avatarUrl) {
+      <img class="w-36 h-36 rounded-full object-cover ring-4 ring-indigo-100 shadow"
+        [src]="(previewImage() || savedLocalPhoto() || user.avatarUrl)" alt="preview" />
+      } @else {
+      <div class="w-36 h-36 rounded-full bg-indigo-50 border-2 border-indigo-200 flex items-center justify-center">
+        <mat-icon class="!text-indigo-400 !text-5xl">person</mat-icon>
+      </div>
+      }
+    </div>
+    @if(avatarUploadProgress() !== null) {
+    <div class="mb-4 space-y-1">
+      <mat-progress-bar mode="determinate" [value]="avatarUploadProgress() ?? 0"></mat-progress-bar>
+      <p class="text-xs text-center text-slate-500">{{ avatarUploadProgress() }}%</p>
+    </div>
     }
-
-    <!-- Reusable input form block -->
-    <ng-template #editFormField let-label="label" let-required="required">
-      <mat-form-field appearance="fill" class="w-full" floatLabel="always">
-        <mat-label>{{ label }}</mat-label>
-        <input matInput [placeholder]="label" [(ngModel)]="editData" [required]="required" [email]="label === 'Email'"
-          [disabled]="saveInProgress()" #inputField="ngModel" (keydown.enter)="onEnter(inputField, user)" />
-
-          <div matSuffix class="flex gap-1 items-center">
-            <button mat-icon-button class="text-indigo-500 hover:text-indigo-600" (click)="onCancelEdit()"
-              [disabled]="saveInProgress()">
-              <mat-icon>close</mat-icon>
-            </button>
-
-            @if(saveInProgress()) {
-              <mat-progress-spinner mode="indeterminate" diameter="22" color="accent"></mat-progress-spinner>
-            } @else {
-              <button mat-icon-button class="text-indigo-500 hover:text-indigo-600" (click)="onSaveEdit(user)"
-                [disabled]="!inputField.valid || saveInProgress()">
-                <mat-icon>check</mat-icon>
-              </button>
-            }
-          </div>
-
-          @if (inputField.hasError('required')) {
-            <mat-error> {{ label }} is required</mat-error>
-          }
-          @if (inputField.hasError('email')) {
-            <mat-error> {{ label }} is not a valid email</mat-error>
-          }
-        </mat-form-field>
-      </ng-template>
+    @if(avatarUploadError()) {
+    <p class="mb-3 text-xs text-red-500 text-center">{{ avatarUploadError() }}</p>
     }
+    <input type="file" accept="image/*" #modalFile hidden (change)="onFileSelected($event)" />
+    <div class="flex justify-center gap-2">
+      <button type="button" (click)="modalFile.click()" [disabled]="saveInProgress()"
+        class="px-4 py-2 text-sm font-medium border border-slate-200 rounded-xl text-slate-700
+               hover:bg-slate-50 disabled:opacity-40 transition">
+        Choose file
+      </button>
+      <button type="button" (click)="onSavePhoto()" [disabled]="!previewImage() || saveInProgress()"
+        class="px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-indigo-500 to-violet-600
+               text-white hover:from-indigo-600 hover:to-violet-700 disabled:opacity-40 transition">
+        Save
+      </button>
+      <button type="button" (click)="closePhotoModal()" [disabled]="saveInProgress()"
+        class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100
+               rounded-xl disabled:opacity-40 transition">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- ── Inline edit field template ──────────────────────────────────── -->
+<ng-template #editFormField let-label="label" let-required="required">
+  <mat-form-field appearance="outline" class="w-full" floatLabel="always" subscriptSizing="dynamic">
+    <mat-label>{{ label }}</mat-label>
+    <input matInput [placeholder]="label" [(ngModel)]="editData" [required]="required"
+      [email]="label === 'Email'" [disabled]="saveInProgress()"
+      #inputField="ngModel" (keydown.enter)="onEnter(inputField, user)" />
+    <div matSuffix class="flex items-center gap-0.5">
+      <button mat-icon-button (click)="onCancelEdit()" [disabled]="saveInProgress()"
+        class="!text-slate-400 hover:!text-slate-600">
+        <mat-icon class="!text-[18px]">close</mat-icon>
+      </button>
+      @if(saveInProgress()) {
+      <mat-progress-spinner mode="indeterminate" diameter="20" color="accent"></mat-progress-spinner>
+      } @else {
+      <button mat-icon-button (click)="onSaveEdit(user)"
+        [disabled]="!inputField.valid || saveInProgress()"
+        class="!text-indigo-500 hover:!text-indigo-700">
+        <mat-icon class="!text-[18px]">check</mat-icon>
+      </button>
+      }
+    </div>
+    @if (inputField.hasError('required')) {
+    <mat-error>{{ label }} is required</mat-error>
+    }
+    @if (inputField.hasError('email')) {
+    <mat-error>{{ label }} is not a valid email</mat-error>
+    }
+  </mat-form-field>
+</ng-template>
+
+}

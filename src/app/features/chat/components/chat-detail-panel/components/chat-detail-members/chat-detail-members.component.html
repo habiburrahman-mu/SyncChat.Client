@@ -1,99 +1,93 @@
 @let state = this.conversationMemberState$ | async;
 
-<mat-accordion>
-  <mat-expansion-panel expanded>
+<mat-accordion class="block">
+  <mat-expansion-panel expanded class="!shadow-none !rounded-none">
 
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        Members {{ (state?.data?.length ?? 0) > 0 ? '(' + state?.data?.length + ')' : '' }}
+    <mat-expansion-panel-header class="!bg-white hover:!bg-slate-50">
+      <mat-panel-title class="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+        Members
+        @if ((state?.data?.length ?? 0) > 0) {
+        <span class="ml-1.5 bg-slate-200 text-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+          {{ state?.data?.length }}
+        </span>
+        }
       </mat-panel-title>
     </mat-expansion-panel-header>
 
+    <!-- Add Member Button -->
     @if(state && !state.isLoading && conversation()?.conversationType === ConversationType.Group &&
     (isCurrentUserAdmin() || isCurrentUserOwner())) {
-    <div class="flex justify-end">
-      <button mat-raised-button aria-label="Add Member" (click)="onClickAddMember()">
-        <mat-icon>group_add</mat-icon>
-        Add Member
+    <div class="px-2 pb-3 pt-1">
+      <button mat-stroked-button class="w-full !rounded-xl !border-dashed !border-indigo-300 !text-indigo-600
+                                        hover:!bg-indigo-50 !transition-colors text-sm"
+        (click)="onClickAddMember()">
+        <mat-icon class="!text-[18px]">person_add</mat-icon>
+        Add member
       </button>
     </div>
     }
 
+    <!-- Member List -->
+    <div class="overflow-auto max-h-96 px-2 pb-4 space-y-1.5">
 
-    <div class="overflow-auto max-h-100">
       @if (state?.isLoading) {
-      <div class="flex justify-center py-2">
-        <mat-progress-spinner mode="indeterminate" diameter="24" color="warn" strokeWidth="3"></mat-progress-spinner>
+      <div class="flex justify-center py-6">
+        <mat-progress-spinner mode="indeterminate" diameter="24" strokeWidth="2" color="accent"></mat-progress-spinner>
       </div>
       } @else if (state?.error) {
-      <div class="flex justify-center py-2">
-        <mat-icon color="warn">error</mat-icon>
-        <span>{{ state?.error }}</span>
+      <div class="flex items-center gap-2 py-3 text-red-500 px-2">
+        <mat-icon class="!text-[18px]">error_outline</mat-icon>
+        <span class="text-sm">{{ state?.error }}</span>
       </div>
       } @else if (state && state.data) {
-      <mat-list class="space-y-1">
-        @for (member of state.data; track member.userID) {
-        <div (click)="onClickMemberCard(member)">
-          <mat-list-item class="rounded-lg border border-gray-200 bg-white/70 backdrop-blur-sm shadow-sm
-             px-3 py-2 hover:shadow-md hover:bg-white transition-all duration-200 mb-2"
-            [style]="{height: 'auto', paddingTop: '5px', paddingBottom: '5px'}">
 
-            <!-- Avatar -->
-            <div matListItemAvatar>
-              @if (member.avatarUrl) {
-              <img
-                [src]="member.avatarUrl"
-                [alt]="member.name"
-                class="inline-flex w-10 h-10 rounded-full object-cover border border-gray-300"
-              />
-              } @else {
-              <div
-                class="inline-flex text-center items-center justify-center w-10 h-10 text-sm font-bold leading-none rounded-full bg-blue-200 text-blue-800">
-                {{ member.name.charAt(0).toUpperCase() }}
-              </div>
-              }
-            </div>
+      @for (member of state.data; track member.userID) {
+      <div
+        (click)="onClickMemberCard(member)"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-slate-100 bg-white
+               hover:bg-slate-50 hover:border-slate-200 transition-all duration-150 cursor-pointer">
 
-            <!-- Info -->
-            <div class="flex flex-col flex-1 ml-2">
-              <!-- Name + Owner Badge -->
-              <div class="flex items-center gap-1">
-                <span class="font-semibold text-gray-700 text-sm">
-                  {{ member.userID === currentUserId ? 'You' : member.name}}
-                </span>
-                @if (member.role === 'owner') {
-                <mat-icon class="text-blue-500 text-sm" matTooltip="Owner">
-                  verified
-                </mat-icon>
-                }
-                @if(!member.isActive) {
-                <div class="text-sm">(Left/Removed)</div>
-                }
-              </div>
-
-              <!-- @username -->
-              <span class="text-xs text-gray-500">{{ '@' + member.userName }}</span>
-
-              <!-- Role + Joined-->
-              <div class="flex items-center text-xs text-gray-500 mt-1">
-                <span class="px-2 py-0.5 rounded-full border font-medium
-                   {{ member.role === 'owner'
-                        ? 'bg-amber-50 border-amber-300 text-amber-700'
-                        : 'bg-blue-50 border-blue-300 text-blue-700' }}">
-                  {{ member.role }}
-                </span>
-                <span class="ml-auto">
-                  Joined {{ member.joinedAt | date:'MMM d, y' }}
-                </span>
-              </div>
-            </div>
-          </mat-list-item>
+        <!-- Avatar -->
+        <div class="shrink-0">
+          @if (member.avatarUrl) {
+          <img [src]="member.avatarUrl" [alt]="member.name"
+            class="w-9 h-9 rounded-full object-cover ring-2 ring-slate-200" />
+          } @else {
+          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500
+                      flex items-center justify-center text-white text-sm font-bold">
+            {{ member.name.charAt(0).toUpperCase() }}
+          </div>
+          }
         </div>
-        }
-      </mat-list>
 
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm font-semibold text-slate-700 truncate">
+              {{ member.userID === currentUserId ? 'You' : member.name }}
+            </span>
+            @if (member.role === 'owner') {
+            <mat-icon class="!text-[14px] text-amber-500 shrink-0" matTooltip="Owner">verified</mat-icon>
+            }
+            @if (!member.isActive) {
+            <span class="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full shrink-0">Left</span>
+            }
+          </div>
+          <div class="text-xs text-slate-400 truncate">{{ '@' + member.userName }}</div>
+        </div>
+
+        <!-- Role badge -->
+        <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold capitalize shrink-0
+          {{ member.role === 'owner'
+              ? 'bg-amber-100 text-amber-700'
+              : 'bg-indigo-100 text-indigo-700' }}">
+          {{ member.role }}
+        </span>
+
+      </div>
       }
 
+      }
     </div>
 
   </mat-expansion-panel>

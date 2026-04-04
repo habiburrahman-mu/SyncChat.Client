@@ -1,159 +1,197 @@
 @if (isConversationsLoading() || isSelectedConversationMessagesLoading()) {
-<div class="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
-  <mat-progress-spinner color="accent" mode="indeterminate" diameter="40"></mat-progress-spinner>
+<div class="absolute inset-0 flex items-center justify-center bg-slate-50 z-10">
+  <div class="flex flex-col items-center gap-3">
+    <mat-progress-spinner color="accent" mode="indeterminate" diameter="36"></mat-progress-spinner>
+    <span class="text-sm text-slate-400 font-medium">Loading…</span>
+  </div>
 </div>
 } @else {
 
-<!-- Chat Header -->
-<div class="flex items-center justify-between gap-3 px-6 py-4 bg-white shrink-0">
-  <div>
+<!-- ── Chat Header ─────────────────────────────────────────────── -->
+<div class="flex items-center justify-between px-5 py-3.5 bg-white border-b border-slate-100 shrink-0 shadow-sm">
+
+  <!-- Left: toggle / back -->
+  <div class="w-10 flex items-center">
     @if(isMobileScreen()) {
-    <button mat-icon-button (click)="onBack()">
+    <button mat-icon-button (click)="onBack()" class="!text-slate-500 hover:!text-slate-800">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    } @else {
-    @if(!chatListPanelPinned()){
-    <button mat-icon-button (click)="toggleChatPanel()">
-      <mat-icon>
-        {{ chatListPanelOpen() ? 'chevron_left' : 'chevron_right' }}
+    } @else if (!chatListPanelPinned()) {
+    <button mat-icon-button (click)="toggleChatPanel()" class="!text-slate-400 hover:!text-slate-700 transition-colors">
+      <mat-icon class="!text-[22px]">
+        {{ chatListPanelOpen() ? 'chevron_left' : 'menu' }}
       </mat-icon>
     </button>
     }
-    }
   </div>
 
-  <div class="flex items-center gap-3">
+  <!-- Center: conversation info -->
+  <div class="flex items-center gap-3 flex-1 min-w-0 justify-center">
+    @if (selectedConversation()) {
     @if (selectedConversation()?.avatarUrl) {
-    <img [src]="selectedConversation()?.avatarUrl" [alt]="selectedConversation()?.name || 'Conversation avatar'"
-      class="w-9 h-9 rounded-full object-cover border border-gray-300" />
+    <img [src]="selectedConversation()?.avatarUrl" [alt]="selectedConversation()?.name || ''"
+      class="w-9 h-9 rounded-full object-cover ring-2 ring-slate-200 shrink-0" />
     } @else {
-    <div
-      class="w-9 h-9 rounded-full bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-semibold">
+    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600
+                flex items-center justify-center text-white font-semibold text-sm shrink-0 ring-2 ring-indigo-100">
       {{ (selectedConversation()?.name || 'C').charAt(0).toUpperCase() }}
     </div>
     }
-    <div class="font-medium text-base">
-      {{ selectedConversation()?.name || 'Select a Chat' }}
+    <div class="min-w-0">
+      <div class="font-semibold text-slate-800 text-sm leading-tight truncate">
+        {{ selectedConversation()?.name }}
+      </div>
+      <div class="text-xs text-slate-400 leading-tight">Active now</div>
     </div>
+    } @else {
+    <span class="text-slate-400 text-sm font-medium">Select a conversation</span>
+    }
   </div>
 
-  <div>
+  <!-- Right: actions -->
+  <div class="w-10 flex items-center justify-end">
     @if (selectedConversation()) {
-    <button mat-icon-button (click)="onClickViewSidebar()">
-      <mat-icon>view_sidebar</mat-icon>
+    <button mat-icon-button (click)="onClickViewSidebar()" class="!text-slate-400 hover:!text-slate-700 transition-colors"
+      matTooltip="Conversation info" matTooltipPosition="left">
+      <mat-icon class="!text-[20px]">info</mat-icon>
     </button>
     }
   </div>
 </div>
 
-<!-- Messages container -->
-<div class="flex-1 min-h-0 overflow-y-auto p-4 space-y-2 bg-gray-50" #messagesContainer (scroll)="onScrollMessage()">
+<!-- ── Messages Container ──────────────────────────────────────── -->
+<div class="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-1 bg-slate-50 messages-scrollbar"
+  #messagesContainer (scroll)="onScrollMessage()">
+
   @if(selectedConversation()) {
+
+  <!-- Load more spinner -->
   @if (selectedConversation()?.olderMessageLoading()) {
-  <div class="flex justify-center py-2">
-    <mat-progress-spinner mode="indeterminate" diameter="24" color="warn" strokeWidth="3"></mat-progress-spinner>
+  <div class="flex justify-center py-3">
+    <mat-progress-spinner mode="indeterminate" diameter="20" strokeWidth="2" color="accent"></mat-progress-spinner>
   </div>
   }
 
   @for (message of messages() ?? []; track message.messageId) {
-
   @switch (message.type) {
 
+  <!-- System message -->
   @case (MessageType.System) {
-  <div class="flex justify-center">
-    <div class="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full select-none mb-1">
-      {{ message.metaData | systemMessageAsync | async}}
+  <div class="flex justify-center py-1">
+    <div class="bg-slate-200/80 text-slate-500 text-[11px] font-medium px-3.5 py-1 rounded-full select-none tracking-wide">
+      {{ message.metaData | systemMessageAsync | async }}
     </div>
   </div>
   }
 
+  <!-- Regular message -->
   @default {
+  <div class="flex flex-col msg-enter"
+    [ngClass]="message.senderId === currentUserId ? 'items-end' : 'items-start'">
 
-  <div class="flex flex-col mb-2" [ngClass]="
-          message.senderId === currentUserId
-            ? 'self-end items-end text-white'
-            : 'self-start items-start text-gray-800'
-        ">
+    <!-- Sender name (others only) -->
     @if (message.senderId !== currentUserId) {
-    <span class="text-xs font-medium mb-1 opacity-80 tracking-wide" [matTooltip]="message.senderName"
-      [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
+    <span class="text-[11px] font-semibold text-slate-500 mb-1 ml-1 tracking-wide"
+      [matTooltip]="message.senderName" [matTooltipShowDelay]="400">
       &#64;{{ message.senderUserName }}
     </span>
     }
 
-    <div [ngClass]="
-            message.senderId === currentUserId
-              ? 'bg-blue-600'
-              : 'bg-white border'
-          "
-      class="max-w-[75%] p-3 rounded-2xl text-sm shadow-md leading-snug transition hover:shadow-lg wrap-break-word">
+    <!-- Bubble -->
+    <div class="max-w-[72%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words"
+      [ngClass]="message.senderId === currentUserId
+        ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white rounded-br-sm shadow-md shadow-indigo-200/50'
+        : 'bg-white border border-slate-200/80 text-slate-800 shadow-sm rounded-bl-sm'">
 
       @if (message.mediaId) {
-      <chat-media-image [mediaId]="message.mediaId" (loaded)="onMediaImageLoaded()" />
+      <chat-media-image [mediaId]="message.mediaId" (loaded)="onMediaImageLoaded()"
+        class="rounded-xl overflow-hidden mb-2 block" />
       }
 
       @if (message.content) {
       <span [class.mt-2]="message.mediaId" [class.block]="message.mediaId">{{ message.content }}</span>
       }
-
     </div>
 
-    <span class="text-[10px] mt-1 opacity-60 select-none" [ngClass]="
-            message.senderId === currentUserId
-              ? 'text-gray-400'
-              : 'text-gray-500'
-          ">
+    <!-- Timestamp -->
+    <span class="text-[10px] mt-1 mx-1 select-none"
+      [class.text-slate-400]="message.senderId === currentUserId"
+      [class.text-slate-400]="message.senderId !== currentUserId">
       {{ message.updatedAt | chatTimestamp }}
     </span>
   </div>
-
   }
   }
-
   }
-  }
-  @else {
-  <div class="flex h-full w-full items-center justify-center">
-    <div class="flex flex-col items-center text-center gap-3 text-gray-500">
 
-      <mat-icon class="text-2xl text-gray-300">chat</mat-icon>
-
-      <div class="text-lg font-medium text-gray-700">
-        No conversation selected
+  } @else {
+  <!-- Empty state -->
+  <div class="flex h-full w-full items-center justify-center pt-16">
+    <div class="flex flex-col items-center text-center gap-4 max-w-xs">
+      <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center shadow-inner">
+        <mat-icon class="!text-4xl text-indigo-400">forum</mat-icon>
       </div>
-
-      <div class="text-sm max-w-xs">
-        Select a conversation from the list or start a new one to begin chatting.
+      <div>
+        <div class="text-lg font-semibold text-slate-700 mb-1">No conversation selected</div>
+        <div class="text-sm text-slate-400 leading-relaxed">
+          Pick a conversation from the sidebar or start a new one to begin chatting.
+        </div>
       </div>
-
     </div>
   </div>
-
   }
 </div>
 
+<!-- ── Typing Indicator ────────────────────────────────────────── -->
 @if (isSelectedConversationTyping()) {
-<div class="text-sm">
+<div class="px-5 pb-1">
   <chat-chat-typing-indicator />
 </div>
 }
 
-<!-- Message Input -->
+<!-- ── Message Input ───────────────────────────────────────────── -->
 @if (selectedConversation()) {
-<div class="px-6 py-4 bg-white shrink-0 flex flex-col gap-2" (dragover)="onDragOverThread($event)"
-  (dragleave)="onDragLeaveThread($event)" (drop)="onDropThread($event)" [class.ring-2]="isThreadDragOver()"
-  [class.ring-blue-400]="isThreadDragOver()" [class.ring-inset]="isThreadDragOver()">
-  <div class="flex items-center gap-3">
-    <chat-media-input #mediaInput [uploadProgress]="uploadProgress()" [isUploading]="isUploadingMedia()"
-      (fileSelected)="onMediaFileSelected($event)" (attachmentCleared)="onAttachmentCleared()" />
-    <mat-form-field subscriptSizing="dynamic" class="flex-1 appearance-outline">
-      <input matInput placeholder="Message..." [(ngModel)]="messageText" (keydown.enter)="sendMessage()"
-        (keydown)="onKeydown()" />
-    </mat-form-field>
-    <button mat-flat-button color="primary" (click)="sendMessage()" [disabled]="isUploadingMedia()" class="normal-case">
-      Send
+<div class="px-5 py-4 bg-white border-t border-slate-100 shrink-0"
+  (dragover)="onDragOverThread($event)"
+  (dragleave)="onDragLeaveThread($event)"
+  (drop)="onDropThread($event)">
+
+  <div class="flex items-end gap-3 bg-slate-50 rounded-2xl px-4 py-2.5 border transition-all duration-150"
+    [class.border-indigo-400]="isThreadDragOver()"
+    [class.ring-2]="isThreadDragOver()"
+    [class.ring-indigo-100]="isThreadDragOver()"
+    [class.border-slate-200]="!isThreadDragOver()">
+
+    <!-- Attachment -->
+    <chat-media-input
+      #mediaInput
+      [uploadProgress]="uploadProgress()"
+      [isUploading]="isUploadingMedia()"
+      (fileSelected)="onMediaFileSelected($event)"
+      (attachmentCleared)="onAttachmentCleared()" />
+
+    <!-- Text input -->
+    <input
+      matInput
+      placeholder="Type a message…"
+      [(ngModel)]="messageText"
+      (keydown.enter)="sendMessage()"
+      (keydown)="onKeydown()"
+      class="flex-1 bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none py-1 min-w-0" />
+
+    <!-- Send button -->
+    <button
+      type="button"
+      (click)="sendMessage()"
+      [disabled]="isUploadingMedia()"
+      class="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-all duration-150 shrink-0 shadow-sm
+             bg-gradient-to-br from-indigo-500 to-violet-600
+             hover:from-indigo-600 hover:to-violet-700
+             disabled:opacity-40 disabled:cursor-not-allowed">
+      <mat-icon class="!text-[20px]">send</mat-icon>
     </button>
   </div>
 </div>
 }
+
 }
