@@ -1,100 +1,103 @@
 @let state = detailState$ | async;
 
-<!-- ── Conversation Overview ── -->
-<mat-accordion>
-  <mat-expansion-panel expanded>
+<!-- ── Conversation Info ──────────────────────────────────────── -->
+<mat-accordion class="block">
+  <mat-expansion-panel expanded class="!shadow-none !rounded-none border-b border-slate-100">
 
-    <mat-expansion-panel-header>
-      <mat-panel-title>Info</mat-panel-title>
+    <mat-expansion-panel-header class="!bg-white hover:!bg-slate-50">
+      <mat-panel-title class="text-xs font-semibold text-slate-500 uppercase tracking-widest">Overview</mat-panel-title>
     </mat-expansion-panel-header>
 
     @if (state?.isLoading) {
-      <div class="flex justify-center py-4">
-        <mat-progress-spinner mode="indeterminate" diameter="24" color="warn" strokeWidth="3" />
-      </div>
+    <div class="flex justify-center py-6">
+      <mat-progress-spinner mode="indeterminate" diameter="24" strokeWidth="2" color="accent" />
+    </div>
 
     } @else if (state?.error) {
-      <div class="flex items-center gap-2 py-2 text-red-500">
-        <mat-icon>error</mat-icon>
-        <span class="text-sm">{{ state?.error }}</span>
-      </div>
+    <div class="flex items-center gap-2 py-3 text-red-500">
+      <mat-icon class="!text-[18px]">error_outline</mat-icon>
+      <span class="text-sm">{{ state?.error }}</span>
+    </div>
 
     } @else if (state?.data && conversation()) {
 
-      <!-- Avatar + Name -->
-      <div class="flex flex-col items-center gap-2 py-3">
-        @if (conversation()?.avatarUrl) {
-          <img
-            [src]="conversation()!.avatarUrl!"
-            alt="avatar"
-            class="w-16 h-16 rounded-full object-cover border border-gray-300"
-          />
-        } @else {
-          <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-200 text-blue-800 text-2xl font-bold select-none">
-            {{ conversation()!.name.charAt(0).toUpperCase() }}
-          </div>
-        }
+    <!-- Avatar + Name -->
+    <div class="flex flex-col items-center gap-3 py-5">
+      @if (conversation()?.avatarUrl) {
+      <img [src]="conversation()!.avatarUrl!" alt="avatar"
+        class="w-20 h-20 rounded-2xl object-cover ring-4 ring-slate-100" />
+      } @else {
+      <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600
+                  flex items-center justify-center text-white text-3xl font-bold select-none shadow-lg shadow-indigo-200">
+        {{ conversation()!.name.charAt(0).toUpperCase() }}
+      </div>
+      }
 
-        <h3 class="text-base font-semibold text-gray-800 text-center leading-tight">
-          {{ conversation()!.name }}
-        </h3>
-
-        <!-- Type badge -->
-        <span class="text-xs px-2 py-0.5 rounded-full border font-medium capitalize
+      <div class="text-center">
+        <h3 class="text-base font-bold text-slate-800 leading-tight">{{ conversation()!.name }}</h3>
+        <span class="inline-block mt-1.5 text-xs px-2.5 py-0.5 rounded-full font-semibold capitalize
           {{ conversation()!.conversationType === ConversationType.Group
-              ? 'bg-purple-50 border-purple-300 text-purple-700'
-              : 'bg-green-50 border-green-300 text-green-700' }}">
+              ? 'bg-violet-100 text-violet-700'
+              : 'bg-emerald-100 text-emerald-700' }}">
           {{ conversation()!.conversationType }}
         </span>
       </div>
+    </div>
 
-      <!-- Meta rows -->
-      <div class="flex flex-col gap-1.5 px-1 pb-3 text-sm text-gray-600">
-        @if (memberCount() > 0) {
-          <div class="flex items-center gap-2">
-            <mat-icon class="!text-[18px] text-gray-400">group</mat-icon>
-            <span>{{ memberCount() }} member{{ memberCount() === 1 ? '' : 's' }}</span>
-          </div>
-        }
-        <div class="flex items-center gap-2">
-          <mat-icon class="!text-[18px] text-gray-400">calendar_today</mat-icon>
-          <span>Created {{ state!.data!.createdAt | date:'MMM d, y' }}</span>
-        </div>
+    <!-- Meta rows -->
+    <div class="flex flex-col gap-1 px-2 pb-4">
+      @if (memberCount() > 0) {
+      <div class="flex items-center gap-2.5 py-1.5">
+        <mat-icon class="!text-[18px] text-slate-400 shrink-0">group</mat-icon>
+        <span class="text-sm text-slate-600">{{ memberCount() }} member{{ memberCount() === 1 ? '' : 's' }}</span>
       </div>
-    }
+      }
+      <div class="flex items-center gap-2.5 py-1.5">
+        <mat-icon class="!text-[18px] text-slate-400 shrink-0">calendar_today</mat-icon>
+        <span class="text-sm text-slate-600">Created {{ state!.data!.createdAt | date:'MMM d, y' }}</span>
+      </div>
+    </div>
 
+    }
   </mat-expansion-panel>
 </mat-accordion>
 
-<!-- ── Shared Media ── -->
-<mat-accordion>
-  <mat-expansion-panel>
+<!-- ── Shared Media ──────────────────────────────────────────── -->
+<mat-accordion class="block">
+  <mat-expansion-panel class="!shadow-none !rounded-none border-b border-slate-100">
 
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        Media {{ sharedMedia().length > 0 ? '(' + sharedMedia().length + ')' : '' }}
+    <mat-expansion-panel-header class="!bg-white hover:!bg-slate-50">
+      <mat-panel-title class="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+        Media
+        @if (sharedMedia().length > 0) {
+        <span class="ml-1.5 bg-slate-200 text-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+          {{ sharedMedia().length }}
+        </span>
+        }
       </mat-panel-title>
     </mat-expansion-panel-header>
 
     @if (sharedMedia().length === 0) {
-      <div class="flex flex-col items-center gap-1 py-5 text-gray-400">
-        <mat-icon>perm_media</mat-icon>
-        <span class="text-sm">No media shared yet</span>
+    <div class="flex flex-col items-center gap-2 py-8 text-slate-400">
+      <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+        <mat-icon class="!text-[22px] text-slate-300">perm_media</mat-icon>
       </div>
+      <span class="text-sm">No media shared yet</span>
+    </div>
     } @else {
-      <div class="grid grid-cols-3 gap-1 p-1">
-        @for (media of sharedMedia(); track media.messageId) {
-          @if (media.type === MessageType.Image) {
-            <div class="aspect-square overflow-hidden rounded">
-              <chat-media-image [mediaId]="media.mediaId!" class="w-full h-full" />
-            </div>
-          } @else {
-            <div class="flex items-center justify-center aspect-square rounded bg-gray-100 text-gray-500">
-              <mat-icon>{{ media.type === MessageType.Video ? 'videocam' : 'insert_drive_file' }}</mat-icon>
-            </div>
-          }
-        }
+    <div class="grid grid-cols-3 gap-1.5 p-2 pb-4">
+      @for (media of sharedMedia(); track media.messageId) {
+      @if (media.type === MessageType.Image) {
+      <div class="aspect-square overflow-hidden rounded-xl ring-1 ring-slate-200">
+        <chat-media-image [mediaId]="media.mediaId!" class="w-full h-full object-cover" />
       </div>
+      } @else {
+      <div class="flex items-center justify-center aspect-square rounded-xl bg-slate-100 text-slate-400 ring-1 ring-slate-200">
+        <mat-icon class="!text-[22px]">{{ media.type === MessageType.Video ? 'videocam' : 'insert_drive_file' }}</mat-icon>
+      </div>
+      }
+      }
+    </div>
     }
 
   </mat-expansion-panel>

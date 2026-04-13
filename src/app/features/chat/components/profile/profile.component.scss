@@ -1,39 +1,40 @@
-/* Modal styles for profile photo dialog */
+:host {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: block;
+}
+
+/* Allow the name card's negative margin to visually overlap the gradient header */
+mat-dialog-content {
+  overflow: visible !important;
+}
+
+/* Photo modal backdrop */
 .photo-modal-backdrop {
-	position: fixed;
-	inset: 0;
-	background: rgba(0,0,0,0.4);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 1200;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
 }
 
 .photo-modal {
-	background: white;
-	padding: 1.25rem;
-	border-radius: 0.5rem;
-	width: 22rem;
-	max-width: 90%;
-	box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-	text-align: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  width: 22rem;
+  max-width: 90vw;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.photo-modal img {
-	display: block;
-	margin: 0 auto;
+/* Ensure Material Icons render correctly inside this component */
+mat-icon {
+  font-family: 'Material Icons' !important;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.avatar-placeholder mat-icon {
-	font-family: 'Material Icons';
-	font-size: 24px;
-	line-height: 1;
-	display: block;
-	width: 1em;
-	height: 1em;
-}
-
-.photo-modal .mat-icon {
-	font-family: 'Material Icons';
-}
-
