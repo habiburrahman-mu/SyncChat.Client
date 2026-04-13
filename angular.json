@@ -51,6 +51,7 @@
             "outputPath": "dist/sync-chat.client",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "baseHref": "/projects/syncchat/",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
