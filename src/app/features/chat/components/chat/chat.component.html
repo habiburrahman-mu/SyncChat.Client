@@ -1,25 +1,30 @@
-<div class="h-screen bg-gray-50 text-gray-800 font-[Inter]">
-  <!-- Sidebar -->
-  <mat-drawer-container class="flex">
+<div class="h-screen font-[Inter] overflow-hidden bg-slate-50">
+  <mat-drawer-container class="h-full" autosize>
+
+    <!-- ── Left Sidebar (desktop) ──────────────────────────────── -->
     @if(!isMobileScreen()) {
-    <mat-drawer [mode]="chatListPanelPinned() ? 'side' : 'over'"
-      [opened]="(chatListPanelOpen() || chatListPanelPinned())" class="h-screen" [(opened)]="chatListPanelOpen">
-      <aside class="w-72 border-gray-200 bg-white shrink-0 h-screen">
+    <mat-drawer
+      [mode]="chatListPanelPinned() ? 'side' : 'over'"
+      [opened]="(chatListPanelOpen() || chatListPanelPinned())"
+      [(opened)]="chatListPanelOpen"
+      class="chat-sidebar-drawer">
+      <aside class="w-72 h-screen bg-white">
         <chat-chat-sidebar />
       </aside>
     </mat-drawer>
     }
 
-    <mat-drawer-content class="flex flex-col flex-1 h-screen">
-      <!-- Chat Thread -->
-      <main class="flex-1">
-        <mat-drawer-container>
+    <!-- ── Main Content ────────────────────────────────────────── -->
+    <mat-drawer-content class="flex flex-col h-screen bg-slate-50">
+      <main class="flex-1 h-full min-h-0 chat-inner-container">
+        <mat-drawer-container class="h-full">
           <mat-drawer-content>
             <chat-chat-thread />
           </mat-drawer-content>
 
           @if(selectedConversation()) {
-          <mat-drawer mode="over" position="end" [(opened)]="isChatDetailPanelOpen">
+          <mat-drawer mode="over" position="end" [(opened)]="isChatDetailPanelOpen"
+            class="chat-detail-drawer !w-80">
             <chat-detail-panel />
           </mat-drawer>
           }
@@ -27,5 +32,6 @@
         </mat-drawer-container>
       </main>
     </mat-drawer-content>
+
   </mat-drawer-container>
 </div>

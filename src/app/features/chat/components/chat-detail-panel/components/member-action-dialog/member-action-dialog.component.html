@@ -1,78 +1,79 @@
-<!-- Profile Card -->
-<div class="w-full bg-gray-50 rounded-lg shadow-sm p-4 border border-gray-200">
-  <div class="flex items-center gap-4">
-    <img src="https://i.pravatar.cc/150?img=12" alt="Habib" class="w-16 h-16 rounded-full border border-gray-300">
-    <div>
-      <div class="text-lg font-semibold text-gray-800">{{member.name}}</div>
-      <div class="text-sm text-gray-500">{{'@' + member.userName}}</div>
-    </div>
+<!-- Profile Header -->
+<div class="flex items-center gap-4 px-6 py-5 border-b border-slate-100">
+  <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0 ring-2 ring-white shadow-sm">
+    @if (member.avatarUrl) {
+      <img [src]="member.avatarUrl" [alt]="member.name" class="w-full h-full object-cover" />
+    } @else {
+      <div class="w-full h-full flex items-center justify-center text-slate-600 text-lg font-bold">
+        {{ member.name.charAt(0).toUpperCase() }}
+      </div>
+    }
+  </div>
+  <div>
+    <div class="text-base font-bold text-slate-800">{{member.name}}</div>
+    <div class="text-sm text-slate-500">{{'@' + member.userName}}</div>
   </div>
 </div>
 
-<!-- Action Card -->
-<!-- Action Card -->
-<div class="w-full bg-white rounded-lg shadow-md">
+<!-- Actions -->
+<div class="py-2">
+
   @if(member.role !== MemberRole.Admin && member.role !== MemberRole.Owner) {
   <!-- Make Admin -->
-  <div class="w-full flex items-center justify-between px-6 py-2 rounded-md transition-colors duration-150 my-2"
+  <div class="flex items-center justify-between px-5 py-3 mx-2 rounded-xl transition-colors duration-150"
     [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
-    [class.text-indigo-700]="!disableAction()" [class.text-gray-400]="disableAction()"
     [class.hover:bg-indigo-50]="!disableAction()" (click)="!disableAction() && makeAdmin()">
-    <div class="flex items-center gap-2">
-      <mat-icon [class.text-indigo-600]="!disableAction()" [class.text-gray-400]="disableAction()">security</mat-icon>
-      <span>Make Admin</span>
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+        [class.bg-indigo-100]="!disableAction()" [class.bg-slate-100]="disableAction()">
+        <mat-icon class="!text-[20px]"
+          [class.text-indigo-600]="!disableAction()" [class.text-slate-400]="disableAction()">security</mat-icon>
+      </div>
+      <span class="text-sm font-semibold"
+        [class.text-indigo-700]="!disableAction()" [class.text-slate-400]="disableAction()">Make Admin</span>
     </div>
     @if (loadingAdmin()) {
-    <mat-progress-spinner diameter="20" mode="indeterminate" color="accent"></mat-progress-spinner>
+      <mat-progress-spinner diameter="18" mode="indeterminate" color="accent"></mat-progress-spinner>
     }
   </div>
   }
-
-  <!-- Make Owner -->
-  <!-- @if(member.role !== MemberRole.Owner) {
-  <div class="w-full flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150"
-    [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
-    [class.text-teal-700]="!disableAction()" [class.text-gray-400]="disableAction()"
-    [class.hover:bg-teal-50]="!disableAction()" (click)="!disableAction() && makeOwner()">
-    <div class="flex items-center gap-2">
-      <mat-icon [class.text-teal-600]="!disableAction()" [class.text-gray-400]="disableAction()">stars</mat-icon>
-      <span>Make Owner</span>
-    </div>
-    @if (loadingOwner()) {
-    <mat-progress-spinner diameter="20" mode="indeterminate" color="accent"></mat-progress-spinner>
-    }
-  </div>
-  } -->
 
   @if(member.role === MemberRole.Admin) {
   <!-- Dismiss as Admin -->
-  <div class="w-full flex items-center justify-between px-6 py-2 rounded-md transition-colors duration-150 my-2"
+  <div class="flex items-center justify-between px-5 py-3 mx-2 rounded-xl transition-colors duration-150"
     [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
-    [class.text-amber-700]="!disableAction()" [class.text-gray-400]="disableAction()"
     [class.hover:bg-amber-50]="!disableAction()" (click)="!disableAction() && dismissAdmin()">
-    <div class="flex items-center gap-2">
-      <mat-icon [class.text-amber-600]="!disableAction()"
-        [class.text-gray-400]="disableAction()">person_remove</mat-icon>
-      <span>Dismiss as admin</span>
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+        [class.bg-amber-100]="!disableAction()" [class.bg-slate-100]="disableAction()">
+        <mat-icon class="!text-[20px]"
+          [class.text-amber-600]="!disableAction()" [class.text-slate-400]="disableAction()">person_remove</mat-icon>
+      </div>
+      <span class="text-sm font-semibold"
+        [class.text-amber-700]="!disableAction()" [class.text-slate-400]="disableAction()">Dismiss as Admin</span>
     </div>
     @if (loadingDismiss()) {
-    <mat-progress-spinner diameter="20" mode="indeterminate" color="warn"></mat-progress-spinner>
+      <mat-progress-spinner diameter="18" mode="indeterminate" color="warn"></mat-progress-spinner>
     }
   </div>
   }
 
-  <!-- Remove Member -->
   @if(member.role !== MemberRole.Owner) {
-  <div class="w-full flex items-center justify-between px-6 py-2 rounded-md transition-colors duration-150 my-2"
+  <!-- Remove / Leave -->
+  <div class="flex items-center justify-between px-5 py-3 mx-2 rounded-xl transition-colors duration-150"
     [class.cursor-pointer]="!disableAction()" [class.cursor-not-allowed]="disableAction()"
-    [class.text-rose-700]="!disableAction()" [class.text-gray-400]="disableAction()"
     [class.hover:bg-rose-50]="!disableAction()" (click)="!disableAction() && removeMember()">
-    <div class="flex items-center gap-2">
-      <mat-icon [class.text-rose-600]="!disableAction()" [class.text-gray-400]="disableAction()">{{!isCurrentUser ? 'delete' : 'exit_to_app'}}</mat-icon>
-      <span>{{!isCurrentUser ? 'Remove' : 'Leave'}}</span>
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+        [class.bg-rose-100]="!disableAction()" [class.bg-slate-100]="disableAction()">
+        <mat-icon class="!text-[20px]"
+          [class.text-rose-600]="!disableAction()" [class.text-slate-400]="disableAction()">{{!isCurrentUser ? 'delete' : 'exit_to_app'}}</mat-icon>
+      </div>
+      <span class="text-sm font-semibold"
+        [class.text-rose-700]="!disableAction()" [class.text-slate-400]="disableAction()">{{!isCurrentUser ? 'Remove' : 'Leave'}}</span>
     </div>
     @if (loadingRemove()) {
-    <mat-progress-spinner diameter="20" mode="indeterminate" color="warn"></mat-progress-spinner>
+      <mat-progress-spinner diameter="18" mode="indeterminate" color="warn"></mat-progress-spinner>
     }
   </div>
   }
