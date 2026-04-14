@@ -115,17 +115,6 @@ export class ConversationStateService {
 
             this.sortConversationSubject.next(conversationId);
             this.playNotification();
-
-            if (document.hidden) {
-              this.notificationService.notify(
-                `New message in ${conversation?.name ?? 'SyncChat'}`,
-                {
-                  body: 'Open SyncChat to read the latest message.',
-                  tag: `chat-${conversationId}`,
-                  data: { conversationId }
-                }
-              ).catch(() => null);
-            }
           }
         }
       });
@@ -227,17 +216,6 @@ export class ConversationStateService {
       };
 
       this.addConversation(conversation);
-
-      if (document.hidden) {
-        this.notificationService.notify(
-          `Added to ${newConversation.name}`,
-          {
-            body: 'A new conversation was created for you.',
-            tag: `conversation-${newConversation.conversationId}`,
-            data: { conversationId: newConversation.conversationId }
-          }
-        ).catch(() => null);
-      }
     } else {
       if (this.removedFromConversation === newConversation.conversationId) {
         this.removedFromConversation = undefined;
@@ -402,18 +380,6 @@ export class ConversationStateService {
 
           if (chatNotification.data.type !== MessageType.System) {
             this.playNotification();
-          }
-
-          if (document.hidden) {
-            const selectedConversation = this.conversations().find(c => c.id === conversationId);
-            this.notificationService.notify(
-              `New message in ${selectedConversation?.name ?? 'SyncChat'}`,
-              {
-                body: message.content ?? 'You received a new message.',
-                tag: `chat-${conversationId}`,
-                data: { conversationId }
-              }
-            ).catch(() => null);
           }
         }
       });

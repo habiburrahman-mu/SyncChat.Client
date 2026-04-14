@@ -4,11 +4,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { map, merge, Observable, startWith, Subject, switchMap } from 'rxjs';
 import { NotificationService } from '@core/services';
-import { PwaInstallPromptComponent } from '@shared/components';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, PwaInstallPromptComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -28,8 +27,6 @@ export class AppComponent implements OnInit {
       startWith(undefined),
       switchMap(() => this.getForecasts())
     );
-
-    this.notificationService.requestPermission().catch(() => null);
   }
 
   getForecasts(): Observable<any[]> {

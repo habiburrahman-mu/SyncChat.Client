@@ -159,37 +159,6 @@ export class NotificationService {
     );
   }
 
-  async requestPermission(): Promise<NotificationPermission> {
-    if (!('Notification' in window)) {
-      return 'denied';
-    }
-
-    const permission = await Notification.requestPermission();
-    return permission;
-  }
-
-  async notify(title: string, options: NotificationOptions = {}) {
-    if (!this._canNotify()) return;
-
-    const notificationOptions = {
-      icon: 'assets/icons/icon.svg',
-      badge: 'assets/icons/icon.svg',
-      ...options,
-    } as NotificationOptions;
-
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-      const registration = await navigator.serviceWorker.getRegistration();
-      registration?.showNotification(title, notificationOptions);
-      return;
-    }
-
-    new Notification(title, notificationOptions);
-  }
-
-  private _canNotify(): boolean {
-    return ('Notification' in window) && Notification.permission === 'granted';
-  }
-
   private _getAccessToken(): string {
     return this.authService.getAccessToken() ?? '';
   }
