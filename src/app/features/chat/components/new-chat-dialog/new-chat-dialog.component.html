@@ -32,14 +32,14 @@
 
   <!-- Selected user chips -->
   @if (selectedUsers().length) {
-  <div class="flex flex-wrap gap-2">
+  <div class="flex flex-wrap gap-2 mb-4">
     @for (user of selectedUsers(); track user) {
     <span class="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700
                  text-xs font-semibold px-3 py-1.5 rounded-full">
       &#64;{{ user.userName }}
       <button type="button" (click)="removeUser(user)"
-        class="w-4 h-4 rounded-full flex items-center justify-center bg-indigo-200 hover:bg-indigo-300 transition leading-none">
-        <mat-icon class="!text-[12px]">close</mat-icon>
+        class="m-0 w-4 h-4 rounded-full flex items-center justify-center hover:cursor-pointer transition leading-none">
+        <mat-icon class="text-lg mt-2">close</mat-icon>
       </button>
     </span>
     }
@@ -49,8 +49,8 @@
   <!-- Search -->
   <div>
     <label class="text-xs font-semibold text-slate-500 uppercase tracking-widest block mb-1.5">Find by Username</label>
-    <div class="flex items-center gap-2">
-      <div class="relative flex-1">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div class="relative flex-1 min-w-0">
         <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 !text-slate-400 !text-[18px] pointer-events-none">
           search
         </mat-icon>
@@ -68,8 +68,8 @@
         type="button"
         (click)="searchUser()"
         [disabled]="searchText.length === 0 || isLoading()"
-        class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-indigo-500 text-white
-               hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition shrink-0 flex items-center gap-1.5">
+        class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-sm font-semibold bg-indigo-500 text-white
+               hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center justify-center gap-1.5">
         @if (isLoading()) {
         <mat-spinner diameter="16"></mat-spinner>
         } @else {
@@ -82,7 +82,7 @@
 
   <!-- Search Results -->
   @if (!isLoading()) {
-  <div class="space-y-1.5">
+  <div class="space-y-1.5 mt-2">
     @if (userSearchResponse(); as user) {
     <div
       (click)="user.userID !== currentUserId && selectUser(user)"
@@ -136,18 +136,18 @@
 </mat-dialog-content>
 
 <!-- ── Dialog Actions ─────────────────────────────────────────── -->
-<div class="flex items-center justify-end gap-2 px-6 py-4 border-t border-slate-100">
+<div class="flex flex-col-reverse gap-3 px-6 py-4 border-t border-slate-100 sm:flex-row sm:items-center sm:justify-end">
   <button type="button" (click)="onCancel()"
-    class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition">
+    class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition">
     Cancel
   </button>
   <button
     type="button"
     (click)="onCreate()"
     [disabled]="saveInProgress() || !selectedUsers().length || (selectedUsers().length > 1 && groupName.length === 0)"
-    class="px-5 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-500 to-violet-600 text-white
+    class="w-full sm:w-auto px-5 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-500 to-violet-600 text-white
            hover:from-indigo-600 hover:to-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition
-           flex items-center gap-1.5 shadow-sm">
+           flex items-center justify-center gap-1.5 shadow-sm">
     @if (saveInProgress()) {
     <mat-spinner diameter="16"></mat-spinner>
     } @else {
