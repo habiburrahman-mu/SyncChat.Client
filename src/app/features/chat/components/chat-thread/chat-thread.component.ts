@@ -132,11 +132,16 @@ export class ChatThreadComponent implements OnInit {
   }
 
   onNewMessage() {
-    requestAnimationFrame(() => {
+    const container = this.messagesContainer()?.nativeElement;
+    if (!container) return;
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    if (distanceFromBottom < 300) {
       requestAnimationFrame(() => {
-        this.scrollToBottom(true);
+        requestAnimationFrame(() => {
+          this.scrollToBottom(true);
+        });
       });
-    });
+    }
   }
 
   onMediaImageLoaded() {

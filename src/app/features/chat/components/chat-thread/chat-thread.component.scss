@@ -4,5 +4,6 @@
   flex-direction: column;
   flex: 1 1 auto;  /* flex-grow + flex-shrink + flex-basis */
   min-height: 0;    /* ensures inner scroll works */
+  height: 100%;     /* fill the drawer content height */
   position: relative; /* for absolute loader overlay */
 }
