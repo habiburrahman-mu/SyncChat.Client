@@ -49,7 +49,22 @@ export class AuthService {
     return deviceIdentifier;
   }
 
-  private generateDeviceIdentifier() { return crypto.randomUUID(); }
+  private generateDeviceIdentifier(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+
+    // fallback
+    return this.fallbackUUID();
+  }
+
+  private fallbackUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 
   updateUserId() {
     this._userId = this.getUserId();
