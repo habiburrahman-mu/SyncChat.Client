@@ -1,0 +1,131 @@
+.pwa-install-prompt {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  animation: slideUp 0.3s ease-out;
+
+  @media (min-width: 768px) {
+    left: auto;
+    right: 20px;
+    max-width: 400px;
+  }
+}
+
+.prompt-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.prompt-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    color: white;
+    font-size: 24px;
+  }
+}
+
+.prompt-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.prompt-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.prompt-description {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.prompt-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.dismiss-btn {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.install-btn {
+  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  color: white;
+  font-weight: 500;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Manual install variant for mobile devices
+.manual-install {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: rgba(245, 158, 11, 0.2);
+
+  .prompt-icon {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  .prompt-title {
+    color: #92400e;
+  }
+
+  .prompt-description {
+    color: #a16207;
+  }
+
+  .dismiss-btn {
+    color: #92400e;
+    background: rgba(255, 255, 255, 0.9);
+  }
+}
+
+// Dark mode support for manual install
+@media (prefers-color-scheme: dark) {
+  .manual-install {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border-color: rgba(245, 158, 11, 0.2);
+
+    .prompt-title {
+      color: #92400e;
+    }
+
+    .prompt-description {
+      color: #a16207;
+    }
+
+    .dismiss-btn {
+      color: #92400e;
+      background: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
