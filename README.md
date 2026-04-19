@@ -323,6 +323,20 @@ Token refresh is handled automatically by `refreshTokenInterceptor` on any 401 r
 
 ---
 
+## Password Reset
+
+SyncChat.Client supports secure password reset via email:
+
+1. **Request Reset** — User enters username/email on "Forgot Password" page → `POST /auth/passwordResetRequest`
+2. **Email Sent** — Backend generates secure token, stores in database, sends email via Resend SMTP with reset link (`/reset-password?token=...`)
+3. **Verify Token** — User clicks link → frontend loads "Reset Password" page → `POST /auth/passwordResetVerify` validates token
+4. **Reset Password** — User enters new password → `POST /auth/passwordResetComplete` updates password and invalidates all sessions
+5. **Success** — User redirected to login with success message
+
+The reset link includes the token as a query parameter. Tokens expire after 1 hour and can only be used once. All sessions are invalidated on password change for security.
+
+---
+
 ## Media Upload
 
 Media (images) in chat messages go through a multi-step pipeline coordinated between the frontend, backend, and MinIO object storage:

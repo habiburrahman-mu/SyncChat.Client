@@ -10,6 +10,9 @@ export const API_ROUTES = {
     Logout: `${BASE_URL}/auth/logout` as const,
     LogoutAll: `${BASE_URL}/auth/logoutAll` as const,
     GoogleAuth: `${BASE_URL}/auth/googleAuth` as const,
+    PasswordResetRequest: `${BASE_URL}/auth/passwordResetRequest` as const,
+    PasswordResetVerify: `${BASE_URL}/auth/passwordResetVerify` as const,
+    PasswordResetComplete: `${BASE_URL}/auth/passwordResetComplete` as const,
   },
   User: {
     GetUserByUserName: `${BASE_URL}/user/GetByUserName` as const,

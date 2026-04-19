@@ -3,3 +3,6 @@ export * from './token-request.model';
 export * from './logout-request.model';
 export * from './refresh-request.model';
 export * from './google-auth-request.model';
+export * from './password-reset-request.model';
+export * from './password-reset-verify.model';
+export * from './password-reset-complete.model';

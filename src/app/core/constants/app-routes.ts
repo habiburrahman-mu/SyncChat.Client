@@ -5,7 +5,9 @@ export const FEATURE_ROUTE_PATH = {
 
 export const AUTH_ROUTE_PATH = {
   Login: 'login',
-  Register: 'register'
+  Register: 'register',
+  ForgotPassword: 'forgot-password',
+  ResetPassword: 'reset-password'
 };
 
 export const CHAT_ROUTE_PATH = {

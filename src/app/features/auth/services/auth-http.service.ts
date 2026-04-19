@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GoogleAuthRequest, LogoutRequest, RefreshRequest, RegisterUserRequest, TokenRequest } from '../models';
+import { GoogleAuthRequest, LogoutRequest, RefreshRequest, RegisterUserRequest, TokenRequest, PasswordResetRequest, PasswordResetVerify, PasswordResetComplete } from '../models';
 import { Observable } from 'rxjs';
 import { API_ROUTES } from '@core/constants';
 
@@ -27,4 +27,13 @@ export class AuthHttpService {
 
   googleAuth = (request: GoogleAuthRequest): Observable<string> =>
     this.http.post<string>(API_ROUTES.Auth.GoogleAuth, request);
+
+  passwordResetRequest = (request: PasswordResetRequest): Observable<void> =>
+    this.http.post<void>(API_ROUTES.Auth.PasswordResetRequest, request);
+
+  passwordResetVerify = (request: PasswordResetVerify): Observable<void> =>
+    this.http.post<void>(API_ROUTES.Auth.PasswordResetVerify, request);
+
+  passwordResetComplete = (request: PasswordResetComplete): Observable<void> =>
+    this.http.post<void>(API_ROUTES.Auth.PasswordResetComplete, request);
 }
